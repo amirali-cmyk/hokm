@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test JS Files</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #000; color: #0f0; font-size: 12px; }
+    .ok { color: #06d6a0; }
+    .fail { color: #ef476f; }
+    button { padding: 10px 20px; font-size: 14px; margin-bottom: 20px; }
+    #output { white-space: pre; }
+  </style>
+</head>
+<body>
+  <h1>🔍 تست فایل‌های JS</h1>
+  <button onclick="testAll()">شروع تست</button>
+  <div id="output"></div>
+
+  <script>
+    const files = [
+      'storage.js', 'themes.js', 'audio.js', 'profile.js',
+      'achievements.js', 'leaderboard.js', 'friends.js',
+      'tournament.js', 'replay.js', 'share.js',
+      'ai.js', 'game.js', 'ui.js', 'main.js'
+    ];
+
+    async function testAll() {
+      const out = document.getElementById('output');
+      out.textContent = 'در حال تست...\n\n';
+      
+      for (const file of files) {
+        try {
+          const res = await fetch('js/' + file, { method: 'HEAD' });
+          if (res.ok) {
+            const text = await (await fetch('js/' + file)).text();
+            const size = text.length;
+            out.innerHTML += '<div class="ok">✅ ' + file + ' — OK (' + size + ' bytes)</div>';
+          } else {
+            out.innerHTML += '<div class="fail">❌ ' + file + ' — HTTP ' + res.status + '</div>';
+          }
+        } catch (e) {
+          out.innerHTML += '<div class="fail">❌ ' + file + ' — ' + e.message + '</div>';
+        }
+      }
+      
+      out.innerHTML += '\n✅ تست تمام شد';
+    }
+  </script>
+</body>
+</html>
