@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 600 400"
+     width="600"
+     height="400"
+     role="img"
+     aria-label="راهنمای گام ۳: حکم‌خوانی">
+
+  <title>گام ۳ — حکم‌خوانی</title>
+  <desc>یک بازیکن با انتخاب یکی از ۴ خال به‌عنوان حکم، بازی را هدایت می‌کند. بقیه می‌توانند پاس بدهند یا حکم بخوانند.</desc>
+
+  <!-- ═══════════════════════════════════════════
+       تعریف گرادیانت‌ها و فیلترها
+       ═══════════════════════════════════════════ -->
+  <defs>
+
+    <!-- پس‌زمینه -->
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1e2d45" />
+      <stop offset="55%"  stop-color="#152138" />
+      <stop offset="100%" stop-color="#0d1b2a" />
+    </linearGradient>
+
+    <!-- طلایی -->
+    <linearGradient id="gold3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ffe97a" />
+      <stop offset="55%"  stop-color="#ffd60a" />
+      <stop offset="100%" stop-color="#b8860b" />
+    </linearGradient>
+
+    <!-- کارت سفید -->
+    <linearGradient id="cardWhite3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fffdf7" />
+      <stop offset="60%"  stop-color="#f5f0e8" />
+      <stop offset="100%" stop-color="#e6ddca" />
+    </linearGradient>
+
+    <!-- سبز (تیم ما) -->
+    <linearGradient id="green3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#06d6a0" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- قرمز (حریف) -->
+    <linearGradient id="red3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ef476f" />
+      <stop offset="100%" stop-color="#b8304e" />
+    </linearGradient>
+
+    <!-- پیک (مشکی) -->
+    <linearGradient id="spadeG3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#2a2a2a" />
+      <stop offset="100%" stop-color="#0a0a0a" />
+    </linearGradient>
+
+    <!-- هاله طلایی -->
+    <radialGradient id="halo3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ffd60a" stop-opacity="0.5" />
+      <stop offset="60%"  stop-color="#ffd60a" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#ffd60a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- درخشش ملایم -->
+    <radialGradient id="softGlow3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#06d6a0" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#06d6a0" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- فیلترها -->
+    <filter id="shadow3" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="3" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="glow3" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+  </defs>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۱: پس‌زمینه
+       ═══════════════════════════════════════════ -->
+  <rect width="600" height="400" rx="20" ry="20" fill="url(#bgGrad3)" />
+
+  <g fill="#ffd60a" opacity="0.05">
+    <circle cx="40"  cy="40"  r="2" />
+    <circle cx="120" cy="40"  r="2" />
+    <circle cx="200" cy="40"  r="2" />
+    <circle cx="280" cy="40"  r="2" />
+    <circle cx="360" cy="40"  r="2" />
+    <circle cx="440" cy="40"  r="2" />
+    <circle cx="520" cy="40"  r="2" />
+    <circle cx="40"  cy="360" r="2" />
+    <circle cx="120" cy="360" r="2" />
+    <circle cx="200" cy="360" r="2" />
+    <circle cx="280" cy="360" r="2" />
+    <circle cx="360" cy="360" r="2" />
+    <circle cx="440" cy="360" r="2" />
+    <circle cx="520" cy="360" r="2" />
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۲: عنوان
+       ═══════════════════════════════════════════ -->
+  <text x="300" y="42"
+        font-family="'Vazirmatn', sans-serif"
+        font-size="18"
+        font-weight="700"
+        text-anchor="middle"
+        fill="#ffd60a">حکم‌خوانی — انتخاب خال برتر</text>
+
+  <line x1="180" y1="54" x2="420" y2="54"
+        stroke="url(#gold3)"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        opacity="0.5" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۳: بازیکن اصلی (حکم‌خوان) — سمت راست
+       ═══════════════════════════════════════════ -->
+
+  <!-- هاله درخشش زیر بازیکن -->
+  <ellipse cx="480" cy="200" rx="100" ry="100" fill="url(#halo3)" opacity="0.6" />
+
+  <g filter="url(#shadow3)" transform="translate(480 130)">
+    <!-- دایره بازیکن با حاشیه طلایی -->
+    <circle r="38" fill="url(#green3)" stroke="#ffd60a" stroke-width="3.5" />
+    <text y="12"
+          font-family="sans-serif"
+          font-size="38"
+          text-anchor="middle"
+          fill="#fff">🧑‍🎓</text>
+  </g>
+
+  <!-- تاج طلایی بالای سر بازیکن -->
+  <g transform="translate(480 80)" filter="url(#glow3)">
+    <path d="
+      M -22 0
+      L -22 -14
+      L -12 -6
+      L 0 -18
+      L 12 -6
+      L 22 -14
+      L 22 0
+      Z"
+      fill="url(#gold3)"
+      stroke="#8a6300"
+      stroke-width="1"
+      stroke-linejoin="round" />
+    <circle cx="0" cy="-4" r="2.5" fill="#fff3b0" />
+    <circle cx="-14" cy="-1" r="1.8" fill="#ffe97a" />
+    <circle cx="14"  cy="-1" r="1.8" fill="#ffe97a" />
+    <rect x="-22" y="0" width="44" height="3" rx="1"
+          fill="url(#gold3)" />
+  </g>
+
+  <!-- برچسب «حکم‌خوان» -->
+  <g transform="translate(480 190)">
+    <rect x="-50" y="-12" width="100" height="24" rx="12"
+          fill="url(#gold3)" />
+    <text y="5"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="12"
+          font-weight="700"
+          text-anchor="middle"
+          fill="#1a1a1a">👑 حکم‌خوان</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۴: ۴ خال به‌عنوان گزینه حکم (وسط-راست)
+       ═══════════════════════════════════════════ -->
+
+  <!-- عنوان «یک خال انتخاب کن» -->
+  <g transform="translate(320 105)">
+    <text font-family="'Vazirmatn', sans-serif"
+          font-size="12"
+          font-weight="700"
+          fill="#ffd60a"
+          text-anchor="middle"
+          opacity="0.9">یک خال انتخاب کن:</text>
+  </g>
+
+  <!-- کارت ۱: ♠ پیک (انتخاب‌شده — هایلایت طلایی) -->
+  <g transform="translate(230 130)" filter="url(#shadow3)">
+    <circle r="52" fill="url(#halo3)" opacity="0.7" />
+    <g transform="translate(-25 -38) rotate(-6)">
+      <rect x="0" y="0" width="50" height="72" rx="7"
+            fill="url(#cardWhite3)" stroke="url(#gold3)" stroke-width="3.5" />
+      <text x="25" y="30"
+            font-family="'Playfair Display', serif"
+            font-size="26" font-weight="900"
+            text-anchor="middle" fill="#1a1a1a">A</text>
+      <text x="25" y="58"
+            font-family="sans-serif"
+            font-size="24"
+            text-anchor="middle" fill="#1a1a1a">♠</text>
+    </g>
+    <!-- تیک تأیید -->
+    <g transform="translate(24 -30)">
+      <circle r="12" fill="url(#gold3)" />
+      <path d="M -5 1 L -1 5 L 6 -3"
+            stroke="#1a1a1a"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none" />
+    </g>
+  </g>
+
+  <!-- کارت ۲: ♥ دل (غیرفعال) -->
+  <g transform="translate(320 130) rotate(-3)" filter="url(#shadow3)" opacity="0.5">
+    <g transform="translate(-25 -38)">
+      <rect x="0" y="0" width="50" height="72" rx="7"
+            fill="url(#cardWhite3)" stroke="#c0b8a0" stroke-width="1.5" />
+      <text x="25" y="30"
+            font-family="'Playfair Display', serif"
+            font-size="26" font-weight="900"
+            text-anchor="middle" fill="#ef476f">K</text>
+      <text x="25" y="58"
+            font-family="sans-serif"
+            font-size="24"
+            text-anchor="middle" fill="#ef476f">♥</text>
+    </g>
+  </g>
+
+  <!-- کارت ۳: ♦ خشت (غیرفعال) -->
+  <g transform="translate(410 130) rotate(3)" filter="url(#shadow3)" opacity="0.5">
+    <g transform="translate(-25 -38)">
+      <rect x="0" y="0" width="50" height="72" rx="7"
+            fill="url(#cardWhite3)" stroke="#c0b8a0" stroke-width="1.5" />
+      <text x="25" y="30"
+            font-family="'Playfair Display', serif"
+            font-size="26" font-weight="900"
+            text-anchor="middle" fill="#ef476f">Q</text>
+      <text x="25" y="58"
+            font-family="sans-serif"
+            font-size="24"
+            text-anchor="middle" fill="#ef476f">♦</text>
+    </g>
+  </g>
+
+  <!-- کارت ۴: ♣ خشت (غیرفعال) -->
+  <g transform="translate(500 130) rotate(5)" filter="url(#shadow3)" opacity="0.5">
+    <g transform="translate(-25 -38)">
+      <rect x="0" y="0" width="50" height="72" rx="7"
+            fill="url(#cardWhite3)" stroke="#c0b8a0" stroke-width="1.5" />
+      <text x="25" y="30"
+            font-family="'Playfair Display', serif"
+            font-size="26" font-weight="900"
+            text-anchor="middle" fill="#1a1a1a">J</text>
+      <text x="25" y="58"
+            font-family="sans-serif"
+            font-size="24"
+            text-anchor="middle" fill="#1a1a1a">♣</text>
+    </g>
+  </g>
+
+  <!-- فلش از کارت انتخاب‌شده به سمت بازیکن -->
+  <path d="M 500 200 Q 520 240 500 260"
+        stroke="url(#gold3)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+        stroke-dasharray="6 4"
+        opacity="0.7" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۵: پیام تأیید حکم (وسط)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(300 240)">
+    <rect x="-140" y="-22" width="280" height="44" rx="22"
+          fill="#0d1b2a"
+          stroke="url(#gold3)"
+          stroke-width="1.5"
+          opacity="0.95" />
+    <text y="-3"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="11"
+          font-weight="600"
+          text-anchor="middle"
+          fill="#a0a8b8">خال حکم اعلام شد:</text>
+    <text y="15"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="14"
+          font-weight="900"
+          text-anchor="middle"
+          fill="#ffd60a">♠ پیک ♠</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۶: سه بازیکن دیگر (با حباب «پاس» یا «حکم»)
+       ═══════════════════════════════════════════ -->
+
+  <!-- بازیکن ۱ (پایین-چپ) -->
+  <g filter="url(#shadow3)" transform="translate(90 290)">
+    <circle r="28" fill="url(#green3)" stroke="#fff" stroke-width="2" />
+    <text y="9"
+          font-family="sans-serif"
+          font-size="26"
+          text-anchor="middle"
+          fill="#fff">😎</text>
+    <!-- حباب پاس -->
+    <g transform="translate(0 -50)">
+      <rect x="-32" y="-16" width="64" height="26" rx="13"
+            fill="#0d1b2a"
+            stroke="#06d6a0"
+            stroke-width="1.2" />
+      <path d="M 0 10 L -6 0 L 6 0 Z" fill="#0d1b2a" />
+      <text y="1"
+            font-family="'Vazirmatn', sans-serif"
+            font-size="11"
+            font-weight="700"
+            text-anchor="middle"
+            fill="#06d6a0">✋ پاس</text>
+    </g>
+  </g>
+
+  <!-- بازیکن ۲ (وسط-چپ) -->
+  <g filter="url(#shadow3)" transform="translate(210 340)">
+    <circle r="28" fill="url(#red3)" stroke="#fff" stroke-width="2" />
+    <text y="9"
+          font-family="sans-serif"
+          font-size="26"
+          text-anchor="middle"
+          fill="#fff">🤖</text>
+    <!-- حباب پاس -->
+    <g transform="translate(0 -50)">
+      <rect x="-32" y="-16" width="64" height="26" rx="13"
+            fill="#0d1b2a"
+            stroke="#ef476f"
+            stroke-width="1.2" />
+      <path d="M 0 10 L -6 0 L 6 0 Z" fill="#0d1b2a" />
+      <text y="1"
+            font-family="'Vazirmatn', sans-serif"
+            font-size="11"
+            font-weight="700"
+            text-anchor="middle"
+            fill="#ef476f">✋ پاس</text>
+    </g>
+  </g>
+
+  <!-- بازیکن ۳ (وسط-راست) -->
+  <g filter="url(#shadow3)" transform="translate(330 340)">
+    <circle r="28" fill="url(#red3)" stroke="#fff" stroke-width="2" />
+    <text y="9"
+          font-family="sans-serif"
+          font-size="26"
+          text-anchor="middle"
+          fill="#fff">👨</text>
+    <!-- حباب پاس -->
+    <g transform="translate(0 -50)">
+      <rect x="-32" y="-16" width="64" height="26" rx="13"
+            fill="#0d1b2a"
+            stroke="#ef476f"
+            stroke-width="1.2" />
+      <path d="M 0 10 L -6 0 L 6 0 Z" fill="#0d1b2a" />
+      <text y="1"
+            font-family="'Vazirmatn', sans-serif"
+            font-size="11"
+            font-weight="700"
+            text-anchor="middle"
+            fill="#ef476f">✋ پاس</text>
+    </g>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۷: جعبه قوانین (پایین)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(30 380)">
+    <rect x="0" y="-14" width="540" height="26" rx="10"
+          fill="#0d1b2a"
+          stroke="#ffd60a"
+          stroke-width="1"
+          opacity="0.85" />
+    <text x="270" y="3"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="10.5"
+          font-weight="500"
+          text-anchor="middle"
+          fill="#e0e1dd">
+      اگه همه پاس بدن، حکم‌خوان مجبوره حکم تعیین کنه. بعد از اعلام حکم، بازی شروع می‌شه!
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۸: شماره گام (بالا-راست)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(548 40)">
+    <circle r="22"
+            fill="url(#gold3)"
+            filter="url(#shadow3)" />
+    <text y="8"
+          font-family="'Playfair Display', serif"
+          font-size="22"
+          font-weight="900"
+          text-anchor="middle"
+          fill="#1a1a1a">3</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۹: جرقه‌های تزئینی
+       ═══════════════════════════════════════════ -->
+  <g fill="url(#gold3)" opacity="0.8">
+    <path d="M 100 130 L 102 136 L 108 138 L 102 140 L 100 146
+             L 98 140 L 92 138 L 98 136 Z" />
+    <path d="M 420 60 L 421 64 L 425 65 L 421 66 L 420 70
+             L 419 66 L 415 65 L 419 64 Z"
+          opacity="0.6" />
+  </g>
+
+</svg>

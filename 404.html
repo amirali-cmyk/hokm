@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1b2a" />
+  <meta name="robots" content="noindex" />
+  <title>۴۰۴ — کارت پیدا نشد | حکم حرفه‌ای</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <!-- فونت‌ها -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════
+       Reset + متغیرها (inline برای استقلال کامل)
+       ═══════════════════════════════════════════ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark-1: #0d1b2a;
+      --bg-dark-2: #1e2d45;
+      --bg-dark-3: #0a1420;
+      --accent-gold: #ffd60a;
+      --accent-gold-soft: rgba(255, 214, 10, 0.15);
+      --accent-gold-glow: rgba(255, 214, 10, 0.4);
+      --text-primary: #e0e1dd;
+      --text-secondary: #a0a8b8;
+      --text-muted: #6b7280;
+      --card-red: #ef476f;
+      --card-black: #1a1a1a;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.6);
+      --shadow-gold: 0 0 40px rgba(255, 214, 10, 0.35);
+      --font-fa: 'Vazirmatn', system-ui, sans-serif;
+      --font-en: 'Playfair Display', Georgia, serif;
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════════════════════════════════
+       Body + پس‌زمینه گرادیانت
+       ═══════════════════════════════════════════ */
+    html, body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: var(--font-fa);
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(30, 45, 69, 0.9) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 90%, rgba(255, 214, 10, 0.06) 0%, transparent 50%),
+        linear-gradient(160deg, var(--bg-dark-1) 0%, var(--bg-dark-3) 60%, #060d15 100%);
+      padding: 20px;
+    }
+
+    /* ═══════════════════════════════════════════
+       الگوی نقطه‌ای پس‌زمینه
+       ═══════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255, 214, 10, 0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      opacity: 0.6;
+      animation: bgPan 60s linear infinite;
+    }
+
+    @keyframes bgPan {
+      from { background-position: 0 0; }
+      to   { background-position: 320px 320px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       کارت‌های شناور تزئینی پس‌زمینه
+       ═══════════════════════════════════════════ */
+    .bg-card {
+      position: fixed;
+      width: 90px;
+      height: 130px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 214, 10, 0.08);
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .bg-card::after {
+      content: attr(data-suit);
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      color: rgba(255, 214, 10, 0.15);
+    }
+
+    .bg-card:nth-child(1) {
+      top: 8%; left: 6%;
+      animation: floatCard1 14s ease-in-out infinite;
+    }
+    .bg-card:nth-child(2) {
+      top: 65%; left: 12%;
+      animation: floatCard2 18s ease-in-out infinite;
+    }
+    .bg-card:nth-child(3) {
+      top: 20%; right: 8%;
+      animation: floatCard3 16s ease-in-out infinite;
+    }
+    .bg-card:nth-child(4) {
+      bottom: 10%; right: 15%;
+      animation: floatCard4 20s ease-in-out infinite;
+    }
+
+    @keyframes floatCard1 {
+      0%, 100% { transform: translate(0, 0) rotate(-12deg); }
+      50%      { transform: translate(20px, -30px) rotate(-6deg); }
+    }
+    @keyframes floatCard2 {
+      0%, 100% { transform: translate(0, 0) rotate(18deg); }
+      50%      { transform: translate(-25px, 25px) rotate(10deg); }
+    }
+    @keyframes floatCard3 {
+      0%, 100% { transform: translate(0, 0) rotate(22deg); }
+      50%      { transform: translate(15px, 30px) rotate(14deg); }
+    }
+    @keyframes floatCard4 {
+      0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+      50%      { transform: translate(-20px, -25px) rotate(-16deg); }
+    }
+
+    /* ═══════════════════════════════════════════
+       کانتینر اصلی
+       ═══════════════════════════════════════════ */
+    .error-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 620px;
+      text-align: center;
+      padding: 48px 32px;
+      background: linear-gradient(
+        145deg,
+        rgba(30, 45, 69, 0.85) 0%,
+        rgba(13, 27, 42, 0.95) 100%
+      );
+      border: 1px solid rgba(255, 214, 10, 0.15);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      animation: containerIn 0.7s var(--ease-bounce) both;
+    }
+
+    @keyframes containerIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       آیکون کارت شناور بالای صفحه
+       ═══════════════════════════════════════════ */
+    .floating-card {
+      position: relative;
+      display: inline-block;
+      width: 110px;
+      height: 155px;
+      margin-bottom: 24px;
+      perspective: 1000px;
+      animation: cardBounce 3s ease-in-out infinite;
+    }
+
+    @keyframes cardBounce {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50%      { transform: translateY(-14px) rotate(4deg); }
+    }
+
+    .floating-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fffdf7, #f0ebe0);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 214, 10, 0.3),
+        var(--shadow-gold);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      animation: cardShine 4s ease-in-out infinite;
+    }
+
+    @keyframes cardShine {
+      0%, 100% { filter: brightness(1); }
+      50%      { filter: brightness(1.08); }
+    }
+
+    /* علامت پیک گوشه بالا-راست */
+    .floating-card .corner {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: var(--font-en);
+      line-height: 1;
+      color: var(--card-black);
+    }
+
+    .floating-card .corner.top-right {
+      top: 8px;
+      right: 8px;
+    }
+
+    .floating-card .corner.bottom-left {
+      bottom: 8px;
+      left: 8px;
+      transform: rotate(180deg);
+    }
+
+    .floating-card .corner .rank {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .floating-card .corner .suit {
+      font-size: 20px;
+      margin-top: 2px;
+    }
+
+    /* پیک بزرگ وسط */
+    .floating-card .center-suit {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: var(--card-black);
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    /* ═══════════════════════════════════════════
+       شماره ۴۰۴ بزرگ
+       ═══════════════════════════════════════════ */
+    .error-code {
+      font-family: var(--font-en);
+      font-size: clamp(80px, 18vw, 140px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+      background: linear-gradient(
+        180deg,
+        var(--accent-gold) 0%,
+        #b8860b 60%,
+        #6b4e00 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 20px var(--accent-gold-glow));
+      animation: codeGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes codeGlow {
+      0%, 100% {
+        filter: drop-shadow(0 4px 20px rgba(255, 214, 10, 0.35));
+      }
+      50% {
+        filter: drop-shadow(0 4px 35px rgba(255, 214, 10, 0.65));
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       عنوان و متن
+       ═══════════════════════════════════════════ */
+    .error-title {
+      font-size: clamp(20px, 3.5vw, 26px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .error-message {
+      font-size: clamp(14px, 2.2vw, 16px);
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 32px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .error-message .highlight {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════
+       دکمه‌ها
+       ═══════════════════════════════════════════ */
+    .error-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      min-height: 48px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.25s var(--ease-bounce);
+      text-decoration: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(6, 214, 160, 0.4);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 12px 32px rgba(6, 214, 160, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:hover:active {
+      transform: translateY(0) scale(0.96);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 214, 10, 0.1);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    /* ═══════════════════════════════════════════
+       اطلاعات ریدایرکت خودکار
+       ═══════════════════════════════════════════ */
+    .redirect-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: rgba(255, 214, 10, 0.06);
+      border: 1px solid rgba(255, 214, 10, 0.15);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .redirect-countdown {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      background: var(--accent-gold);
+      color: var(--bg-dark-1);
+      font-weight: 700;
+      font-family: var(--font-en);
+      font-size: 15px;
+      border-radius: 8px;
+      animation: countdownPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes countdownPulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.08); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 214, 10, 0.2);
+      border-top-color: var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ═══════════════════════════════════════════
+       لوگوی پایین صفحه
+       ═══════════════════════════════════════════ */
+    .error-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    .error-footer img {
+      width: 22px;
+      height: 22px;
+      opacity: 0.6;
+    }
+
+    /* ═══════════════════════════════════════════
+       واکنش‌گرایی
+       ═══════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      .error-container {
+        padding: 36px 22px;
+      }
+
+      .floating-card {
+        width: 88px;
+        height: 124px;
+      }
+
+      .floating-card .center-suit {
+        font-size: 48px;
+      }
+
+      .floating-card .corner .rank,
+      .floating-card .corner .suit {
+        font-size: 16px;
+      }
+
+      .bg-card {
+        width: 60px;
+        height: 86px;
+      }
+
+      .error-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .error-container {
+        padding: 28px 16px;
+      }
+
+      .redirect-info {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .bg-card {
+        display: none;
+      }
+    }
+
+    /* حالت کاهش حرکت */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* اگر ارتفاع صفحه کم بود */
+    @media (max-height: 700px) {
+      .floating-card {
+        width: 80px;
+        height: 112px;
+        margin-bottom: 16px;
+      }
+
+      .floating-card .center-suit {
+        font-size: 44px;
+      }
+
+      .error-container {
+        padding: 28px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- کارت‌های تزئینی پس‌زمینه -->
+  <div class="bg-card" data-suit="♠" style="transform: rotate(-12deg);"></div>
+  <div class="bg-card" data-suit="♥" style="transform: rotate(18deg);"></div>
+  <div class="bg-card" data-suit="♦" style="transform: rotate(22deg);"></div>
+  <div class="bg-card" data-suit="♣" style="transform: rotate(-8deg);"></div>
+
+  <!-- کانتینر اصلی خطا -->
+  <main class="error-container" role="main">
+
+    <!-- کارت پیک طلایی شناور -->
+    <div class="floating-card" aria-hidden="true">
+      <div class="floating-card-inner">
+        <div class="corner top-right">
+          <span class="rank">A</span>
+          <span class="suit">♠</span>
+        </div>
+        <div class="center-suit">♠</div>
+        <div class="corner bottom-left">
+          <span class="rank">A</span>
+          <span class="suit">♠</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- شماره ۴۰۴ -->
+    <h1 class="error-code" aria-label="خطای ۴۰۴">404</h1>
+
+    <!-- عنوان -->
+    <h2 class="error-title">صفحه پیدا نشد</h2>
+
+    <!-- متن توضیحی -->
+    <p class="error-message">
+      انگار این کارت <span class="highlight">توی دست نیست</span>! 🃏<br />
+      آدرسی که دنبالش بودی وجود نداره یا جابه‌جا شده.
+    </p>
+
+    <!-- دکمه‌ها -->
+    <div class="error-actions">
+      <a href="index.html" class="btn btn-primary" id="btnBackToGame">
+        <span>🎮</span>
+        <span>بازگشت به بازی</span>
+      </a>
+      <button class="btn btn-secondary" id="btnGoBack" type="button">
+        <span>↩</span>
+        <span>صفحه قبل</span>
+      </button>
+    </div>
+
+    <!-- ریدایرکت خودکار -->
+    <div class="redirect-info">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>هدایت خودکار به صفحه اصلی در</span>
+      <span class="redirect-countdown" id="countdown" aria-live="polite">۱۰</span>
+      <span>ثانیه</span>
+    </div>
+  </main>
+
+  <!-- فوتر -->
+  <footer class="error-footer">
+    <img src="assets/logo.svg" alt="" />
+    <span>حکم حرفه‌ای — نسخه ۶.۰</span>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ═══════════════════════════════════════════
+         شمارش معکوس ریدایرکت خودکار
+         ═══════════════════════════════════════════ */
+      const countdownEl = document.getElementById('countdown');
+      const REDIRECT_SECONDS = 10;
+      const HOME_URL = 'index.html';
+
+      // تلاش برای استفاده از مسیر صحیح (اگر داخل زیرپوشه باشیم)
+      const isSubpage = window.location.pathname
+        .split('/')
+        .filter(Boolean)
+        .length > 1;
+      const finalUrl = isSubpage ? '../index.html' : HOME_URL;
+
+      let remaining = REDIRECT_SECONDS;
+      let timerId = null;
+      let paused = false;
+
+      // تبدیل عدد لاتین به فارسی
+      function toPersianNumber(n) {
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(n).replace(/\d/g, (d) => persianDigits[+d]);
+      }
+
+      // شروع شمارش معکوس
+      function startCountdown() {
+        countdownEl.textContent = toPersianNumber(remaining);
+
+        timerId = setInterval(() => {
+          if (paused) return;
+
+          remaining -= 1;
+          countdownEl.textContent = toPersianNumber(Math.max(remaining, 0));
+
+          // رنگ قرمز در ۳ ثانیه آخر
+          if (remaining <= 3) {
+            countdownEl.style.background = '#ef476f';
+            countdownEl.style.color = '#fff';
+          }
+
+          // رسیدن به صفر → ریدایرکت
+          if (remaining <= 0) {
+            clearInterval(timerId);
+            try {
+              window.location.href = finalUrl;
+            } catch (err) {
+              // fallback در صورت مسدود بودن
+              window.location.replace(finalUrl);
+            }
+          }
+        }, 1000);
+      }
+
+      // توقف موقت روی hover (تا کاربر فرصت کنه دکمه بزنه)
+      const container = document.querySelector('.error-container');
+      container.addEventListener('mouseenter', () => { paused = true; });
+      container.addEventListener('mouseleave', () => { paused = false; });
+
+      // شروع
+      startCountdown();
+
+      /* ═══════════════════════════════════════════
+         دکمه‌ها
+         ═══════════════════════════════════════════ */
+
+      // دکمه بازگشت به بازی → لغو تایمر و رفتن به index
+      document.getElementById('btnBackToGame').addEventListener('click', (e) => {
+        e.preventDefault();
+        clearInterval(timerId);
+        window.location.href = finalUrl;
+      });
+
+      // دکمه صفحه قبل
+      document.getElementById('btnGoBack').addEventListener('click', () => {
+        clearInterval(timerId);
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = finalUrl;
+        }
+      });
+
+      /* ═══════════════════════════════════════════
+         ثبت بازدید ۴۰۴ در localStorage (برای تحلیل)
+         ═══════════════════════════════════════════ */
+      try {
+        const key = 'hokm_404_log';
+        const log = JSON.parse(localStorage.getItem(key) || '[]');
+        log.push({
+          path: window.location.pathname,
+          ref: document.referrer || null,
+          time: Date.now()
+        });
+        // فقط ۲۰ مورد آخر را نگه‌دار
+        if (log.length > 20) log.splice(0, log.length - 20);
+        localStorage.setItem(key, JSON.stringify(log));
+      } catch (_) {
+        // اگر localStorage غیرفعال بود، نادیده بگیر
+      }
+
+      /* ═══════════════════════════════════════════
+         افکت پارالاکس سبک روی موس (دسکتاپ)
+         ═══════════════════════════════════════════ */
+      const bgCards = document.querySelectorAll('.bg-card');
+      if (window.matchMedia('(hover: hover)').matches) {
+        let rafId = null;
+        document.addEventListener('mousemove', (e) => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(() => {
+            const cx = (e.clientX / window.innerWidth - 0.5) * 2;
+            const cy = (e.clientY / window.innerHeight - 0.5) * 2;
+            bgCards.forEach((card, i) => {
+              const depth = (i + 1) * 6;
+              const baseRot = card.style.transform.match(/rotate\(([-\d.]+)deg\)/);
+              const rot = baseRot ? parseFloat(baseRot[1]) : 0;
+              card.style.transform =
+                `translate(${cx * depth}px, ${cy * depth}px) rotate(${rot}deg)`;
+            });
+            rafId = null;
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

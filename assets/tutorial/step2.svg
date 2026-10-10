@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 600 400"
+     width="600"
+     height="400"
+     role="img"
+     aria-label="راهنمای گام ۲: ترتیب کارت‌ها">
+
+  <title>گام ۲ — ترتیب کارت‌ها</title>
+  <desc>نمایش ۱۳ کارت از A (بالاترین) تا ۲ (پایین‌ترین). A=14، K=13، Q=12، J=11، 10 تا 2 باقی.</desc>
+
+  <!-- ═══════════════════════════════════════════
+       تعریف گرادیانت‌ها و فیلترها
+       ═══════════════════════════════════════════ -->
+  <defs>
+
+    <!-- پس‌زمینه اصلی -->
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1e2d45" />
+      <stop offset="55%"  stop-color="#152138" />
+      <stop offset="100%" stop-color="#0d1b2a" />
+    </linearGradient>
+
+    <!-- کارت سفید — گرادیانت -->
+    <linearGradient id="cardWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fffdf7" />
+      <stop offset="60%"  stop-color="#f5f0e8" />
+      <stop offset="100%" stop-color="#e6ddca" />
+    </linearGradient>
+
+    <!-- طلایی (سطج بالا A) -->
+    <linearGradient id="goldTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ffe97a" />
+      <stop offset="55%"  stop-color="#ffd60a" />
+      <stop offset="100%" stop-color="#b8860b" />
+    </linearGradient>
+
+    <!-- آبی (سطج بالا K، Q) -->
+    <linearGradient id="blueTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#4da6d1" />
+      <stop offset="100%" stop-color="#118ab2" />
+    </linearGradient>
+
+    <!-- سبز (میان J تا 7) -->
+    <linearGradient id="greenMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#06d6a0" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- نارنجی (پایین 6 تا 3) -->
+    <linearGradient id="orangeLow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#f4a259" />
+      <stop offset="100%" stop-color="#c77b3a" />
+    </linearGradient>
+
+    <!-- قرمز (پایین‌ترین 2) -->
+    <linearGradient id="redLowest" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ef476f" />
+      <stop offset="100%" stop-color="#b8304e" />
+    </linearGradient>
+
+    <!-- هاله درخشش طلایی -->
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ffd60a" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffd60a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- سایه نرم -->
+    <filter id="cardDrop2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="3" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- سایه ملایم -->
+    <filter id="soft2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+      <feOffset dx="0" dy="1.5" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.35" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+  </defs>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۱: پس‌زمینه
+       ═══════════════════════════════════════════ -->
+  <rect width="600" height="400" rx="20" ry="20" fill="url(#bgGrad2)" />
+
+  <!-- الگوی نقطه‌ای پس‌زمینه -->
+  <g fill="#ffd60a" opacity="0.05">
+    <circle cx="40"  cy="40"  r="2" />
+    <circle cx="120" cy="40"  r="2" />
+    <circle cx="200" cy="40"  r="2" />
+    <circle cx="280" cy="40"  r="2" />
+    <circle cx="360" cy="40"  r="2" />
+    <circle cx="440" cy="40"  r="2" />
+    <circle cx="520" cy="40"  r="2" />
+    <circle cx="40"  cy="360" r="2" />
+    <circle cx="120" cy="360" r="2" />
+    <circle cx="200" cy="360" r="2" />
+    <circle cx="280" cy="360" r="2" />
+    <circle cx="360" cy="360" r="2" />
+    <circle cx="440" cy="360" r="2" />
+    <circle cx="520" cy="360" r="2" />
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۲: عنوان
+       ═══════════════════════════════════════════ -->
+  <text x="300" y="42"
+        font-family="'Vazirmatn', sans-serif"
+        font-size="18"
+        font-weight="700"
+        text-anchor="middle"
+        fill="#ffd60a">ترتیب کارت‌ها — از قوی به ضعیف</text>
+
+  <!-- خط تزئینی زیر عنوان -->
+  <line x1="180" y1="54" x2="420" y2="54"
+        stroke="url(#goldTop)"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        opacity="0.5" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۳: نوار رتبه‌بندی رنگی (سمت راست)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(30 60)">
+    <!-- نوار عمودی -->
+    <rect x="0" y="0" width="6" height="300" rx="3"
+          fill="url(#goldTop)" opacity="0.15" />
+    <rect x="0" y="0" width="6" height="60" rx="3"
+          fill="url(#goldTop)" />
+    <rect x="0" y="60" width="6" height="90" rx="0"
+          fill="url(#blueTop)" opacity="0.8" />
+    <rect x="0" y="150" width="6" height="90" rx="0"
+          fill="url(#greenMid)" opacity="0.8" />
+    <rect x="0" y="240" width="6" height="60" rx="3"
+          fill="url(#orangeLow)" opacity="0.8" />
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۴: ۱۳ کارت به‌ترتیب نزولی (چیده‌شده افقی)
+       ═══════════════════════════════════════════ -->
+
+  <!-- 🃏 A (بالاترین — ۱۴) -->
+  <g filter="url(#cardDrop2)" transform="translate(60 90) rotate(-3)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#goldTop)" stroke-width="2.5" />
+    <text x="21" y="26"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">A</text>
+    <text x="21" y="50"
+          font-family="sans-serif"
+          font-size="18"
+          text-anchor="middle" fill="#1a1a1a">♠</text>
+  </g>
+  <!-- برچسب ارزش -->
+  <g transform="translate(81 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#goldTop)" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">14</text>
+  </g>
+
+  <!-- 🃏 K (۱۳) -->
+  <g filter="url(#cardDrop2)" transform="translate(112 90) rotate(-2)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#blueTop)" stroke-width="2" />
+    <text x="21" y="26"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">K</text>
+    <text x="21" y="50"
+          font-family="sans-serif"
+          font-size="18"
+          text-anchor="middle" fill="#ef476f">♥</text>
+  </g>
+  <g transform="translate(133 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#blueTop)" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">13</text>
+  </g>
+
+  <!-- 🃏 Q (۱۲) -->
+  <g filter="url(#cardDrop2)" transform="translate(164 90) rotate(-1)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#blueTop)" stroke-width="2" />
+    <text x="21" y="26"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">Q</text>
+    <text x="21" y="50"
+          font-family="sans-serif"
+          font-size="18"
+          text-anchor="middle" fill="#1a1a1a">♣</text>
+  </g>
+  <g transform="translate(185 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#blueTop)" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">12</text>
+  </g>
+
+  <!-- 🃏 J (۱۱) -->
+  <g filter="url(#cardDrop2)" transform="translate(216 90) rotate(0)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#greenMid)" stroke-width="2" />
+    <text x="21" y="26"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">J</text>
+    <text x="21" y="50"
+          font-family="sans-serif"
+          font-size="18"
+          text-anchor="middle" fill="#ef476f">♦</text>
+  </g>
+  <g transform="translate(237 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#greenMid)" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">11</text>
+  </g>
+
+  <!-- 🃏 10 -->
+  <g filter="url(#cardDrop2)" transform="translate(268 90) rotate(1)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#greenMid)" stroke-width="1.8" />
+    <text x="21" y="32"
+          font-family="'Playfair Display', serif"
+          font-size="20" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">10</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#1a1a1a">♠</text>
+  </g>
+  <g transform="translate(289 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#greenMid)" opacity="0.85" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">10</text>
+  </g>
+
+  <!-- 🃏 9 -->
+  <g filter="url(#cardDrop2)" transform="translate(320 90) rotate(2)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#greenMid)" stroke-width="1.6" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">9</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#ef476f">♥</text>
+  </g>
+  <g transform="translate(341 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#greenMid)" opacity="0.75" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">9</text>
+  </g>
+
+  <!-- 🃏 8 -->
+  <g filter="url(#cardDrop2)" transform="translate(372 90) rotate(3)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#greenMid)" stroke-width="1.4" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">8</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#1a1a1a">♣</text>
+  </g>
+  <g transform="translate(393 168)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#greenMid)" opacity="0.65" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">8</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       ستون دوم — از y=220
+       ═══════════════════════════════════════════ -->
+
+  <!-- 🃏 7 -->
+  <g filter="url(#cardDrop2)" transform="translate(60 230) rotate(-3)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#greenMid)" stroke-width="1.2" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">7</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#ef476f">♦</text>
+  </g>
+  <g transform="translate(81 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#greenMid)" opacity="0.55" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">7</text>
+  </g>
+
+  <!-- 🃏 6 -->
+  <g filter="url(#cardDrop2)" transform="translate(112 230) rotate(-2)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#orangeLow)" stroke-width="1.2" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">6</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#1a1a1a">♠</text>
+  </g>
+  <g transform="translate(133 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#orangeLow)" opacity="0.8" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">6</text>
+  </g>
+
+  <!-- 🃏 5 -->
+  <g filter="url(#cardDrop2)" transform="translate(164 230) rotate(-1)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#orangeLow)" stroke-width="1.2" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">5</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#ef476f">♥</text>
+  </g>
+  <g transform="translate(185 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#orangeLow)" opacity="0.7" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">5</text>
+  </g>
+
+  <!-- 🃏 4 -->
+  <g filter="url(#cardDrop2)" transform="translate(216 230) rotate(0)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#orangeLow)" stroke-width="1.2" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">4</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#1a1a1a">♣</text>
+  </g>
+  <g transform="translate(237 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#orangeLow)" opacity="0.6" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">4</text>
+  </g>
+
+  <!-- 🃏 3 -->
+  <g filter="url(#cardDrop2)" transform="translate(268 230) rotate(1)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#orangeLow)" stroke-width="1.2" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#ef476f">3</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#ef476f">♦</text>
+  </g>
+  <g transform="translate(289 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#orangeLow)" opacity="0.5" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">3</text>
+  </g>
+
+  <!-- 🃏 2 (پایین‌ترین) -->
+  <g filter="url(#cardDrop2)" transform="translate(320 230) rotate(2)">
+    <rect x="0" y="0" width="42" height="62" rx="6"
+          fill="url(#cardWhite)" stroke="url(#redLowest)" stroke-width="1.8" />
+    <text x="21" y="34"
+          font-family="'Playfair Display', serif"
+          font-size="22" font-weight="900"
+          text-anchor="middle" fill="#1a1a1a">2</text>
+    <text x="21" y="52"
+          font-family="sans-serif"
+          font-size="16"
+          text-anchor="middle" fill="#1a1a1a">♠</text>
+  </g>
+  <g transform="translate(341 308)">
+    <rect x="-16" y="-9" width="32" height="18" rx="9"
+          fill="url(#redLowest)" />
+    <text y="4"
+          font-family="'Playfair Display', serif"
+          font-size="12" font-weight="900"
+          text-anchor="middle" fill="#fff">2</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۵: فلش راهنما (راست → چپ، از قوی به ضعیف)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(420 320)" opacity="0.7">
+    <text font-family="'Vazirmatn', sans-serif"
+          font-size="11"
+          font-weight="600"
+          fill="#ffd60a"
+          text-anchor="middle">قوی‌تر</text>
+    <path d="M -40 -8 L 40 -8 M 40 -8 L 30 -14 M 40 -8 L 30 -2"
+          stroke="#ffd60a"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none" />
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۶: کارت پادشاه طلایی در گوشه (نماد «قوی‌ترین»)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(505 90)" filter="url(#cardDrop2)">
+    <circle r="42" fill="url(#glow2)" />
+    <g transform="translate(-27 -40) rotate(-8)">
+      <rect x="0" y="0" width="54" height="80" rx="8"
+            fill="url(#cardWhite)" stroke="url(#goldTop)" stroke-width="3" />
+      <text x="27" y="32"
+            font-family="'Playfair Display', serif"
+            font-size="28" font-weight="900"
+            text-anchor="middle" fill="#1a1a1a">A</text>
+      <text x="27" y="62"
+            font-family="sans-serif"
+            font-size="24"
+            text-anchor="middle" fill="#1a1a1a">♠</text>
+    </g>
+    <!-- تاج کوچک بالای کارت -->
+    <g transform="translate(0 -52)">
+      <path d="M -14 0 L -14 -8 L -7 -4 L 0 -10 L 7 -4 L 14 -8 L 14 0 Z"
+            fill="url(#goldTop)"
+            stroke="#8a6300"
+            stroke-width="0.6"
+            stroke-linejoin="round" />
+      <circle cx="0" cy="-2" r="1.5" fill="#fff3b0" />
+    </g>
+  </g>
+
+  <!-- متن زیر کارت طلایی -->
+  <text x="505" y="180"
+        font-family="'Vazirmatn', sans-serif"
+        font-size="11"
+        font-weight="700"
+        text-anchor="middle"
+        fill="#ffd60a">قوی‌ترین</text>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۷: جعبه راهنما پایین
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(30 340)">
+    <rect x="0" y="0" width="540" height="42" rx="10"
+          fill="#0d1b2a"
+          stroke="#ffd60a"
+          stroke-width="1"
+          opacity="0.85" />
+    <text x="270" y="18"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="12"
+          font-weight="700"
+          text-anchor="middle"
+          fill="#ffd60a">💡 نکته کلیدی</text>
+    <text x="270" y="34"
+          font-family="'Vazirmatn', sans-serif"
+          font-size="11"
+          font-weight="500"
+          text-anchor="middle"
+          fill="#e0e1dd">
+      کارت حکم بر همه کارت‌های خال‌های دیگر برتری دارد، حتی اگر ۲ حکم باشد!
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۸: شماره گام (بالا-راست)
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(548 40)">
+    <circle r="22"
+            fill="url(#goldTop)"
+            filter="url(#soft2)" />
+    <text y="8"
+          font-family="'Playfair Display', serif"
+          font-size="22"
+          font-weight="900"
+          text-anchor="middle"
+          fill="#1a1a1a">2</text>
+  </g>
+
+</svg>

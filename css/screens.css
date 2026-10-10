@@ -1,0 +1,1724 @@
+/* ═══════════════════════════════════════════════════════════
+   📱 HOKM PRO v6.0 — screens.css
+   استایل اختصاصی همه صفحات و چیدمان اصلی
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   ۰. چیدمان اصلی اپ
+   ═══════════════════════════════════════════ */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--topbar-h);
+  position: relative;
+  z-index: 1;
+}
+
+.main-content {
+  flex: 1;
+  position: relative;
+}
+
+/* هر صفحه */
+.screen {
+  display: none;
+  width: 100%;
+  min-height: calc(100vh - var(--topbar-h));
+  padding: var(--space-5);
+  animation: screenFadeIn 0.35s var(--ease-out);
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱. Splash Screen
+   ═══════════════════════════════════════════ */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-splash);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(36, 59, 90, 0.9) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(255, 214, 10, 0.08) 0%, transparent 50%),
+    linear-gradient(160deg, #0d1b2a 0%, #0a1420 60%, #060d15 100%);
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-out), visibility 0.6s;
+}
+
+.splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  text-align: center;
+  animation: splashEnter 0.8s var(--ease-bounce) both;
+}
+
+@keyframes splashEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* لوگو دایره‌ای چرخان */
+.splash-logo-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #ffd60a;
+  border-right-color: rgba(255, 214, 10, 0.4);
+  animation: splashSpin 1.4s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 214, 10, 0.5));
+}
+
+.splash-logo {
+  width: 110px;
+  height: 110px;
+  filter: drop-shadow(0 8px 30px rgba(255, 214, 10, 0.55));
+  animation: logoFloat 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes splashSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-10px) rotate(2deg); }
+}
+
+.splash-title {
+  font-family: var(--font-fa);
+  font-size: clamp(36px, 7vw, 54px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, #ffe97a 0%, #ffd60a 50%, #b8860b 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 4px 24px rgba(255, 214, 10, 0.6));
+  margin-top: var(--space-2);
+  animation: titleGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { filter: drop-shadow(0 4px 20px rgba(255, 214, 10, 0.4)); }
+  50%      { filter: drop-shadow(0 4px 35px rgba(255, 214, 10, 0.75)); }
+}
+
+.splash-subtitle {
+  font-family: var(--font-fa);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  margin-top: -8px;
+}
+
+/* نوار لودینگ */
+.splash-loading-bar {
+  width: min(300px, 70vw);
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-6);
+  position: relative;
+}
+
+.splash-loading-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffd60a, #ffe97a, #ffd60a);
+  background-size: 200% 100%;
+  border-radius: inherit;
+  box-shadow: 0 0 16px rgba(255, 214, 10, 0.7);
+  animation: splashFill 2.5s var(--ease-out) forwards,
+             splashShine 1.2s linear infinite;
+}
+
+@keyframes splashFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@keyframes splashShine {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* دکمه Skip */
+.btn-skip {
+  margin-top: var(--space-4);
+  padding: 8px 18px;
+  font-family: var(--font-fa);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.btn-skip:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.splash-version {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-en);
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   ۲. Top Bar
+   ═══════════════════════════════════════════ */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+  background: rgba(13, 27, 42, 0.85);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+}
+
+.top-bar-right,
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.top-bar-right {
+  justify-content: flex-start;
+}
+
+.top-bar-left {
+  justify-content: flex-end;
+}
+
+.top-logo {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.4));
+}
+
+.top-title {
+  font-family: var(--font-fa);
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+.tabs {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-full);
+}
+
+.tab {
+  padding: 6px 12px;
+  min-height: 36px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all var(--t-normal) var(--ease-out);
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab.active {
+  background: var(--accent-grad, var(--accent));
+  color: var(--accent-text-on, #1a1a1a);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.tab-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tab-label {
+  font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   ۳. صفحه منو
+   ═══════════════════════════════════════════ */
+.menu-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: var(--space-4);
+}
+
+.menu-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+/* پروفایل سریع */
+.quick-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-4);
+}
+
+.quick-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.quick-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.quick-elo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.quick-elo > span:first-child {
+  font-family: var(--font-num);
+  font-weight: 900;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.quick-rank {
+  padding: 2px 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.quick-login-btn {
+  padding: 8px 14px;
+  font-family: var(--font-fa);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--t-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.quick-login-btn:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۴. صفحه پروفایل
+   ═══════════════════════════════════════════ */
+.profile-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.profile-header-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  background:
+    radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 60%),
+    var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-5);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-avatar-big {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  background: var(--bg-elevated);
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 40px var(--accent-glow);
+  cursor: pointer;
+  transition: transform var(--t-normal) var(--ease-bounce);
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-avatar-big img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-big:hover {
+  transform: scale(1.05);
+}
+
+.btn-change-avatar {
+  padding: 6px 14px;
+  font-family: var(--font-fa);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.btn-change-avatar:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-top: var(--space-2);
+}
+
+.profile-rank {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.profile-elo-bar {
+  width: min(280px, 80%);
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-2);
+}
+
+.profile-elo-fill {
+  height: 100%;
+  width: 25%;
+  background: var(--accent-grad, var(--accent));
+  border-radius: inherit;
+  box-shadow: 0 0 12px var(--accent-glow);
+  transition: width var(--t-slow) var(--ease-out);
+}
+
+/* گرید آمار */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+/* تاریخچه */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  border-right: 3px solid var(--border-color);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.history-item.win {
+  border-right-color: var(--color-success);
+}
+
+.history-item.loss {
+  border-right-color: var(--color-danger);
+}
+
+.history-item:hover {
+  transform: translateX(-2px);
+}
+
+.history-result {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.history-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.history-elo {
+  font-family: var(--font-num);
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   ۵. صفحه تنظیمات
+   ═══════════════════════════════════════════ */
+.settings-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* پیکر تم */
+.theme-color-picker {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: var(--space-2) 0;
+}
+
+/* دکمه‌های خطرناک */
+.danger-zone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-danger);
+}
+
+/* ═══════════════════════════════════════════
+   ۶. صفحه راهنما
+   ═══════════════════════════════════════════ */
+.help-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.tutorial-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-normal) var(--ease-out);
+  overflow: hidden;
+}
+
+.tutorial-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3),
+              0 0 25px var(--accent-glow);
+}
+
+.tutorial-card img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+.tutorial-card:hover img {
+  transform: scale(1.05);
+}
+
+.tutorial-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tutorial-card p {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* جدول شورتکات */
+.shortcuts-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  padding: 4px 8px;
+  font-family: var(--font-en);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 2px 0 var(--border-strong);
+}
+
+.shortcut-row span {
+  color: var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════
+   ۷. صفحه بازی (Table)
+   ═══════════════════════════════════════════ */
+.screen[data-screen="game"] {
+  padding: 0;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-h));
+  height: calc(100dvh - var(--topbar-h));
+  position: relative;
+  overflow: hidden;
+}
+
+/* نوار اطلاعات بالا */
+.game-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(13, 27, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 2;
+}
+
+.team-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 70px;
+}
+
+.team-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.team-score-value {
+  font-family: var(--font-num);
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.team-a .team-score-value { color: var(--team-a); text-shadow: 0 0 16px rgba(6, 214, 160, 0.5); }
+.team-b .team-score-value { color: var(--team-b); text-shadow: 0 0 16px rgba(239, 71, 111, 0.5); }
+
+.game-center-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hokm-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.hokm-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.hokm-suit {
+  font-family: var(--font-en);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.round-display {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ─── میز بازی ─── */
+.table-area {
+  flex: 1;
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(6, 90, 70, 0.25) 0%, transparent 65%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 214, 10, 0.06) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(13, 27, 42, 0.4), rgba(13, 27, 42, 0.7));
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr 2fr 1fr;
+  grid-template-areas:
+    "corner-tl top corner-tr"
+    "left center right"
+    "corner-bl bottom corner-br";
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+/* ─── صندلی بازیکن ─── */
+.seat-top    { grid-area: top; justify-self: center; align-self: start; }
+.seat-left   { grid-area: left; justify-self: start; align-self: center; }
+.seat-right  { grid-area: right; justify-self: end; align-self: center; }
+.seat-bottom { grid-area: bottom; justify-self: center; align-self: end; }
+
+/* کارت‌های بازی‌شده */
+.played-card-slot {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.seat-top .played-card-slot {
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.seat-bottom .played-card-slot {
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.seat-left .played-card-slot {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.seat-right .played-card-slot {
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  margin-right: 8px;
+}
+
+/* کارت وسط میز */
+.trick-center {
+  grid-area: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trick-center .card-face {
+  position: absolute;
+  width: 68px;
+  height: 96px;
+  font-size: 14px;
+  animation: cardPlayIn 0.45s var(--ease-bounce);
+}
+
+.trick-center .card-face:nth-child(1) { transform: translate(-34px, -46px) rotate(-8deg); }
+.trick-center .card-face:nth-child(2) { transform: translate(34px, -46px) rotate(8deg); }
+.trick-center .card-face:nth-child(3) { transform: translate(-34px, 46px) rotate(5deg); }
+.trick-center .card-face:nth-child(4) { transform: translate(34px, 46px) rotate(-5deg); }
+
+@keyframes cardPlayIn {
+  from {
+    opacity: 0;
+    transform: translate(var(--from-x, 0), var(--from-y, 100px)) scale(0.6) rotate(30deg);
+  }
+}
+
+/* ─── دست بازیکن (پایین) ─── */
+.player-hand-wrapper {
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  background: linear-gradient(0deg, rgba(13, 27, 42, 0.9) 0%, transparent 100%);
+  position: relative;
+  z-index: 5;
+}
+
+.player-hand {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: -20px;
+  min-height: 108px;
+  position: relative;
+  padding: 0 var(--space-4);
+}
+
+.player-hand .card-face {
+  margin: 0 -12px;
+  transition: all var(--t-normal) var(--ease-bounce);
+  transform-origin: bottom center;
+}
+
+.player-hand .card-face:nth-child(odd)  { transform: rotate(-2deg) translateY(2px); }
+.player-hand .card-face:nth-child(even) { transform: rotate(2deg) translateY(0); }
+
+.player-hand .card-face:hover {
+  transform: translateY(-24px) scale(1.08) !important;
+  z-index: 100;
+}
+
+.player-hand .card-face.playable {
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
+              0 0 0 2px var(--accent-soft);
+}
+
+.player-hand .card-face.playable:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
+              0 0 30px var(--accent-glow),
+              0 0 0 2px var(--accent);
+}
+
+/* ─── نوار اقدامات ─── */
+.action-bar {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(13, 27, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  z-index: 6;
+}
+
+.timer-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.timer-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-success), var(--accent));
+  border-radius: inherit;
+  transition: width 1s linear, background 0.3s ease;
+}
+
+.timer-fill.warning {
+  background: linear-gradient(90deg, var(--color-warning), var(--color-danger));
+}
+
+.timer-fill.danger {
+  background: var(--color-danger);
+  animation: timerPulse 0.6s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  min-height: 44px;
+  font-family: var(--font-fa);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.btn-action:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.btn-hokm {
+  background: var(--accent-grad, linear-gradient(135deg, #ffd60a, #b8860b));
+  color: var(--accent-text-on, #1a1a1a);
+  border-color: transparent;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.btn-hokm:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+/* ─── پنجره انتخاب حکم ─── */
+.hokm-picker {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: rgba(13, 27, 42, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s var(--ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hokm-picker h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+.suit-options {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.suit-btn {
+  width: 90px;
+  height: 120px;
+  font-family: var(--font-en);
+  font-size: 54px;
+  font-weight: 400;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-normal) var(--ease-bounce);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suit-btn:hover {
+  transform: translateY(-8px) scale(1.05);
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4),
+              0 0 25px var(--accent-glow);
+}
+
+.suit-spades, .suit-clubs     { color: var(--text-primary); }
+.suit-hearts, .suit-diamonds  { color: var(--color-danger); }
+
+/* ═══════════════════════════════════════════
+   ۸. صفحه لیدربورد
+   ═══════════════════════════════════════════ */
+.leaderboard-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.leaderboard-row:hover {
+  transform: translateX(-3px);
+  border-color: var(--border-accent);
+}
+
+.leaderboard-row.self {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.lb-rank {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-num);
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lb-rank.top-1 {
+  background: linear-gradient(135deg, #ffe97a, #b8860b);
+  color: #1a1a1a;
+  box-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+}
+
+.lb-rank.top-2 {
+  background: linear-gradient(135deg, #e0e0e0, #909090);
+  color: #1a1a1a;
+}
+
+.lb-rank.top-3 {
+  background: linear-gradient(135deg, #d4a373, #8b5a2b);
+  color: #fff;
+}
+
+.lb-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-color);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lb-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.lb-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-stats {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  gap: var(--space-2);
+  margin-top: 2px;
+}
+
+.lb-elo {
+  font-family: var(--font-num);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   ۹. صفحه دستاوردها
+   ═══════════════════════════════════════════ */
+.achievements-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.ach-progress-text {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.ach-progress-text span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ach-progress-bar {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+}
+
+.ach-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-grad, var(--accent));
+  border-radius: inherit;
+  box-shadow: 0 0 16px var(--accent-glow);
+  transition: width var(--t-slow) var(--ease-out);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.achievement-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--t-normal) var(--ease-out);
+}
+
+.achievement-card.unlocked {
+  border-color: var(--accent);
+  background:
+    radial-gradient(circle at 100% 0%, var(--accent-soft) 0%, transparent 60%),
+    var(--bg-surface);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.achievement-card.locked {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}
+
+.achievement-card.unlocked:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3),
+              0 0 30px var(--accent-glow);
+}
+
+.ach-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--bg-elevated);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.achievement-card.unlocked .ach-icon {
+  background: var(--accent-soft);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.ach-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ach-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.ach-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.ach-lock-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۰. صفحه دوستان
+   ═══════════════════════════════════════════ */
+.friends-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.add-friend-bar {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.add-friend-bar input {
+  flex: 1;
+}
+
+.add-friend-bar button {
+  padding: 12px 22px;
+  min-height: 46px;
+  font-family: var(--font-fa);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-text-on, #1a1a1a);
+  background: var(--accent-grad, var(--accent));
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.add-friend-bar button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.friend-item:hover {
+  border-color: var(--border-accent);
+  transform: translateX(-2px);
+}
+
+.friend-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.friend-status.online {
+  background: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+.friend-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.friend-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۱. صفحه تورنمنت
+   ═══════════════════════════════════════════ */
+.tournament-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.tournament-card {
+  padding: var(--space-6);
+  background:
+    radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 55%),
+    var(--bg-surface);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+              0 0 40px var(--accent-glow);
+}
+
+.tournament-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.tournament-badge {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.tournament-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.tournament-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.tournament-prizes li {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.tournament-prizes li:last-child {
+  border-bottom: none;
+}
+
+.tournament-note {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tournament-note span {
+  font-family: var(--font-num);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۲. صفحه ری‌پلی
+   ═══════════════════════════════════════════ */
+.replay-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.replay-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.replay-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.replay-item:hover {
+  transform: translateX(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.replay-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.replay-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.replay-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.replay-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۳. صفحه آنلاین
+   ═══════════════════════════════════════════ */
+.online-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding-top: var(--space-4);
+}
+
+.online-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.join-room-bar {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.join-room-bar input {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-num);
+  font-size: 20px;
+  letter-spacing: 0.3em;
+  font-weight: 900;
+}
+
+.join-room-bar button {
+  padding: 0 24px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۴. صفحه ورود / ثبت‌نام
+   ═══════════════════════════════════════════ */
+.auth-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding-top: var(--space-6);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: var(--space-5);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  font-family: var(--font-fa);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.auth-tab.active {
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۵. Bottom Nav موبایل
+   ═══════════════════════════════════════════ */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottombar-h);
+  background: rgba(13, 27, 42, 0.92);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-top: 1px solid var(--border-color);
+  z-index: var(--z-sticky);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.bottom-nav-item.active {
+  color: var(--accent);
+}
+
+.bottom-nav-item-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۶. Secret: کارت‌های مینی دستاورد در پروفایل
+   ═══════════════════════════════════════════ */
+.achievements-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: var(--space-2);
+}
+
+.achievement-mini {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  position: relative;
+}
+
+.achievement-mini.unlocked {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.achievement-mini.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.achievement-mini:hover {
+  transform: scale(1.1);
+}

@@ -1,0 +1,24 @@
+# ═══════════════════════════════════════════════════════════
+# 🃏 HOKM PRO v6.0 — Dependencies
+# ═══════════════════════════════════════════════════════════
+
+# وب فریمورک اصلی
+Flask>=3.0.0,<4.0.0
+
+# پشتیبانی CORS برای API
+Flask-Cors>=4.0.0,<5.0.0
+
+# ارتباط Realtime با WebSocket
+Flask-SocketIO>=5.3.0,<6.0.0
+
+# موتور SocketIO (async_mode=threading از این استفاده نمی‌کنه ولی برای upgrade)
+python-socketio>=5.10.0,<6.0.0
+
+# هش کردن رمز عبور
+bcrypt>=4.1.0,<5.0.0
+
+# سرور WSGI (برای production)
+# برای توسعه python server.py کافیه
+# برای production: pip install gunicorn eventlet
+gunicorn>=21.2.0,<22.0.0
+eventlet>=0.35.0,<0.36.0

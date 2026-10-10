@@ -1,0 +1,1232 @@
+/* ═══════════════════════════════════════════════════════════
+   📱 HOKM PRO v6.0 — responsive.css
+   ۱۲ بریک‌پوینت + حالت‌های ویژه (hover، retina، print)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   ۱. دسکتاپ بزرگ (≥ 1400px)
+   ═══════════════════════════════════════════ */
+@media (min-width: 1400px) {
+  html { font-size: 17px; }
+
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container,
+  .leaderboard-container,
+  .achievements-container,
+  .friends-container,
+  .tournament-container,
+  .replay-container {
+    max-width: 1000px;
+  }
+
+  .menu-secondary-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .tutorial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  :root {
+    --card-w: 82px;
+    --card-h: 118px;
+    --card-w-sm: 60px;
+    --card-h-sm: 88px;
+  }
+
+  .top-bar {
+    padding: 0 var(--space-6);
+  }
+
+  .btn-start-big {
+    max-width: 720px;
+    padding: 28px;
+    font-size: 28px;
+  }
+
+  .btn-start-icon { font-size: 42px; }
+  .btn-start-text { font-size: 28px; }
+}
+
+/* ═══════════════════════════════════════════
+   ۲. دسکتاپ (1024px - 1399px)
+   ═══════════════════════════════════════════ */
+@media (min-width: 1024px) and (max-width: 1399px) {
+  html { font-size: 16px; }
+
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container,
+  .leaderboard-container,
+  .achievements-container,
+  .friends-container,
+  .tournament-container,
+  .replay-container {
+    max-width: 900px;
+  }
+
+  .menu-secondary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tutorial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* در دسکتاپ، Bottom Nav پنهان */
+  .bottom-nav {
+    display: none;
+  }
+
+  /* افزایش پدینگ صفحه */
+  .screen {
+    padding: var(--space-6);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۳. تبلت افقی (768px - 1023px)
+   ═══════════════════════════════════════════ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  html { font-size: 15px; }
+
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container,
+  .leaderboard-container,
+  .achievements-container,
+  .friends-container,
+  .tournament-container,
+  .replay-container {
+    max-width: 700px;
+  }
+
+  .menu-secondary-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .tutorial-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* کوچک‌سازی کارت‌های بازی */
+  :root {
+    --card-w: 62px;
+    --card-h: 90px;
+    --card-w-sm: 48px;
+    --card-h-sm: 70px;
+  }
+
+  .top-bar {
+    padding: 0 var(--space-3);
+  }
+
+  /* تب‌ها: آیکون + برچسب کوتاه */
+  .tab {
+    padding: 6px 10px;
+  }
+
+  .tab-label {
+    font-size: 11px;
+  }
+
+  /* دکمه شروع */
+  .btn-start-big {
+    padding: 20px;
+    font-size: 22px;
+  }
+
+  .btn-start-icon { font-size: 32px; }
+  .btn-start-text { font-size: 22px; }
+  .btn-start-sub { font-size: 12px; }
+}
+
+/* ═══════════════════════════════════════════
+   ۴. تبلت عمودی (600px - 767px)
+   ═══════════════════════════════════════════ */
+@media (min-width: 600px) and (max-width: 767px) {
+  html { font-size: 15px; }
+
+  :root {
+    --topbar-h: 56px;
+    --card-w: 58px;
+    --card-h: 84px;
+    --card-w-sm: 44px;
+    --card-h-sm: 64px;
+  }
+
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container,
+  .leaderboard-container,
+  .achievements-container,
+  .friends-container,
+  .tournament-container,
+  .replay-container {
+    max-width: 100%;
+  }
+
+  .menu-secondary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .tutorial-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .screen {
+    padding: var(--space-4);
+  }
+
+  .top-bar {
+    padding: 0 var(--space-3);
+  }
+
+  .top-title {
+    font-size: 15px;
+  }
+
+  .top-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* تب‌ها فقط آیکون */
+  .tab-label {
+    display: none;
+  }
+
+  .tab {
+    padding: 8px 12px;
+    min-width: 44px;
+  }
+
+  .tab-icon {
+    font-size: 17px;
+  }
+
+  .btn-start-big {
+    padding: 20px;
+    font-size: 20px;
+  }
+
+  .btn-start-icon { font-size: 30px; }
+  .btn-start-text { font-size: 20px; }
+
+  /* جدول تورنمنت */
+  .tournament-card {
+    padding: var(--space-4);
+  }
+
+  /* بازی */
+  .game-info-bar {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .team-score-value {
+    font-size: 22px;
+  }
+
+  .player-hand-wrapper {
+    padding: var(--space-2) var(--space-1);
+  }
+
+  .player-hand {
+    min-height: 92px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۵. موبایل بزرگ (480px - 599px)
+   ═══════════════════════════════════════════ */
+@media (min-width: 480px) and (max-width: 599px) {
+  html { font-size: 14px; }
+
+  :root {
+    --topbar-h: 54px;
+    --bottombar-h: 60px;
+    --card-w: 54px;
+    --card-h: 78px;
+    --card-w-sm: 40px;
+    --card-h-sm: 58px;
+    --space-6: 20px;
+    --space-8: 28px;
+  }
+
+  .app {
+    padding-bottom: var(--bottombar-h);
+  }
+
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container,
+  .leaderboard-container,
+  .achievements-container,
+  .friends-container,
+  .tournament-container,
+  .replay-container {
+    max-width: 100%;
+  }
+
+  /* منو ۲ ستونی */
+  .menu-secondary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .menu-card {
+    min-height: 92px;
+    padding: var(--space-3);
+  }
+
+  .menu-card-icon { font-size: 26px; }
+  .menu-card-title { font-size: 13.5px; }
+  .menu-card-sub { font-size: 11px; }
+
+  .tutorial-grid,
+  .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .stat-card {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .stat-value { font-size: 20px; }
+
+  .screen {
+    padding: var(--space-3);
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+
+  /* Top Bar فشرده */
+  .top-bar {
+    padding: 0 var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .top-title {
+    display: none;
+  }
+
+  .top-logo {
+    width: 26px;
+    height: 26px;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  /* تب‌ها فقط آیکون */
+  .tab-label {
+    display: none;
+  }
+
+  .tab {
+    padding: 6px 10px;
+    min-width: 40px;
+  }
+
+  .tab-icon {
+    font-size: 16px;
+  }
+
+  /* دکمه شروع */
+  .btn-start-big {
+    padding: 18px;
+    font-size: 19px;
+    border-radius: 16px;
+  }
+
+  .btn-start-icon { font-size: 28px; }
+  .btn-start-text { font-size: 19px; }
+  .btn-start-sub { font-size: 11.5px; }
+
+  /* پروفایل سریع */
+  .quick-profile {
+    padding: var(--space-3);
+  }
+
+  .quick-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .quick-name { font-size: 14px; }
+
+  /* آواتار بزرگ پروفایل */
+  .profile-avatar-big {
+    width: 84px;
+    height: 84px;
+    font-size: 44px;
+  }
+
+  .profile-name { font-size: 19px; }
+
+  /* کارت‌های بازی */
+  .trick-center .card-face {
+    width: 58px;
+    height: 84px;
+    font-size: 12px;
+  }
+
+  .trick-center .card-face:nth-child(1) { transform: translate(-28px, -40px) rotate(-8deg); }
+  .trick-center .card-face:nth-child(2) { transform: translate(28px, -40px) rotate(8deg); }
+  .trick-center .card-face:nth-child(3) { transform: translate(-28px, 40px) rotate(5deg); }
+  .trick-center .card-face:nth-child(4) { transform: translate(28px, 40px) rotate(-5deg); }
+
+  .player-hand .card-face {
+    margin: 0 -14px;
+  }
+
+  /* نوار اقدامات */
+  .action-bar {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .btn-action {
+    padding: 8px 14px;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  /* Modal */
+  .modal {
+    padding: var(--space-4);
+    max-height: 85vh;
+  }
+
+  /* Toast */
+  .toast-container {
+    top: 66px;
+    width: calc(100% - 20px);
+  }
+
+  .toast {
+    padding: var(--space-2) var(--space-3);
+    font-size: 12.5px;
+  }
+
+  /* Bottom Nav موبایل */
+  .bottom-nav {
+    display: flex;
+  }
+
+  .bottom-nav-item {
+    font-size: 9.5px;
+  }
+
+  .bottom-nav-item-icon {
+    font-size: 18px;
+  }
+
+  /* Split پروفایل بازی */
+  .suit-btn {
+    width: 72px;
+    height: 96px;
+    font-size: 42px;
+  }
+
+  /* تورنمنت */
+  .tournament-prizes li {
+    font-size: 12.5px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۶. موبایل کوچک (≤ 380px)
+   ═══════════════════════════════════════════ */
+@media (max-width: 380px) {
+  html { font-size: 13.5px; }
+
+  :root {
+    --topbar-h: 52px;
+    --bottombar-h: 56px;
+    --card-w: 48px;
+    --card-h: 70px;
+    --card-w-sm: 36px;
+    --card-h-sm: 52px;
+    --space-4: 12px;
+    --space-5: 16px;
+    --space-6: 18px;
+  }
+
+  .screen {
+    padding: var(--space-2);
+  }
+
+  /* منو */
+  .menu-secondary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .menu-card {
+    min-height: 80px;
+    padding: var(--space-2);
+  }
+
+  .menu-card-icon { font-size: 22px; }
+  .menu-card-title { font-size: 12.5px; }
+  .menu-card-sub { display: none; }
+
+  /* دکمه شروع */
+  .btn-start-big {
+    padding: 16px;
+    font-size: 17px;
+    border-radius: 14px;
+  }
+
+  .btn-start-icon { font-size: 24px; }
+  .btn-start-text { font-size: 17px; }
+  .btn-start-sub { font-size: 10.5px; }
+
+  /* Top Bar */
+  .top-bar {
+    padding: 0 var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .top-logo { width: 22px; height: 22px; }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .tab {
+    padding: 5px 8px;
+    min-width: 36px;
+  }
+
+  .tab-icon { font-size: 15px; }
+
+  /* آمار */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-value { font-size: 18px; }
+  .stat-label { font-size: 10px; }
+
+  /* پروفایل */
+  .profile-avatar-big {
+    width: 72px;
+    height: 72px;
+    font-size: 38px;
+  }
+
+  .profile-name { font-size: 17px; }
+
+  /* کارت‌های بازی */
+  .trick-center .card-face {
+    width: 52px;
+    height: 76px;
+    font-size: 11px;
+  }
+
+  .trick-center .card-face:nth-child(1) { transform: translate(-24px, -34px) rotate(-8deg); }
+  .trick-center .card-face:nth-child(2) { transform: translate(24px, -34px) rotate(8deg); }
+  .trick-center .card-face:nth-child(3) { transform: translate(-24px, 34px) rotate(5deg); }
+  .trick-center .card-face:nth-child(4) { transform: translate(24px, 34px) rotate(-5deg); }
+
+  .player-hand .card-face {
+    margin: 0 -16px;
+  }
+
+  .seat-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .seat-name { font-size: 10.5px; }
+
+  /* اقدامات */
+  .btn-action {
+    padding: 7px 12px;
+    min-height: 36px;
+    font-size: 12px;
+  }
+
+  /* حکم پیکر */
+  .suit-btn {
+    width: 62px;
+    height: 84px;
+    font-size: 36px;
+  }
+
+  /* Toast */
+  .toast-container {
+    top: 60px;
+    width: calc(100% - 16px);
+  }
+
+  .toast {
+    padding: var(--space-2) var(--space-3);
+    font-size: 12px;
+  }
+
+  .toast-icon { font-size: 18px; }
+
+  /* چیدمان دو-ستونی */
+  .leaderboard-row {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .lb-rank {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+
+  .lb-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+
+  .lb-elo { font-size: 14px; }
+
+  /* عنوان بخش */
+  .section-title {
+    font-size: 14px;
+    margin: var(--space-4) 0 var(--space-3);
+  }
+
+  /* Bottom nav */
+  .bottom-nav-item {
+    font-size: 9px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۷. Foldable / موبایل خیلی کوچک (≤ 320px)
+   ═══════════════════════════════════════════ */
+@media (max-width: 320px) {
+  html { font-size: 12.5px; }
+
+  :root {
+    --topbar-h: 48px;
+    --bottombar-h: 52px;
+    --card-w: 42px;
+    --card-h: 62px;
+    --card-w-sm: 32px;
+    --card-h-sm: 46px;
+  }
+
+  .screen {
+    padding: 8px;
+  }
+
+  /* منو تک ستونی */
+  .menu-secondary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-card {
+    flex-direction: row;
+    align-items: center;
+    min-height: 56px;
+    gap: var(--space-3);
+  }
+
+  .menu-card-sub { display: block; font-size: 10px; }
+
+  .btn-start-big {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .btn-start-icon { font-size: 22px; }
+  .btn-start-text { font-size: 15px; }
+  .btn-start-sub { display: none; }
+
+  .top-bar {
+    padding: 0 6px;
+  }
+
+  /* پنهان کردن توست و اسپلش اضافی */
+  .toast-container {
+    top: 56px;
+    width: calc(100% - 12px);
+  }
+
+  /* کارت‌های بازی */
+  .trick-center .card-face {
+    width: 44px;
+    height: 64px;
+    font-size: 10px;
+  }
+
+  .player-hand .card-face {
+    margin: 0 -18px;
+  }
+
+  /* Avatars */
+  .seat-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .quick-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  /* حکم پیکر */
+  .suit-btn {
+    width: 54px;
+    height: 72px;
+    font-size: 30px;
+  }
+
+  .suit-options {
+    gap: var(--space-2);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۸. موبایل افقی (max-height: 500px)
+   ═══════════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --topbar-h: 44px;
+  }
+
+  .screen {
+    padding: var(--space-2);
+  }
+
+  /* Splash فشرده */
+  .splash-logo-wrap {
+    width: 90px;
+    height: 90px;
+  }
+
+  .splash-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .splash-title {
+    font-size: 28px;
+  }
+
+  .splash-subtitle {
+    font-size: 11px;
+  }
+
+  .splash-loading-bar {
+    width: 200px;
+    margin-top: var(--space-2);
+  }
+
+  .splash-content {
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .btn-skip {
+    margin-top: var(--space-1);
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+
+  /* منو فشرده */
+  .menu-secondary-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-1);
+    margin-bottom: var(--space-3);
+  }
+
+  .menu-card {
+    min-height: 70px;
+    padding: var(--space-2);
+  }
+
+  .menu-card-icon { font-size: 20px; }
+  .menu-card-title { font-size: 12px; }
+  .menu-card-sub { font-size: 10px; }
+
+  .btn-start-big {
+    padding: 12px;
+    font-size: 18px;
+    margin-bottom: var(--space-3);
+  }
+
+  .btn-start-icon { font-size: 24px; }
+  .btn-start-text { font-size: 18px; }
+
+  /* میز بازی landscape */
+  .game-container {
+    height: calc(100vh - var(--topbar-h));
+  }
+
+  .player-hand-wrapper {
+    padding: 4px;
+  }
+
+  .player-hand {
+    min-height: 70px;
+  }
+
+  .player-hand .card-face {
+    margin: 0 -18px;
+    transform: scale(0.85);
+  }
+
+  .action-bar {
+    padding: 6px var(--space-3);
+  }
+
+  /* پروفایل */
+  .profile-header-card {
+    flex-direction: row;
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .profile-avatar-big {
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  /* Modals */
+  .modal {
+    max-height: 92vh;
+    padding: var(--space-4);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۹. تاچ (hover: none) — افزایش نواحی لمسی
+   ═══════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  /* همه دکمه‌ها حداقل ۴۴px */
+  .btn,
+  .icon-btn,
+  .tab,
+  .menu-card,
+  .btn-action,
+  .btn-skip,
+  .quick-login-btn,
+  .btn-change-avatar {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* حذف hover effects سنگین */
+  .card-face:hover {
+    transform: none;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .menu-card:hover {
+    transform: none;
+  }
+
+  .leaderboard-row:hover,
+  .friend-item:hover,
+  .replay-item:hover,
+  .history-item:hover {
+    transform: none;
+  }
+
+  /* فعال‌سازی feedback لمس */
+  .btn:active,
+  .icon-btn:active,
+  .menu-card:active,
+  .card-face:active {
+    transform: scale(0.96);
+    transition: transform 0.1s;
+  }
+
+  /* اسکرول نرم */
+  .scroll-x,
+  .segmented,
+  .leaderboard-list,
+  .friends-list {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+
+  /* Hover برچسب به tap تبدیل */
+  [data-tooltip]::after {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۰. Retina / High DPI (≥ 2x)
+   ═══════════════════════════════════════════ */
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+  /* خطوط نازک‌تر */
+  .top-bar,
+  .action-bar,
+  .game-info-bar {
+    border-width: 0.5px;
+  }
+
+  .card-face {
+    border-width: 0.75px;
+  }
+
+  /* فونت‌ها نرم‌تر */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* سایه‌ها دقیق‌تر */
+  .card-face {
+    box-shadow:
+      0 3px 10px rgba(0, 0, 0, 0.18),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۱. چاپ (Print)
+   ═══════════════════════════════════════════ */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  /* حذف عناصر تعاملی */
+  .top-bar,
+  .bottom-nav,
+  .fab,
+  .modal-overlay,
+  .toast-container,
+  .particle-canvas,
+  #splashScreen,
+  .action-bar,
+  .timer-bar,
+  .player-seat .seat-timer {
+    display: none !important;
+  }
+
+  /* حذف سایه‌ها */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+  }
+
+  /* همه صفحات را نمایش بده */
+  .screen {
+    display: block !important;
+    page-break-inside: avoid;
+    page-break-after: always;
+    min-height: auto;
+  }
+
+  .screen:last-child {
+    page-break-after: auto;
+  }
+
+  /* کارت‌ها با حاشیه‌های واضح */
+  .card-face {
+    border: 1px solid #000 !important;
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  .card-face.red {
+    color: #c00 !important;
+  }
+
+  /* جداول */
+  .data-table {
+    border: 1px solid #000;
+  }
+
+  .data-table th,
+  .data-table td {
+    border: 1px solid #999;
+    padding: 6px;
+  }
+
+  /* لینک‌ها */
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #666;
+  }
+
+  /* حذف انیمیشن */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۲. کاهش حرکت (Reduced Motion)
+   ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .splash-ring,
+  .float,
+  .float-x,
+  .pulse,
+  .heartbeat,
+  .bounce,
+  .wiggle,
+  .spin,
+  .rotate {
+    animation: none !important;
+  }
+
+  /* کارت‌ها بدون چرخش */
+  .trick-center .card-face {
+    transform: translate(0, 0) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۳. حالت خاص: نمایش افقی خیلی پهن (Ultra-wide)
+   ═══════════════════════════════════════════ */
+@media (min-aspect-ratio: 21/9) and (min-width: 1600px) {
+  .menu-container,
+  .profile-container,
+  .settings-container,
+  .help-container {
+    max-width: 1200px;
+  }
+
+  .menu-secondary-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۴. تنظیمات دستی از طریق data-attribute
+   ═══════════════════════════════════════════ */
+body[data-force-mobile] .menu-secondary-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+body[data-force-mobile] .tab-label {
+  display: none;
+}
+
+body[data-force-desktop] .bottom-nav {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۵. پشتیبانی از Safe Area (نوچ و نوار پایین)
+   ═══════════════════════════════════════════ */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .top-bar {
+    padding-left: max(var(--space-4), env(safe-area-inset-left));
+    padding-right: max(var(--space-4), env(safe-area-inset-right));
+  }
+
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .player-hand-wrapper {
+    padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  }
+
+  .fab {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: max(24px, env(safe-area-inset-left));
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۶. حالت تاریک سیستمی (اگر کاربر تنظیمات رو تغییر نداده)
+   ═══════════════════════════════════════════ */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) body {
+    /* اگر JS لود نشد، پیش‌فرض لایت */
+    background-color: #f5f0e8;
+    color: #2b2b2b;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) body {
+    background-color: #0d1b2a;
+    color: #e0e1dd;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۷. حالت کاهش داده (Save-Data)
+   ═══════════════════════════════════════════ */
+@media (prefers-reduced-data: reduce) {
+  .aurora,
+  .crystal,
+  .confetti,
+  .particle-burst {
+    display: none !important;
+  }
+
+  .menu-card::before,
+  .btn-start-big::before {
+    display: none !important;
+  }
+
+  /* حذف بلورهای backdrop-filter */
+  .top-bar,
+  .modal-overlay,
+  .toast,
+  .action-bar,
+  .game-info-bar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۸. تنظیمات ویژه iPad (1024×768, 1366×1024)
+   ═══════════════════════════════════════════ */
+@media only screen
+  and (min-device-width: 768px)
+  and (max-device-width: 1366px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+
+  .game-container {
+    max-height: 100vh;
+  }
+
+  /* تب‌های مناسب iPad */
+  .tab {
+    padding: 8px 14px;
+  }
+
+  .tab-label {
+    font-size: 12.5px;
+  }
+
+  /* دست بازیکن */
+  .player-hand .card-face {
+    margin: 0 -10px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۹. تنظیمات ویژه iPhone SE / mini (375×667)
+   ═══════════════════════════════════════════ */
+@media only screen
+  and (min-device-width: 320px)
+  and (max-device-width: 400px)
+  and (orientation: portrait) {
+
+  .btn-start-big {
+    padding: 16px;
+  }
+
+  .btn-start-sub {
+    font-size: 10.5px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۲۰. حالت تست: نمایش شبکه برای debug
+   ═══════════════════════════════════════════ */
+body[data-debug="grid"] .table-area {
+  background-image:
+    linear-gradient(to right, rgba(255, 0, 0, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 0, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+body[data-debug="grid"] .player-hand {
+  outline: 1px dashed rgba(0, 255, 0, 0.4);
+}

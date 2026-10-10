@@ -1,0 +1,748 @@
+/* ═══════════════════════════════════════════════════════════
+   🎨 HOKM PRO v6.0 — themes.css
+   تم‌های رنگی، کارت، پس‌زمینه و انیمیشن تغییر
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────
+   ۱. انتقال نرم هنگام تغییر تم
+   ───────────────────────────────────────────── */
+html,
+body,
+.top-bar,
+.tab,
+.icon-btn,
+.btn,
+.menu-card,
+.stat-card,
+.setting-group,
+.game-info-bar,
+.player-seat,
+.modal,
+.toast,
+.card-face,
+.screen-title {
+  transition:
+    background-color var(--t-slow) var(--ease-out),
+    color var(--t-slow) var(--ease-out),
+    border-color var(--t-slow) var(--ease-out),
+    box-shadow var(--t-slow) var(--ease-out);
+}
+
+/* جلوگیری از پرش در حین تغییر تم */
+body.theme-changing *,
+body.theme-changing *::before,
+body.theme-changing *::after {
+  transition: none !important;
+}
+
+/* ─────────────────────────────────────────────
+   ۲. گرادیانت‌های Accent (۵ تم)
+   ───────────────────────────────────────────── */
+
+/* 🥇 طلایی */
+[data-accent="gold"] {
+  --accent-grad: linear-gradient(135deg, #ffe97a 0%, #ffd60a 45%, #b8860b 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(255, 233, 122, 0.15), rgba(184, 134, 11, 0.15));
+  --accent-text-on: #1a1a1a;
+  --accent-shadow: 0 0 30px rgba(255, 214, 10, 0.45);
+}
+
+[data-accent="gold"] .top-bar {
+  background: linear-gradient(180deg, rgba(255, 214, 10, 0.06) 0%, transparent 100%);
+  border-bottom-color: rgba(255, 214, 10, 0.2);
+}
+
+[data-accent="gold"] .tab.active .tab-icon {
+  filter: drop-shadow(0 0 6px rgba(255, 214, 10, 0.7));
+}
+
+/* 💚 سبز زمرد */
+[data-accent="emerald"] {
+  --accent-grad: linear-gradient(135deg, #5cf0c2 0%, #06d6a0 45%, #059669 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(92, 240, 194, 0.15), rgba(5, 150, 105, 0.15));
+  --accent-text-on: #0a2e24;
+  --accent-shadow: 0 0 30px rgba(6, 214, 160, 0.45);
+}
+
+[data-accent="emerald"] .top-bar {
+  background: linear-gradient(180deg, rgba(6, 214, 160, 0.06) 0%, transparent 100%);
+  border-bottom-color: rgba(6, 214, 160, 0.2);
+}
+
+[data-accent="emerald"] .tab.active .tab-icon {
+  filter: drop-shadow(0 0 6px rgba(6, 214, 160, 0.7));
+}
+
+/* 💙 آبی اقیانوس */
+[data-accent="ocean"] {
+  --accent-grad: linear-gradient(135deg, #4db8db 0%, #118ab2 45%, #0a6a8c 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(77, 184, 219, 0.15), rgba(10, 106, 140, 0.15));
+  --accent-text-on: #f0faff;
+  --accent-shadow: 0 0 30px rgba(17, 138, 178, 0.45);
+}
+
+[data-accent="ocean"] .top-bar {
+  background: linear-gradient(180deg, rgba(17, 138, 178, 0.06) 0%, transparent 100%);
+  border-bottom-color: rgba(17, 138, 178, 0.2);
+}
+
+[data-accent="ocean"] .tab.active .tab-icon {
+  filter: drop-shadow(0 0 6px rgba(17, 138, 178, 0.7));
+}
+
+/* 💜 بنفش سلطنتی */
+[data-accent="royal"] {
+  --accent-grad: linear-gradient(135deg, #c195f0 0%, #9b5de5 45%, #7a3dbd 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(193, 149, 240, 0.15), rgba(122, 61, 189, 0.15));
+  --accent-text-on: #ffffff;
+  --accent-shadow: 0 0 30px rgba(155, 93, 229, 0.45);
+}
+
+[data-accent="royal"] .top-bar {
+  background: linear-gradient(180deg, rgba(155, 93, 229, 0.06) 0%, transparent 100%);
+  border-bottom-color: rgba(155, 93, 229, 0.2);
+}
+
+[data-accent="royal"] .tab.active .tab-icon {
+  filter: drop-shadow(0 0 6px rgba(155, 93, 229, 0.7));
+}
+
+/* ❤️ قرمز یاقوت */
+[data-accent="ruby"] {
+  --accent-grad: linear-gradient(135deg, #f58ba4 0%, #ef476f 45%, #b8304e 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(245, 139, 164, 0.15), rgba(184, 48, 78, 0.15));
+  --accent-text-on: #ffffff;
+  --accent-shadow: 0 0 30px rgba(239, 71, 111, 0.45);
+}
+
+[data-accent="ruby"] .top-bar {
+  background: linear-gradient(180deg, rgba(239, 71, 111, 0.06) 0%, transparent 100%);
+  border-bottom-color: rgba(239, 71, 111, 0.2);
+}
+
+[data-accent="ruby"] .tab.active .tab-icon {
+  filter: drop-shadow(0 0 6px rgba(239, 71, 111, 0.7));
+}
+
+/* ─────────────────────────────────────────────
+   ۳. نقطه‌های رنگی Accent (Picker)
+   ───────────────────────────────────────────── */
+.accent-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  position: relative;
+  transition: transform var(--t-normal) var(--ease-bounce),
+              border-color var(--t-normal) var(--ease-out),
+              box-shadow var(--t-normal) var(--ease-out);
+}
+
+.accent-dot:hover {
+  transform: scale(1.12);
+}
+
+.accent-dot::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color var(--t-normal) var(--ease-out);
+}
+
+.accent-dot.active::before {
+  border-color: var(--accent);
+}
+
+.accent-dot.active {
+  transform: scale(1.18);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.accent-dot[data-accent="gold"]     { background: linear-gradient(135deg, #ffe97a, #b8860b); }
+.accent-dot[data-accent="emerald"]  { background: linear-gradient(135deg, #5cf0c2, #059669); }
+.accent-dot[data-accent="ocean"]    { background: linear-gradient(135deg, #4db8db, #0a6a8c); }
+.accent-dot[data-accent="royal"]    { background: linear-gradient(135deg, #c195f0, #7a3dbd); }
+.accent-dot[data-accent="ruby"]     { background: linear-gradient(135deg, #f58ba4, #b8304e); }
+
+/* ─────────────────────────────────────────────
+   ۴. استایل ویژه هر تم کارت
+   ───────────────────────────────────────────── */
+
+/* 🃏 کلاسیک (پیش‌فرض) */
+[data-card-theme="classic"] .card-face {
+  background: linear-gradient(145deg, #fffdf7 0%, #f5f0e8 60%, #e6ddca 100%);
+  color: #1a1a1a;
+  border: 1px solid #c0b8a0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-card-theme="classic"] .card-face.red {
+  color: #ef476f;
+}
+
+/* 🃏 تاریک */
+[data-card-theme="dark"] .card-face {
+  background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 60%, #0a0a0a 100%);
+  color: #f5f0e8;
+  border: 1px solid #4a4a4a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-card-theme="dark"] .card-face.red {
+  color: #ff5c8a;
+}
+
+/* 🃏 چوبی */
+[data-card-theme="wooden"] .card-face {
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 3px,
+      transparent 3px, transparent 8px),
+    linear-gradient(145deg, #e0b483 0%, #d4a373 60%, #a87b50 100%);
+  color: #3a1f0a;
+  border: 1px solid #8b5a2b;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  font-weight: 700;
+}
+
+[data-card-theme="wooden"] .card-face.red {
+  color: #8b1a1a;
+}
+
+/* 🃏 کارتونی */
+[data-card-theme="cartoon"] .card-face {
+  background: linear-gradient(145deg, #ffe4f0 0%, #e4f0ff 100%);
+  color: #2a2a2a;
+  border: 2px solid #ff6b9d;
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.35),
+              inset 0 -3px 0 rgba(255, 107, 157, 0.2);
+  font-weight: 900;
+}
+
+[data-card-theme="cartoon"] .card-face.red {
+  color: #ff006e;
+}
+
+/* 🃏 نئون */
+[data-card-theme="neon"] .card-face {
+  background: linear-gradient(145deg, #0d1b2a 0%, #0a1420 100%);
+  color: #06d6a0;
+  border: 1.5px solid #06d6a0;
+  box-shadow: 0 0 12px rgba(6, 214, 160, 0.5),
+              0 0 25px rgba(6, 214, 160, 0.25),
+              inset 0 0 12px rgba(6, 214, 160, 0.15);
+  text-shadow: 0 0 8px currentColor;
+}
+
+[data-card-theme="neon"] .card-face.red {
+  color: #ef476f;
+  border-color: #ef476f;
+  box-shadow: 0 0 12px rgba(239, 71, 111, 0.5),
+              0 0 25px rgba(239, 71, 111, 0.25),
+              inset 0 0 12px rgba(239, 71, 111, 0.15);
+}
+
+[data-card-theme="neon"] .card-face:hover {
+  box-shadow: 0 0 20px currentColor,
+              0 0 40px currentColor,
+              inset 0 0 20px currentColor;
+}
+
+/* ─────────────────────────────────────────────
+   ۵. پس‌زمینه‌های پیشرفته با SVG inline
+   ───────────────────────────────────────────── */
+
+/* گرادیانت زنده (پیش‌فرض) */
+[data-bg="gradient"] body::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 30% 30%, var(--accent-soft) 0%, transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(6, 214, 160, 0.08) 0%, transparent 40%);
+  animation: auroraMove 30s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes auroraMove {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(5%, -5%) scale(1.05); }
+  66%      { transform: translate(-5%, 5%) scale(0.98); }
+}
+
+/* چوبی با بافت */
+[data-bg="wooden"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(0, 0, 0, 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 0, 0, 0.4) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+[data-bg="wooden"] .top-bar {
+  background: rgba(20, 12, 6, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* شطرنجی */
+[data-bg="checker"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: none;
+}
+
+/* شبانه با ستاره‌های چشمک‌زن */
+[data-bg="night"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 25%, rgba(255, 255, 255, 0.9) 50%, transparent),
+    radial-gradient(1.5px 1.5px at 55% 45%, rgba(255, 255, 255, 0.7) 50%, transparent),
+    radial-gradient(1px 1px at 85% 15%, rgba(255, 255, 255, 0.8) 50%, transparent),
+    radial-gradient(1px 1px at 25% 75%, rgba(255, 255, 255, 0.6) 50%, transparent),
+    radial-gradient(2px 2px at 70% 85%, rgba(255, 214, 10, 0.7) 50%, transparent),
+    radial-gradient(1.5px 1.5px at 40% 55%, rgba(255, 214, 10, 0.5) 50%, transparent);
+  animation: twinkleStars 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes twinkleStars {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* کریستالی */
+[data-bg="crystal"] body::before {
+  content: '';
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  background:
+    conic-gradient(from 0deg at 30% 40%, transparent 0deg, var(--accent-soft) 60deg, transparent 120deg),
+    conic-gradient(from 180deg at 70% 60%, transparent 0deg, rgba(17, 138, 178, 0.08) 60deg, transparent 120deg);
+  animation: crystalRotate 45s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes crystalRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────────────────────────────────────────
+   ۶. حلقه درخشش دور عناصر Accent
+   ───────────────────────────────────────────── */
+.accent-ring {
+  position: relative;
+}
+
+.accent-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: var(--accent-grad);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  animation: accentRingPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes accentRingPulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────
+   ۷. حالت Light — تنظیمات ویژه
+   ───────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(184, 134, 11, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(6, 214, 160, 0.04) 0%, transparent 50%);
+}
+
+[data-theme="light"] .top-bar {
+  background: rgba(255, 253, 247, 0.9);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .menu-card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .setting-group,
+[data-theme="light"] .tutorial-card {
+  background: var(--bg-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .splash-screen {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(184, 134, 11, 0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(255, 214, 10, 0.1) 0%, transparent 50%),
+    linear-gradient(160deg, #f5f0e8 0%, #ebe5da 60%, #e0d8ca 100%);
+}
+
+[data-theme="light"] .splash-title {
+  color: #b8860b;
+  text-shadow: 0 2px 20px rgba(184, 134, 11, 0.3);
+}
+
+[data-theme="light"] .modal {
+  background: #fffdf7;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* ─────────────────────────────────────────────
+   ۸. حالت Dark — تنظیمات ویژه
+   ───────────────────────────────────────────── */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .top-bar {
+  background: rgba(13, 27, 42, 0.85);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .menu-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .setting-group,
+[data-theme="dark"] .tutorial-card {
+  background: rgba(30, 45, 69, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .modal {
+  background: #152138;
+  border: 1px solid var(--border-strong);
+}
+
+/* ─────────────────────────────────────────────
+   ۹. انیمیشن تغییر تم Accent (ripple)
+   ───────────────────────────────────────────── */
+@keyframes accentRipple {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 40px rgba(0, 0, 0, 0);
+  }
+}
+
+.accent-changed {
+  animation: accentRipple 0.7s var(--ease-out);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۰. هاله Accent زیر عناصر (Ambient Light)
+   ───────────────────────────────────────────── */
+.ambient-accent {
+  position: relative;
+}
+
+.ambient-accent::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۱. تغییر تم شب/روز — انیمیشن rotate آیکون
+   ───────────────────────────────────────────── */
+#btnThemeToggle {
+  transition: transform var(--t-slow) var(--ease-bounce),
+              background-color var(--t-normal),
+              color var(--t-normal);
+}
+
+#btnThemeToggle.rotating {
+  animation: themeRotate 0.6s var(--ease-bounce);
+}
+
+@keyframes themeRotate {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.25); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* ─────────────────────────────────────────────
+   ۱۲. هاله نرم Accent روی متن‌های مهم
+   ───────────────────────────────────────────── */
+.accent-text-glow {
+  color: var(--accent);
+  text-shadow:
+    0 0 8px var(--accent-glow),
+    0 0 20px var(--accent-glow);
+}
+
+.title-accent {
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۳. استایل برچسب تم Accent (پیش‌نمایش)
+   ───────────────────────────────────────────── */
+.theme-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.theme-preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease-out);
+}
+
+.theme-preview-item:hover {
+  background: var(--bg-elevated);
+}
+
+.theme-preview-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+}
+
+.theme-preview-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۴. سازگاری Accent با دکمه‌ها
+   ───────────────────────────────────────────── */
+.btn-accent {
+  background: var(--accent-grad);
+  color: var(--accent-text-on);
+  border: none;
+  box-shadow: var(--accent-shadow);
+}
+
+.btn-accent:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 40px var(--accent-glow);
+}
+
+.btn-accent:active {
+  filter: brightness(0.95);
+}
+
+.btn-outline-accent {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-outline-accent:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۵. تطبیق نوار پیشرفت با Accent
+   ───────────────────────────────────────────── */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-grad);
+  border-radius: var(--radius-full);
+  transition: width var(--t-slow) var(--ease-out);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۶. هاله Accent دور آواتار فعال
+   ───────────────────────────────────────────── */
+.avatar-active {
+  position: relative;
+}
+
+.avatar-active::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+  animation: avatarPulse 2s ease-in-out infinite;
+}
+
+@keyframes avatarPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50%      { transform: scale(1.06); opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────
+   ۱۷. ریپل کلیک Accent
+   ───────────────────────────────────────────── */
+.ripple-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  transform: scale(0);
+  animation: rippleExpand 0.6s var(--ease-out);
+  pointer-events: none;
+}
+
+@keyframes rippleExpand {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ۱۸. تم Accent در حالت hover روی کارت‌ها
+   ───────────────────────────────────────────── */
+.menu-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle at top right, var(--accent-soft), transparent 70%);
+  transition: width var(--t-slow) var(--ease-out),
+              height var(--t-slow) var(--ease-out);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.menu-card:hover::before {
+  width: 200%;
+  height: 200%;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۹. تم Accent در Scrollbar
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-grad);
+  background: var(--accent);
+}
+
+/* ─────────────────────────────────────────────
+   ۲۰. حالت High Contrast (دسترس‌پذیری)
+   ───────────────────────────────────────────── */
+@media (prefers-contrast: more) {
+  :root {
+    --border-color: rgba(255, 255, 255, 0.3);
+    --border-strong: rgba(255, 255, 255, 0.5);
+    --text-secondary: #c8cdd8;
+    --text-muted: #a0a8b8;
+  }
+
+  [data-theme="light"] {
+    --border-color: rgba(0, 0, 0, 0.3);
+    --border-strong: rgba(0, 0, 0, 0.5);
+    --text-secondary: #3a3a3a;
+    --text-muted: #5a5a5a;
+  }
+
+  .btn,
+  .menu-card,
+  .stat-card {
+    border-width: 2px;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ۲۱. سازگاری با forced-colors (Windows High Contrast)
+   ───────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .btn,
+  .menu-card,
+  .tab,
+  .card-face {
+    border: 1px solid ButtonBorder;
+  }
+
+  .btn-primary {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ۲۲. متغیرهای انیمیشن (قابل تنظیم)
+   ───────────────────────────────────────────── */
+:root {
+  --theme-transition-duration: 400ms;
+  --accent-pulse-speed: 2.5s;
+  --bg-animation-speed: 30s;
+}
+
+[data-motion="reduced"] {
+  --theme-transition-duration: 0ms;
+  --accent-pulse-speed: 0s;
+  --bg-animation-speed: 0s;
+}
+
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

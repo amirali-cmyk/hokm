@@ -1,0 +1,784 @@
+/* ═══════════════════════════════════════════════════════════
+   🃏 HOKM PRO v6.0 — base.css
+   پایه پروژه: reset، متغیرها، تایپوگرافی، کمکی‌ها
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────
+   ۱. RESET کامل
+   ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-fa);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  background-image: var(--bg-image, none);
+  background-size: var(--bg-size, auto);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  transition: background-color 0.35s ease, color 0.35s ease;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  user-select: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* ─────────────────────────────────────────────
+   ۲. متغیرهای ریشه (Dark — پیش‌فرض)
+   ───────────────────────────────────────────── */
+:root {
+  /* ───── فونت‌ها ───── */
+  --font-fa: 'Vazirmatn', 'Tahoma', system-ui, -apple-system, sans-serif;
+  --font-en: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+  --font-num: 'Playfair Display', 'Vazirmatn', serif;
+
+  /* ───── پس‌زمینه و سطوح ───── */
+  --bg-primary:   #0d1b2a;
+  --bg-secondary: #152138;
+  --bg-surface:   #1e2d45;
+  --bg-elevated:  #243b5a;
+  --bg-overlay:   rgba(0, 0, 0, 0.7);
+  --bg-glass:     rgba(30, 45, 69, 0.65);
+
+  /* ───── متن ───── */
+  --text-primary:   #e0e1dd;
+  --text-secondary: #a0a8b8;
+  --text-muted:     #6b7280;
+  --text-disabled:  #4a5568;
+  --text-inverse:   #0d1b2a;
+
+  /* ───── Accent (پیش‌فرض: طلایی) ───── */
+  --accent:           #ffd60a;
+  --accent-dark:      #b8860b;
+  --accent-light:     #ffe97a;
+  --accent-soft:      rgba(255, 214, 10, 0.15);
+  --accent-glow:      rgba(255, 214, 10, 0.4);
+  --accent-contrast:  #0d1b2a;
+
+  /* ───── رنگ‌های معنایی ───── */
+  --color-success:      #06d6a0;
+  --color-success-dark: #059669;
+  --color-danger:       #ef476f;
+  --color-danger-dark:  #b8304e;
+  --color-warning:      #f4a259;
+  --color-info:         #118ab2;
+
+  /* ───── رنگ‌های بازی ───── */
+  --card-white:  #fffdf7;
+  --card-cream:  #f5f0e8;
+  --card-shadow: #e6ddca;
+  --card-red:    #ef476f;
+  --card-black:  #1a1a1a;
+  --table-green: #0a4d3c;
+  --table-wood:  #3a2a1a;
+
+  /* ───── تیم‌ها ───── */
+  --team-a: #06d6a0;
+  --team-b: #ef476f;
+
+  /* ───── حاشیه و جداکننده ───── */
+  --border-color:  rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-accent: rgba(255, 214, 10, 0.35);
+  --divider:       rgba(255, 255, 255, 0.05);
+
+  /* ───── سایه‌ها ───── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --shadow-gold: 0 0 30px rgba(255, 214, 10, 0.35);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* ───── شعاع گوشه‌ها ───── */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* ───── فاصله‌ها ───── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ───── انتقال‌ها ───── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.5, 1.75, 0.5, 1);
+
+  --t-fast:   150ms;
+  --t-normal: 250ms;
+  --t-slow:   400ms;
+  --t-xslow:  700ms;
+
+  /* ───── z-index ───── */
+  --z-base:     1;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-modal:    500;
+  --z-toast:    800;
+  --z-splash:   1000;
+  --z-particle: 900;
+
+  /* ───── ابعاد ───── */
+  --topbar-h: 60px;
+  --bottombar-h: 64px;
+  --card-w: 72px;
+  --card-h: 104px;
+  --card-w-sm: 54px;
+  --card-h-sm: 78px;
+}
+
+/* ─────────────────────────────────────────────
+   ۳. حالت روشن (Light)
+   ───────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary:   #f5f0e8;
+  --bg-secondary: #ebe5da;
+  --bg-surface:   #fffdf7;
+  --bg-elevated:  #ffffff;
+  --bg-overlay:   rgba(0, 0, 0, 0.45);
+  --bg-glass:     rgba(255, 253, 247, 0.75);
+
+  --text-primary:   #2b2b2b;
+  --text-secondary: #5a5a5a;
+  --text-muted:     #8a8a8a;
+  --text-disabled:  #b0b0b0;
+  --text-inverse:   #f5f0e8;
+
+  --accent:           #b8860b;
+  --accent-dark:      #8a6300;
+  --accent-light:     #d4a017;
+  --accent-soft:      rgba(184, 134, 11, 0.12);
+  --accent-glow:      rgba(184, 134, 11, 0.35);
+  --accent-contrast:  #fffdf7;
+
+  --border-color:  rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-accent: rgba(184, 134, 11, 0.35);
+  --divider:       rgba(0, 0, 0, 0.06);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.10);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.20);
+  --shadow-gold: 0 0 25px rgba(184, 134, 11, 0.25);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  --card-white:  #ffffff;
+  --card-cream:  #fafaf5;
+  --card-shadow: #e8e4da;
+}
+
+/* ─────────────────────────────────────────────
+   ۴. تم‌های رنگی Accent (۵ نوع)
+   ───────────────────────────────────────────── */
+
+/* 🥇 طلایی (پیش‌فرض — در :root تعریف شده) */
+[data-accent="gold"] {
+  --accent:       #ffd60a;
+  --accent-dark:  #b8860b;
+  --accent-light: #ffe97a;
+  --accent-soft:  rgba(255, 214, 10, 0.15);
+  --accent-glow:  rgba(255, 214, 10, 0.4);
+}
+
+/* 💚 سبز زمرد */
+[data-accent="emerald"] {
+  --accent:       #06d6a0;
+  --accent-dark:  #059669;
+  --accent-light: #5cf0c2;
+  --accent-soft:  rgba(6, 214, 160, 0.15);
+  --accent-glow:  rgba(6, 214, 160, 0.4);
+}
+
+/* 💙 آبی اقیانوس */
+[data-accent="ocean"] {
+  --accent:       #118ab2;
+  --accent-dark:  #0a6a8c;
+  --accent-light: #4db8db;
+  --accent-soft:  rgba(17, 138, 178, 0.15);
+  --accent-glow:  rgba(17, 138, 178, 0.4);
+}
+
+/* 💜 بنفش سلطنتی */
+[data-accent="royal"] {
+  --accent:       #9b5de5;
+  --accent-dark:  #7a3dbd;
+  --accent-light: #c195f0;
+  --accent-soft:  rgba(155, 93, 229, 0.15);
+  --accent-glow:  rgba(155, 93, 229, 0.4);
+}
+
+/* ❤️ قرمز یاقوت */
+[data-accent="ruby"] {
+  --accent:       #ef476f;
+  --accent-dark:  #b8304e;
+  --accent-light: #f58ba4;
+  --accent-soft:  rgba(239, 71, 111, 0.15);
+  --accent-glow:  rgba(239, 71, 111, 0.4);
+}
+
+/* ─────────────────────────────────────────────
+   ۵. تم‌های کارت (Card Themes)
+   ───────────────────────────────────────────── */
+[data-card-theme="classic"] {
+  --card-bg:      #fffdf7;
+  --card-stroke:  #c0b8a0;
+  --card-rank:    #1a1a1a;
+  --card-red:     #ef476f;
+}
+
+[data-card-theme="dark"] {
+  --card-bg:      #1a1a1a;
+  --card-stroke:  #4a4a4a;
+  --card-rank:    #f5f0e8;
+  --card-red:     #ff5c8a;
+}
+
+[data-card-theme="wooden"] {
+  --card-bg:      #d4a373;
+  --card-stroke:  #8b5a2b;
+  --card-rank:    #3a1f0a;
+  --card-red:     #8b1a1a;
+}
+
+[data-card-theme="cartoon"] {
+  --card-bg:      linear-gradient(145deg, #ffe4f0, #e4f0ff);
+  --card-stroke:  #ff6b9d;
+  --card-rank:    #2a2a2a;
+  --card-red:     #ff006e;
+}
+
+[data-card-theme="neon"] {
+  --card-bg:      #0d1b2a;
+  --card-stroke:  #06d6a0;
+  --card-rank:    #06d6a0;
+  --card-red:     #ef476f;
+}
+
+/* ─────────────────────────────────────────────
+   ۶. تم‌های پس‌زمینه (Backgrounds)
+   ───────────────────────────────────────────── */
+
+/* گرادیانت (پیش‌فرض) */
+[data-bg="gradient"] body {
+  background-image: radial-gradient(ellipse at 20% 10%, rgba(36, 59, 90, 0.7) 0%, transparent 55%),
+                    radial-gradient(ellipse at 80% 90%, rgba(255, 214, 10, 0.05) 0%, transparent 50%);
+}
+
+/* چوبی */
+[data-bg="wooden"] body {
+  background-color: #2a1e10;
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.08) 0px, rgba(0, 0, 0, 0.08) 2px,
+      transparent 2px, transparent 12px),
+    repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px, transparent 6px);
+}
+
+/* شطرنجی */
+[data-bg="checker"] body {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%);
+  background-size: 32px 32px;
+  background-position: 0 0, 0 16px, 16px -16px, -16px 0;
+}
+
+/* شبانه */
+[data-bg="night"] body {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.6) 50%, transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255, 255, 255, 0.5) 50%, transparent),
+    radial-gradient(1px 1px at 80% 20%, rgba(255, 255, 255, 0.7) 50%, transparent),
+    radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.4) 50%, transparent),
+    radial-gradient(2px 2px at 45% 50%, rgba(255, 214, 10, 0.5) 50%, transparent),
+    radial-gradient(ellipse at 50% 0%, rgba(36, 59, 90, 0.5) 0%, transparent 60%);
+}
+
+/* کریستالی */
+[data-bg="crystal"] body {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255, 214, 10, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 75% 75%, rgba(6, 214, 160, 0.06) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(17, 138, 178, 0.05) 0%, transparent 50%);
+}
+
+/* ─────────────────────────────────────────────
+   ۷. تایپوگرافی
+   ───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(24px, 4vw, 36px); }
+h2 { font-size: clamp(20px, 3vw, 28px); }
+h3 { font-size: clamp(17px, 2.5vw, 22px); }
+h4 { font-size: clamp(15px, 2vw, 18px); }
+h5 { font-size: 15px; }
+h6 { font-size: 14px; }
+
+p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+strong, b {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* اعداد با فونت Playfair */
+.num,
+.stat-value,
+.elo-value,
+.score-value {
+  font-family: var(--font-num);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* اعداد فارسی */
+.fa-num {
+  font-family: var(--font-fa);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────
+   ۸. اسکرول‌بار سفارشی
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg-secondary);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-secondary);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-elevated) var(--bg-secondary);
+}
+
+/* ─────────────────────────────────────────────
+   ۹. انتخاب متن
+   ───────────────────────────────────────────── */
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+::-moz-selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۰. حالت Focus (دسترس‌پذیری)
+   ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۱. کلاس‌های کمکی (Utility)
+   ───────────────────────────────────────────── */
+
+/* پنهان‌سازی */
+.hidden { display: none !important; }
+.invisible { visibility: hidden !important; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Flexbox */
+.flex        { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col    { flex-direction: column; }
+.flex-row    { flex-direction: row; }
+.flex-wrap   { flex-wrap: wrap; }
+.flex-1      { flex: 1 1 0%; }
+.flex-none   { flex: none; }
+
+.items-center  { align-items: center; }
+.items-start   { align-items: flex-start; }
+.items-end     { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+
+.justify-center  { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around  { justify-content: space-around; }
+.justify-end     { justify-content: flex-end; }
+.justify-start   { justify-content: flex-start; }
+
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+
+/* Grid */
+.grid      { display: grid; }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* موقعیت */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed    { position: fixed; }
+.sticky   { position: sticky; }
+
+/* متن */
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.text-left   { text-align: left; }
+.text-xs     { font-size: 11px; }
+.text-sm     { font-size: 13px; }
+.text-base   { font-size: 15px; }
+.text-lg     { font-size: 17px; }
+.text-xl     { font-size: 20px; }
+.text-2xl    { font-size: 26px; }
+.text-3xl    { font-size: 34px; }
+
+.font-normal  { font-weight: 400; }
+.font-medium  { font-weight: 500; }
+.font-semibold{ font-weight: 600; }
+.font-bold    { font-weight: 700; }
+.font-black   { font-weight: 900; }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-accent    { color: var(--accent); }
+.text-success   { color: var(--color-success); }
+.text-danger    { color: var(--color-danger); }
+
+/* فاصله‌ها */
+.m-0 { margin: 0; }
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.p-0 { padding: 0; }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+
+/* گوشه‌ها */
+.rounded-sm   { border-radius: var(--radius-sm); }
+.rounded-md   { border-radius: var(--radius-md); }
+.rounded-lg   { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* سایه‌ها */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* سرریز */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto   { overflow: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* اشاره‌گر */
+.pointer  { cursor: pointer; }
+.no-select { user-select: none; }
+.no-pointer { pointer-events: none; }
+
+/* شفافیت */
+.opacity-0   { opacity: 0; }
+.opacity-50  { opacity: 0.5; }
+.opacity-75  { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* عرض */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.w-auto { width: auto; }
+
+/* تراز */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۲. جداکننده و برچسب‌های عمومی
+   ───────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  width: 100%;
+  background: var(--divider);
+  border: 0;
+  margin: var(--space-4) 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.badge-accent  { background: var(--accent-soft); color: var(--accent); }
+.badge-success { background: rgba(6, 214, 160, 0.15); color: var(--color-success); }
+.badge-danger  { background: rgba(239, 71, 111, 0.15); color: var(--color-danger); }
+.badge-warning { background: rgba(244, 162, 89, 0.15); color: var(--color-warning); }
+
+/* ─────────────────────────────────────────────
+   ۱۳. کارت شیشه‌ای (Glass)
+   ───────────────────────────────────────────── */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۴. عناوین بخش (Section Title)
+   ───────────────────────────────────────────── */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: var(--space-6) 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+/* ─────────────────────────────────────────────
+   ۱۵. پیام خالی (Empty State)
+   ───────────────────────────────────────────── */
+.empty-msg {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.empty-msg::before {
+  content: '🃏';
+  display: block;
+  font-size: 42px;
+  margin-bottom: var(--space-3);
+  opacity: 0.35;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۶. حذف انیمیشن (Reduced Motion)
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ۱۷. حالت چاپ (Print)
+   ───────────────────────────────────────────── */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .top-bar,
+  .bottom-nav,
+  .modal-overlay,
+  .toast-container,
+  #particleCanvas {
+    display: none !important;
+  }
+
+  .screen {
+    page-break-inside: avoid;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ۱۸. hokm — سازگاری اعداد فارسی (RTL)
+   ───────────────────────────────────────────── */
+[dir="rtl"] .num,
+[dir="rtl"] .stat-value {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* ─────────────────────────────────────────────
+   ۱۹. دیباگ (فقط در حالت dev)
+   ───────────────────────────────────────────── */
+body.debug * {
+  outline: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+body.debug *:hover {
+  outline: 1px solid rgba(0, 255, 0, 0.6);
+}

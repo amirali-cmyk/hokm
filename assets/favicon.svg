@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 512 512"
+     width="512"
+     height="512"
+     role="img"
+     aria-label="حکم حرفه‌ای">
+
+  <title>Hokm Pro — حکم حرفه‌ای</title>
+  <desc>آیکون بازی حکم با کارت پیک طلایی روی پس‌زمینه آبی تیره</desc>
+
+  <!-- ═══════════════════════════════════════════
+       تعریف گرادیانت‌ها و فیلترها
+       ═══════════════════════════════════════════ -->
+  <defs>
+
+    <!-- گرادیانت پس‌زمینه (آبی تیره) -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1b2a" />
+      <stop offset="55%" stop-color="#1e2d45" />
+      <stop offset="100%" stop-color="#0a1420" />
+    </linearGradient>
+
+    <!-- گرادیانت کارت (سفید به کرم) -->
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffdf7" />
+      <stop offset="50%" stop-color="#f5f0e8" />
+      <stop offset="100%" stop-color="#e8e0d0" />
+    </linearGradient>
+
+    <!-- گرادیانت طلایی برای پیک و حاشیه -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe97a" />
+      <stop offset="30%" stop-color="#ffd60a" />
+      <stop offset="70%" stop-color="#e8b800" />
+      <stop offset="100%" stop-color="#b8860b" />
+    </linearGradient>
+
+    <!-- گرادیانت طلایی روشن برای براقیت -->
+    <linearGradient id="goldShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffd60a" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#b8860b" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- درخشش طلایی (Glow) -->
+    <radialGradient id="goldGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd60a" stop-opacity="0.55" />
+      <stop offset="60%" stop-color="#ffd60a" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#ffd60a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- درخشش داخلی کارت -->
+    <radialGradient id="cardShine" cx="30%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- سایه کارت -->
+    <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10" />
+      <feOffset dx="0" dy="8" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.55" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- سایه نرم برای متن/پیک -->
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+      <feOffset dx="0" dy="1" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.35" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- سایه طلایی برای درخشش -->
+    <filter id="goldGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- گوشه‌های گرد کارت (clipPath) -->
+    <clipPath id="cardClip">
+      <rect x="128" y="88" width="256" height="336" rx="28" ry="28" />
+    </clipPath>
+
+  </defs>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۱: پس‌زمینه آبی تیره با گوشه‌های گرد
+       ═══════════════════════════════════════════ -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bgGradient)" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۲: درخشش طلایی مرکزی (هاله پشت کارت)
+       ═══════════════════════════════════════════ -->
+  <circle cx="256" cy="256" r="200" fill="url(#goldGlow)" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۳: الگوی تزئینی نقطه‌ای ظریف
+       ═══════════════════════════════════════════ -->
+  <g opacity="0.08">
+    <circle cx="80" cy="80" r="3" fill="#ffd60a" />
+    <circle cx="432" cy="80" r="3" fill="#ffd60a" />
+    <circle cx="80" cy="432" r="3" fill="#ffd60a" />
+    <circle cx="432" cy="432" r="3" fill="#ffd60a" />
+    <circle cx="256" cy="60" r="2" fill="#ffd60a" />
+    <circle cx="256" cy="452" r="2" fill="#ffd60a" />
+    <circle cx="60" cy="256" r="2" fill="#ffd60a" />
+    <circle cx="452" cy="256" r="2" fill="#ffd60a" />
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۴: حاشیه طلایی ظریف اطراف آیکون
+       ═══════════════════════════════════════════ -->
+  <rect x="8" y="8" width="496" height="496" rx="108" ry="108"
+        fill="none"
+        stroke="url(#goldGradient)"
+        stroke-width="3"
+        opacity="0.35" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۵: کارت پیک (بدنه اصلی)
+       ═══════════════════════════════════════════ -->
+  <g filter="url(#cardShadow)">
+
+    <!-- بدنه کارت با گوشه‌های گرد -->
+    <rect x="128" y="88" width="256" height="336" rx="28" ry="28"
+          fill="url(#cardGradient)" />
+
+    <!-- هایلایت براق بالای کارت -->
+    <rect x="128" y="88" width="256" height="336" rx="28" ry="28"
+          fill="url(#cardShine)"
+          style="mix-blend-mode: overlay;" />
+
+    <!-- خط دور کارت (طلایی) -->
+    <rect x="128" y="88" width="256" height="336" rx="28" ry="28"
+          fill="none"
+          stroke="url(#goldGradient)"
+          stroke-width="3.5"
+          opacity="0.85" />
+
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۶: علامت پیک بزرگ وسط کارت
+       ═══════════════════════════════════════════ -->
+  <g filter="url(#goldGlowFilter)">
+
+    <!-- پیک (Spade) با گرادیانت طلایی -->
+    <path d="
+      M 256 200
+      C 256 200, 200 250, 200 290
+      C 200 315, 220 328, 240 322
+      C 245 320, 248 318, 250 315
+      L 250 340
+      L 262 340
+      L 262 315
+      C 264 318, 267 320, 272 322
+      C 292 328, 312 315, 312 290
+      C 312 250, 256 200, 256 200
+      Z"
+      fill="url(#goldGradient)"
+      stroke="#b8860b"
+      stroke-width="2"
+      stroke-linejoin="round" />
+
+    <!-- هایلایت داخلی پیک -->
+    <path d="
+      M 256 215
+      C 256 215, 215 258, 215 288
+      C 215 300, 225 308, 235 305
+      C 240 304, 245 300, 248 295
+      L 248 320
+      L 250 320
+      L 250 295
+      C 252 300, 255 303, 260 305
+      C 268 307, 278 302, 282 292
+      C 288 268, 256 215, 256 215
+      Z"
+      fill="#ffe97a"
+      opacity="0.45" />
+
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۷: نشان A در گوشه‌های کارت
+       ═══════════════════════════════════════════ -->
+
+  <!-- گوشه بالا-راست (در RTL یعنی شروع کارت) -->
+  <g filter="url(#softShadow)">
+    <text x="355" y="150"
+          font-family="'Playfair Display', 'Times New Roman', serif"
+          font-size="52"
+          font-weight="900"
+          fill="#1a1a1a"
+          text-anchor="middle"
+          letter-spacing="-1">A</text>
+    <text x="355" y="190"
+          font-family="'Segoe UI Symbol', 'Apple Symbols', sans-serif"
+          font-size="38"
+          fill="url(#goldGradient)"
+          text-anchor="middle">♠</text>
+  </g>
+
+  <!-- گوشه پایین-چپ (چرخیده ۱۸۰ درجه) -->
+  <g filter="url(#softShadow)" transform="rotate(180 256 256)">
+    <text x="355" y="150"
+          font-family="'Playfair Display', 'Times New Roman', serif"
+          font-size="52"
+          font-weight="900"
+          fill="#1a1a1a"
+          text-anchor="middle"
+          letter-spacing="-1">A</text>
+    <text x="355" y="190"
+          font-family="'Segoe UI Symbol', 'Apple Symbols', sans-serif"
+          font-size="38"
+          fill="url(#goldGradient)"
+          text-anchor="middle">♠</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۸: خط تزئینی پایین کارت
+       ═══════════════════════════════════════════ -->
+  <line x1="180" y1="385" x2="332" y2="385"
+        stroke="url(#goldGradient)"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.4" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۹: براقیت نهایی (Glossy highlight)
+       ═══════════════════════════════════════════ -->
+  <ellipse cx="200" cy="140"
+           rx="70" ry="28"
+           fill="#ffffff"
+           opacity="0.18"
+           style="mix-blend-mode: overlay;" />
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۱۰: ذرات طلایی تزئینی (Sparkles)
+       ═══════════════════════════════════════════ -->
+  <g fill="url(#goldGradient)" opacity="0.75">
+
+    <!-- جرقه بالا-راست کارت -->
+    <path d="M 400 130 L 404 138 L 412 142 L 404 146 L 400 154
+             L 396 146 L 388 142 L 396 138 Z" />
+
+    <!-- جرقه پایین-چپ کارت -->
+    <path d="M 112 380 L 115 386 L 121 389 L 115 392 L 112 398
+             L 109 392 L 103 389 L 109 386 Z" />
+
+    <!-- ستاره کوچک بالا-چپ -->
+    <path d="M 110 130 L 112 134 L 116 136 L 112 138 L 110 142
+             L 108 138 L 104 136 L 108 134 Z"
+          opacity="0.6" />
+
+    <!-- ستاره کوچک پایین-راست -->
+    <path d="M 402 380 L 404 384 L 408 386 L 404 388 L 402 392
+             L 400 388 L 396 386 L 400 384 Z"
+          opacity="0.6" />
+
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       لایه ۱۱: نامه اختصاصی (تزئینی پایین)
+       ═══════════════════════════════════════════ -->
+  <g opacity="0.35">
+    <circle cx="256" cy="452" r="4" fill="#ffd60a" />
+    <circle cx="276" cy="452" r="3" fill="#ffd60a" opacity="0.6" />
+    <circle cx="236" cy="452" r="3" fill="#ffd60a" opacity="0.6" />
+  </g>
+
+</svg>

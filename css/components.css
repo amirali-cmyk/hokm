@@ -1,0 +1,1513 @@
+/* ═══════════════════════════════════════════════════════════
+   🧩 HOKM PRO v6.0 — components.css
+   دکمه، کارت، پنل، مودال، فرم، Toast، و همه کامپوننت‌ها
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   ۱. دکمه‌ها (Buttons)
+   ═══════════════════════════════════════════ */
+
+/* ─── دکمه پایه ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 20px;
+  min-height: 44px;
+  font-family: var(--font-fa);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background var(--t-normal) var(--ease-out),
+    color var(--t-normal) var(--ease-out),
+    border-color var(--t-normal) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out),
+    transform var(--t-fast) var(--ease-bounce);
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  background: var(--bg-elevated);
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ─── دکمه اصلی (Primary) ─── */
+.btn-primary {
+  background: var(--accent-grad, linear-gradient(135deg, #ffd60a, #b8860b));
+  color: var(--accent-text-on, #1a1a1a);
+  border: none;
+  box-shadow: 0 6px 20px var(--accent-glow, rgba(255, 214, 10, 0.4));
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 30px var(--accent-glow, rgba(255, 214, 10, 0.5));
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 4px 12px var(--accent-glow, rgba(255, 214, 10, 0.4));
+}
+
+/* ─── دکمه موفق (Success) ─── */
+.btn-success {
+  background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(6, 214, 160, 0.4);
+}
+
+.btn-success:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 30px rgba(6, 214, 160, 0.55);
+}
+
+/* ─── دکمه خطر (Danger) ─── */
+.btn-danger {
+  background: linear-gradient(135deg, #ef476f 0%, #b8304e 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(239, 71, 111, 0.4);
+}
+
+.btn-danger:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 30px rgba(239, 71, 111, 0.55);
+}
+
+/* ─── دکمه شبح (Ghost) ─── */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ─── دکمه Outline ─── */
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ─── دکمه اندازه بزرگ ─── */
+.btn-large {
+  padding: 16px 28px;
+  min-height: 52px;
+  font-size: 16px;
+  border-radius: var(--radius-lg);
+}
+
+/* ─── دکمه کوچک ─── */
+.btn-sm {
+  padding: 8px 14px;
+  min-height: 36px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── دکمه تمام‌عرض ─── */
+.btn-block {
+  width: 100%;
+}
+
+/* ─── دکمه آیکون (Icon Button) ─── */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-bounce);
+}
+
+.icon-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-color);
+  transform: scale(1.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+.icon-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ─── دکمه شناور (FAB) ─── */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-grad);
+  color: var(--accent-text-on);
+  font-size: 24px;
+  box-shadow: 0 10px 30px var(--accent-glow);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: transform var(--t-normal) var(--ease-bounce);
+}
+
+.fab:hover {
+  transform: scale(1.1) rotate(8deg);
+}
+
+/* ─── دکمه سبز بزرگ شروع بازی ─── */
+.btn-start-big {
+  width: 100%;
+  max-width: 600px;
+  padding: 24px;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: var(--font-fa);
+  color: #fff;
+  background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow:
+    0 0 30px rgba(6, 214, 160, 0.5),
+    0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: glowGreen 2s ease-in-out infinite;
+  transition: transform var(--t-normal) var(--ease-bounce);
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto var(--space-6);
+}
+
+.btn-start-big::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shineSlide 3s ease-in-out infinite;
+}
+
+.btn-start-big:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 50px rgba(6, 214, 160, 0.7),
+    0 15px 50px rgba(0, 0, 0, 0.4);
+}
+
+.btn-start-big:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-start-icon {
+  font-size: 36px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+}
+
+.btn-start-text {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.btn-start-sub {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+@keyframes glowGreen {
+  0%, 100% {
+    box-shadow:
+      0 0 30px rgba(6, 214, 160, 0.5),
+      0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 50px rgba(6, 214, 160, 0.8),
+      0 10px 50px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@keyframes shineSlide {
+  0%   { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(100%); }
+}
+
+/* ═══════════════════════════════════════════
+   ۲. کارت بازی (Card Face) — CSS خالص
+   ═══════════════════════════════════════════ */
+
+.card-face {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 8px;
+  background: var(--card-bg, linear-gradient(145deg, #fffdf7, #e6ddca));
+  color: var(--card-rank, #1a1a1a);
+  border: 1px solid var(--card-stroke, #c0b8a0);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-family: var(--font-en);
+  user-select: none;
+  transition:
+    transform var(--t-normal) var(--ease-bounce),
+    box-shadow var(--t-normal) var(--ease-out);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.card-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 55%);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.card-face:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.45),
+    0 0 25px var(--accent-glow, rgba(255, 214, 10, 0.4));
+  z-index: 5;
+}
+
+.card-face.red {
+  color: var(--card-red, #ef476f);
+}
+
+.card-face.red .card-suit {
+  color: var(--card-red, #ef476f);
+}
+
+/* گوشه‌های کارت */
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.card-corner.top {
+  align-self: flex-start;
+}
+
+.card-corner.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.card-rank {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.card-suit-small {
+  font-size: 14px;
+  margin-top: 1px;
+}
+
+/* خال بزرگ وسط */
+.card-suit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--card-rank, #1a1a1a);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  pointer-events: none;
+}
+
+/* کارت پشت (پشت‌رو) */
+.card-back {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #1e3a5f 0px, #1e3a5f 6px,
+      #2a4a70 6px, #2a4a70 12px
+    );
+  border: 2px solid #ffd60a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-back::after {
+  content: '♠';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: rgba(255, 214, 10, 0.4);
+}
+
+/* کارت کوچک (برای دست‌های حریف) */
+.card-face.small {
+  width: var(--card-w-sm);
+  height: var(--card-h-sm);
+  padding: 4px 6px;
+}
+
+.card-face.small .card-rank { font-size: 14px; }
+.card-face.small .card-suit { font-size: 28px; }
+.card-face.small .card-suit-small { font-size: 11px; }
+
+/* کارت انتخاب‌شده */
+.card-face.selected {
+  transform: translateY(-20px) scale(1.05);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px var(--accent-glow);
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+/* کارت غیرقابل بازی */
+.card-face.disabled {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* کارت برنده دور */
+.card-face.winner {
+  animation: cardWinner 0.8s var(--ease-bounce);
+  box-shadow:
+    0 0 30px var(--accent-glow),
+    0 0 60px var(--accent-glow),
+    0 12px 30px rgba(0, 0, 0, 0.5);
+  border-color: var(--accent);
+  border-width: 2.5px;
+}
+
+@keyframes cardWinner {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.15) rotate(-3deg); }
+  60%  { transform: scale(1.08) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* ═══════════════════════════════════════════
+   ۳. کارت منو (Menu Card)
+   ═══════════════════════════════════════════ */
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: var(--space-4);
+  min-height: 110px;
+  text-align: right;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    transform var(--t-normal) var(--ease-bounce),
+    border-color var(--t-normal) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out),
+    background var(--t-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25),
+              0 0 25px var(--accent-glow);
+  background: var(--bg-elevated);
+}
+
+.menu-card:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.menu-card-icon {
+  font-size: 30px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}
+
+.menu-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.menu-card-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════
+   ۴. پنل و کارت آماری
+   ═══════════════════════════════════════════ */
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--divider);
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: transform var(--t-normal) var(--ease-out);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-accent);
+}
+
+.stat-value {
+  font-family: var(--font-num);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════
+   ۵. مودال (Modal)
+   ═══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--t-normal) var(--ease-out),
+    visibility var(--t-normal) var(--ease-out);
+}
+
+.modal-overlay:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition:
+    transform var(--t-slow) var(--ease-bounce),
+    opacity var(--t-slow) var(--ease-out);
+}
+
+.modal-overlay:not(.hidden) .modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.modal-close:hover {
+  background: var(--color-danger);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+/* ═══════════════════════════════════════════
+   ۶. Toast (اعلان شناور)
+   ═══════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+  width: min(440px, calc(100% - 32px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-right: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: auto;
+  animation: toastIn 0.4s var(--ease-bounce) both;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.toast.removing {
+  animation: toastOut 0.3s var(--ease-in) both;
+}
+
+.toast-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.toast-msg {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* انواع Toast */
+.toast-success { border-right-color: var(--color-success); }
+.toast-success .toast-icon { color: var(--color-success); }
+
+.toast-error { border-right-color: var(--color-danger); }
+.toast-error .toast-icon { color: var(--color-danger); }
+
+.toast-warning { border-right-color: var(--color-warning); }
+.toast-warning .toast-icon { color: var(--color-warning); }
+
+.toast-info { border-right-color: var(--color-info); }
+.toast-info .toast-icon { color: var(--color-info); }
+
+.toast-achievement {
+  border-right-color: var(--accent);
+  background: linear-gradient(135deg, var(--bg-elevated), var(--accent-soft));
+}
+
+@keyframes toastIn {
+  from {
+    transform: translateY(-30px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toastOut {
+  to {
+    transform: translateY(-20px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۷. Switch (کلید تعویض)
+   ═══════════════════════════════════════════ */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 30px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.switch-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  transition: background var(--t-normal) var(--ease-out),
+              border-color var(--t-normal) var(--ease-out);
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition: transform var(--t-normal) var(--ease-bounce),
+              background var(--t-normal) var(--ease-out);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.switch input:checked + .switch-slider {
+  background: var(--accent-grad, var(--accent));
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.switch input:checked + .switch-slider::before {
+  transform: translateX(-22px);
+  background: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   ۸. Slider (اسلایدر)
+   ═══════════════════════════════════════════ */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+  margin: var(--space-3) 0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-grad, var(--accent));
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--accent-glow);
+  border: 2px solid #fff;
+  transition: transform var(--t-fast) var(--ease-bounce);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۹. Segmented Control
+   ═══════════════════════════════════════════ */
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.segmented::-webkit-scrollbar { display: none; }
+
+.segmented button {
+  padding: 8px 16px;
+  min-height: 36px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--t-normal) var(--ease-out),
+              color var(--t-normal) var(--ease-out);
+}
+
+.segmented button:hover {
+  color: var(--text-primary);
+}
+
+.segmented button.active {
+  background: var(--accent-grad, var(--accent));
+  color: var(--accent-text-on, #1a1a1a);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۰. Input / Select / Textarea
+   ═══════════════════════════════════════════ */
+.input,
+.setting-select,
+textarea.input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 46px;
+  font-family: var(--font-fa);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out),
+    background var(--t-fast) var(--ease-out);
+}
+
+.input::placeholder,
+.setting-select::placeholder,
+input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus,
+.setting-select:focus,
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  background: var(--bg-surface);
+}
+
+.setting-select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a0a8b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  padding-left: 40px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۱. Setting Group (گروه تنظیمات)
+   ═══════════════════════════════════════════ */
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+}
+
+.setting-group.row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.setting-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.setting-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۲. Badge / Chip
+   ═══════════════════════════════════════════ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.chip:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip.active {
+  background: var(--accent-grad);
+  color: var(--accent-text-on);
+  border-color: transparent;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۳. Tooltip
+   ═══════════════════════════════════════════ */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all var(--t-fast) var(--ease-out);
+  z-index: var(--z-dropdown);
+}
+
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۴. Skeleton Loading
+   ═══════════════════════════════════════════ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    var(--bg-surface) 50%,
+    var(--bg-elevated) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  min-height: 16px;
+}
+
+@keyframes skeletonShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۵. Avatar
+   ═══════════════════════════════════════════ */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-color);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-primary);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar.sm { width: 32px; height: 32px; font-size: 16px; }
+.avatar.lg { width: 60px; height: 60px; font-size: 30px; }
+.avatar.xl { width: 96px; height: 96px; font-size: 48px; border-width: 3px; }
+
+.avatar.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۶. Divider
+   ═══════════════════════════════════════════ */
+.divider {
+  height: 1px;
+  background: var(--divider);
+  border: 0;
+  margin: var(--space-4) 0;
+}
+
+.divider.vertical {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+  margin: 0 var(--space-3);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۷. Loading Spinner
+   ═══════════════════════════════════════════ */
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spinRotate 0.8s linear infinite;
+}
+
+.spinner.sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner.lg { width: 36px; height: 36px; border-width: 3.5px; }
+
+@keyframes spinRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۸. Progress Bar
+   ═══════════════════════════════════════════ */
+.progress {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-grad, var(--accent));
+  border-radius: inherit;
+  transition: width var(--t-slow) var(--ease-out);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.progress-fill.animated::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent, rgba(255, 255, 255, 0.4), transparent
+  );
+  animation: progressShine 1.5s linear infinite;
+}
+
+@keyframes progressShine {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۹. Player Seat (صندلی بازیکن)
+   ═══════════════════════════════════════════ */
+.player-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-3);
+  position: relative;
+}
+
+.seat-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-color);
+  transition: all var(--t-normal) var(--ease-out);
+}
+
+.seat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.seat-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.seat-cards {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-num);
+}
+
+.seat-timer {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.seat-timer.active::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: var(--accent-grad, var(--accent));
+  animation: timerRun 30s linear forwards;
+}
+
+@keyframes timerRun {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* نوبت فعال */
+.player-seat.active .seat-avatar {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 4px var(--accent-soft),
+    0 0 25px var(--accent-glow);
+  animation: pulseRing 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 20px var(--accent-glow); }
+  50%      { box-shadow: 0 0 0 10px transparent, 0 0 35px var(--accent-glow); }
+}
+
+/* ═══════════════════════════════════════════
+   ۲۰. Empty State
+   ═══════════════════════════════════════════ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state::before {
+  content: '🃏';
+  font-size: 56px;
+  opacity: 0.3;
+  display: block;
+}
+
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.empty-state-msg {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   ۲۱. List Item
+   ═══════════════════════════════════════════ */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--t-fast) var(--ease-out);
+  cursor: pointer;
+}
+
+.list-item:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-accent);
+  transform: translateX(-2px);
+}
+
+.list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.list-item-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.list-item-action {
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۲. Table
+   ═══════════════════════════════════════════ */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  text-align: right;
+  border-bottom: 1px solid var(--divider);
+}
+
+.data-table th {
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table tbody tr {
+  transition: background var(--t-fast) var(--ease-out);
+}
+
+.data-table tbody tr:hover {
+  background: var(--accent-soft);
+}
+
+.data-table tbody tr.highlight {
+  background: var(--accent-soft);
+  border-right: 3px solid var(--accent);
+}
+
+/* ═══════════════════════════════════════════
+   ۲۳. Tabs (تب‌های اصلی)
+   ═══════════════════════════════════════════ */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-full);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  min-height: 38px;
+  font-family: var(--font-fa);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--t-normal) var(--ease-out),
+    color var(--t-normal) var(--ease-out),
+    box-shadow var(--t-normal) var(--ease-out);
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab.active {
+  background: var(--accent-grad, var(--accent));
+  color: var(--accent-text-on, #1a1a1a);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.tab-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.tab-label {
+  font-size: 12.5px;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۴. Accordion
+   ═══════════════════════════════════════════ */
+.accordion {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.accordion + .accordion { margin-top: var(--space-2); }
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: right;
+  transition: background var(--t-fast) var(--ease-out);
+}
+
+.accordion-header:hover {
+  background: var(--bg-elevated);
+}
+
+.accordion-header::after {
+  content: '▾';
+  font-size: 14px;
+  transition: transform var(--t-normal) var(--ease-out);
+}
+
+.accordion.open .accordion-header::after {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--t-slow) var(--ease-out);
+  padding: 0 var(--space-4);
+}
+
+.accordion.open .accordion-body {
+  max-height: 600px;
+  padding: var(--space-4);
+  border-top: 1px solid var(--divider);
+}
+
+/* ═══════════════════════════════════════════
+   ۲۵. ریپل‌های تزئینی
+   ═══════════════════════════════════════════ */
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-particle);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۶. اسکرول‌بار افقی برای Segmented
+   ═══════════════════════════════════════════ */
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-x::-webkit-scrollbar { display: none; }
