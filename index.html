@@ -1,50 +1,51 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Test JS Files</title>
-  <style>
-    body { font-family: monospace; padding: 20px; background: #000; color: #0f0; font-size: 12px; }
-    .ok { color: #06d6a0; }
-    .fail { color: #ef476f; }
-    button { padding: 10px 20px; font-size: 14px; margin-bottom: 20px; }
-    #output { white-space: pre; }
-  </style>
-</head>
+<head><meta charset="UTF-8"><title>Test</title></head>
 <body>
-  <h1>🔍 تست فایل‌های JS</h1>
-  <button onclick="testAll()">شروع تست</button>
-  <div id="output"></div>
+<h1>تست فایل‌های JS</h1>
+<div id="out">در حال لود...</div>
 
-  <script>
-    const files = [
-      'storage.js', 'themes.js', 'audio.js', 'profile.js',
-      'achievements.js', 'leaderboard.js', 'friends.js',
-      'tournament.js', 'replay.js', 'share.js',
-      'ai.js', 'game.js', 'ui.js', 'main.js'
-    ];
+<script src="js/storage.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ storage.js</div>';</script>
 
-    async function testAll() {
-      const out = document.getElementById('output');
-      out.textContent = 'در حال تست...\n\n';
-      
-      for (const file of files) {
-        try {
-          const res = await fetch('js/' + file, { method: 'HEAD' });
-          if (res.ok) {
-            const text = await (await fetch('js/' + file)).text();
-            const size = text.length;
-            out.innerHTML += '<div class="ok">✅ ' + file + ' — OK (' + size + ' bytes)</div>';
-          } else {
-            out.innerHTML += '<div class="fail">❌ ' + file + ' — HTTP ' + res.status + '</div>';
-          }
-        } catch (e) {
-          out.innerHTML += '<div class="fail">❌ ' + file + ' — ' + e.message + '</div>';
-        }
-      }
-      
-      out.innerHTML += '\n✅ تست تمام شد';
-    }
-  </script>
+<script src="js/themes.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ themes.js</div>';</script>
+
+<script src="js/audio.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ audio.js</div>';</script>
+
+<script src="js/profile.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ profile.js</div>';</script>
+
+<script src="js/achievements.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ achievements.js</div>';</script>
+
+<script src="js/leaderboard.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ leaderboard.js</div>';</script>
+
+<script src="js/friends.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ friends.js</div>';</script>
+
+<script src="js/tournament.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ tournament.js</div>';</script>
+
+<script src="js/replay.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ replay.js</div>';</script>
+
+<script src="js/share.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ share.js</div>';</script>
+
+<script src="js/ai.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ ai.js</div>';</script>
+
+<script src="js/game.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ game.js</div>';</script>
+
+<script src="js/ui.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ ui.js</div>';</script>
+
+<script src="js/main.js"></script>
+<script>document.getElementById('out').innerHTML += '<div>✅ main.js</div>';</script>
+
 </body>
 </html>
