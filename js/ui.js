@@ -78,16 +78,12 @@
      ───────────────────────────────────────────── */
   const UI = {
 
-    /**
-     * رفتن به یک صفحه
-     */
     navigate(screenName, options = {}) {
       if (!SCREENS[screenName]) {
         console.warn('[UI] Unknown screen:', screenName);
         return;
       }
 
-      // اگر در بازی هستیم و داریم به صفحه غیر از game می‌ریم
       if (state.inGame && screenName !== 'game' && !options.force) {
         if (confirm('از بازی خارج می‌شوید؟')) {
           UI.exitGame();
@@ -99,37 +95,25 @@
       state.previousScreen = state.currentScreen;
       state.currentScreen = screenName;
 
-      // پنهان کردن همه
       _$$('.screen').forEach(el => el.classList.remove('active'));
 
-      // نمایش جدید
       const screenEl = _$(SCREENS[screenName]);
       if (screenEl) {
         screenEl.classList.add('active');
-        // اسکرول به بالا
         screenEl.scrollTop = 0;
       }
 
-      // آپدیت تب‌ها (فقط برای tab screens)
       UI.updateTabs(screenName);
-
-      // منطق مخصوص هر صفحه
       _onScreenEnter(screenName);
 
       _emit('navigate', { screen: screenName, previous: state.previousScreen });
       return true;
     },
 
-    /**
-     * رفتن به صفحه قبل
-     */
     back() {
       UI.navigate(state.previousScreen);
     },
 
-    /**
-     * آپدیت تب‌های Top Bar
-     */
     updateTabs(activeTab) {
       _$$('.tab').forEach(tab => {
         const tabName = tab.dataset.tab;
@@ -147,9 +131,6 @@
 
     /* ─── Toast ─── */
 
-    /**
-     * نمایش Toast
-     */
     showToast(title, message = '', type = 'info', duration = 3500) {
       const container = _$('toastContainer');
       if (!container) return null;
@@ -175,7 +156,6 @@
 
       container.appendChild(toast);
 
-      // انیمیشن حذف
       setTimeout(() => {
         toast.classList.add('removing');
         setTimeout(() => toast.remove(), 300);
@@ -197,14 +177,12 @@
 
       if (_audio()) _audio().play('modalOpen');
 
-      // رویداد بستن
       const closeBtn = _$('modalClose');
       if (closeBtn && !closeBtn.dataset.bound) {
         closeBtn.dataset.bound = '1';
         closeBtn.addEventListener('click', UI.closeModal);
       }
 
-      // بستن با کلیک روی overlay
       if (!overlay.dataset.bound) {
         overlay.dataset.bound = '1';
         overlay.addEventListener('click', (e) => {
@@ -214,7 +192,6 @@
         });
       }
 
-      // بستن با Escape
       if (!state.escHandler) {
         state.escHandler = (e) => {
           if (e.key === 'Escape' && state.modalOpen) {
@@ -239,9 +216,6 @@
        بازی — شروع و خروج
        ═══════════════════════════════════════════ */
 
-    /**
-     * شروع بازی از UI
-     */
     async startGame(options = {}) {
       if (!_game()) {
         UI.showToast('خطا', 'موتور بازی در دسترس نیست', 'error');
@@ -251,20 +225,13 @@
       try {
         state.inGame = true;
 
-        // رفتن به صفحه بازی
         UI.navigate('game', { force: true });
-
-        // نمایش‌های اولیه
         UI.resetGameView();
 
-        // دکمه بازگشت
         const backBtn = _$('btnBackFromGame');
         if (backBtn) backBtn.classList.remove('hidden');
 
-        // شروع
         await _game().start(options);
-
-        // Bind رویدادها
         _bindGameEvents();
 
       } catch (err) {
@@ -274,9 +241,6 @@
       }
     },
 
-    /**
-     * خروج از بازی
-     */
     exitGame() {
       if (_game()) {
         _game().quit();
@@ -284,53 +248,40 @@
 
       state.inGame = false;
 
-      // پاک کردن صفحه
       UI.resetGameView();
 
-      // دکمه بازگشت
       const backBtn = _$('btnBackFromGame');
       if (backBtn) backBtn.classList.add('hidden');
 
-      // بازگشت به منو
       UI.navigate('menu', { force: true });
     },
 
-    /**
-     * ریست نمای بازی
-     */
     resetGameView() {
-      // کارت‌های دست
       const hand = _$('playerHand');
       if (hand) hand.innerHTML = '';
 
-      // کارت‌های وسط
       const trickCenter = _$('trickCenter');
       if (trickCenter) trickCenter.innerHTML = '';
 
-      // کارت‌های روی میز
       ['Top', 'Left', 'Right', 'Bottom'].forEach(pos => {
         const slot = _$('played' + pos);
         if (slot) slot.innerHTML = '';
       });
 
-      // امتیازات
       _setText('scoreA', _toPersianNumber(0));
       _setText('scoreB', _toPersianNumber(0));
       _setText('roundNumber', _toPersianNumber(1));
       _setText('hokmSuit', '—');
 
-      // تایمر
       const timerFill = _$('timerFill');
       if (timerFill) {
         timerFill.style.width = '100%';
         timerFill.classList.remove('warning', 'danger');
       }
 
-      // پنهان کردن پنجره حکم
       const picker = _$('hokmPicker');
       if (picker) picker.classList.add('hidden');
 
-      // پنهان کردن دکمه‌های اقدام
       const actions = _$('actionButtons');
       if (actions) actions.style.display = 'none';
     },
@@ -339,37 +290,22 @@
        رندر بازی
        ═══════════════════════════════════════════ */
 
-    /**
-     * رندر کامل میز
-     */
     renderGame() {
       if (!_game()) return;
       const s = _game().getState();
 
-      // امتیازات
       UI.updateScores(s.scores, s.trickCount);
 
-      // حکم
       if (s.hokm) {
         UI.updateHokmDisplay(s.hokm);
       }
 
-      // دست من
       UI.renderHand(s.players[0]?.hand || [], s);
-
-      // صندلی‌های بازیکنان
       UI.renderSeats(s);
-
-      // کارت‌های دور فعلی
       UI.renderTrick(s.trick, s);
-
-      // نوبت فعال
       UI.highlightCurrentPlayer(s.currentPlayer);
     },
 
-    /**
-     * رندر دست بازیکن
-     */
     renderHand(cards, gameState) {
       const hand = _$('playerHand');
       if (!hand) return;
@@ -393,14 +329,9 @@
       }).join('');
     },
 
-    /**
-     * رندر صندلی‌های بازیکنان
-     */
     renderSeats(gameState) {
-      const seats = ['Bottom', 'Left', 'Top', 'Right'];
       const players = gameState.players;
 
-      // Bottom = خودم، Left = هم‌تیمی/بعدی، Top = روبرو، Right = قبلی
       const seatMap = {
         Bottom: players[0],
         Left: players[1],
@@ -410,7 +341,6 @@
 
       Object.entries(seatMap).forEach(([pos, p]) => {
         if (!p) {
-          // پنهان کردن صندلی خالی
           const seat = _$('seat' + pos);
           if (seat) seat.style.display = 'none';
           return;
@@ -425,7 +355,7 @@
         const avatarEl = _$('avatar' + pos);
         if (avatarEl) {
           if (typeof p.avatar === 'string' && p.avatar.startsWith('data:image')) {
-            avatarEl.innerHTML = `<img src="${p.avatar}" alt="" />`;
+            avatarEl.innerHTML = `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
           } else {
             avatarEl.textContent = p.avatar || '🤖';
           }
@@ -433,17 +363,12 @@
       });
     },
 
-    /**
-     * رندر کارت‌های وسط میز
-     */
     renderTrick(trick, gameState) {
       const center = _$('trickCenter');
       if (!center) return;
 
-      // پاک کردن
       center.innerHTML = '';
 
-      // هر کارت به سمت بازیکنش
       trick.forEach(({ playerIdx, card }) => {
         const el = document.createElement('div');
         el.className = 'card-face card-played-anim';
@@ -452,7 +377,6 @@
         el.style.setProperty('--play-from-y', _getFromY(playerIdx));
         el.innerHTML = _cardInnerHTML(card);
 
-        // تعیین موقعیت بر اساس بازیکن
         const positions = ['bottom', 'left', 'top', 'right'];
         const pos = positions[playerIdx] || 'bottom';
         el.dataset.pos = pos;
@@ -461,18 +385,12 @@
       });
     },
 
-    /**
-     * به‌روزرسانی امتیازات
-     */
     updateScores(scores, trickCount) {
       _setText('scoreA', _toPersianNumber(scores.A));
       _setText('scoreB', _toPersianNumber(scores.B));
       _setText('roundNumber', _toPersianNumber(trickCount + 1));
     },
 
-    /**
-     * نمایش حکم
-     */
     updateHokmDisplay(suit) {
       const el = _$('hokmSuit');
       if (!el) return;
@@ -482,9 +400,6 @@
       el.style.color = isRed ? 'var(--color-danger)' : 'var(--accent)';
     },
 
-    /**
-     * هایلایت بازیکن نوبت
-     */
     highlightCurrentPlayer(playerIdx) {
       ['Top', 'Left', 'Right', 'Bottom'].forEach((pos, i) => {
         const seat = _$('seat' + pos);
@@ -493,15 +408,11 @@
       });
     },
 
-    /**
-     * نمایش انتخاب حکم به کاربر
-     */
     showHokmPicker() {
       const picker = _$('hokmPicker');
       if (!picker) return;
       picker.classList.remove('hidden');
 
-      // Bind دکمه‌های suit
       picker.querySelectorAll('.suit-btn').forEach(btn => {
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
@@ -521,9 +432,6 @@
        رویدادهای کاربر
        ═══════════════════════════════════════════ */
 
-    /**
-     * کلیک روی کارت
-     */
     handleCardClick(cardId) {
       if (!_game()) return;
 
@@ -531,14 +439,12 @@
       const card = hand.find(c => c.id === cardId);
       if (!card) return;
 
-      // بررسی نوبت
       if (!_game().isMyTurn()) {
         UI.showToast('نوبت تو نیست', '', 'warning', 1500);
         if (_audio()) _audio().play('error');
         return;
       }
 
-      // بررسی اعتبار
       const valid = _game().getValidCards(0);
       const isValid = valid.some(c => c.id === cardId);
 
@@ -546,7 +452,6 @@
         UI.showToast('باید از خال جاری بازی کنی!', '', 'warning', 1800);
         if (_audio()) _audio().play('error');
 
-        // انیمیشن لرزش
         const el = document.querySelector(`[data-card-id="${cardId}"]`);
         if (el) {
           el.classList.add('card-invalid');
@@ -555,13 +460,9 @@
         return;
       }
 
-      // بازی
       _game().playCard(0, card);
     },
 
-    /**
-     * انتخاب حکم
-     */
     handleHokmSelect(suit) {
       if (!_game()) return;
       const ok = _game().selectHokm(suit);
@@ -571,12 +472,8 @@
       }
     },
 
-    /**
-     * پاس (در حالت‌های خاص)
-     */
     handlePass() {
       if (!_game()) return;
-      // در حکم پاس → انتخاب تصادفی
       UI.showToast('باید حکم تعیین کنی', '', 'warning', 2000);
     },
 
@@ -627,7 +524,6 @@
       const mins = Math.floor(duration / 60000);
       const secs = Math.floor((duration % 60000) / 1000);
 
-      // نتیجه
       const title = win ? '🏆 بردی!' : '💔 باختی';
       const titleColor = win ? 'var(--color-success)' : 'var(--color-danger)';
 
@@ -681,7 +577,6 @@
 
       UI.openModal(html, { dismissible: false });
 
-      // Bind
       const playAgain = _$('btnPlayAgain');
       if (playAgain) {
         playAgain.addEventListener('click', () => {
@@ -714,17 +609,12 @@
         });
       }
 
-      // جشن
       if (win) {
         UI.celebrateWin();
       }
     },
 
-    /**
-     * انیمیشن جشن برد
-     */
     celebrateWin() {
-      // کاغذرنگی
       const colors = ['#ffd60a', '#06d6a0', '#ef476f', '#118ab2', '#9b5de5'];
       for (let i = 0; i < 60; i++) {
         const c = document.createElement('div');
@@ -737,7 +627,6 @@
         setTimeout(() => c.remove(), 5000);
       }
 
-      // صدا
       if (_audio()) _audio().play('achievement');
     },
 
@@ -757,7 +646,12 @@
   };
 
   /* ─────────────────────────────────────────────
-     رندر HTML کارت
+     رندر HTML کارت — طرح ساده
+     ═════════════════════════════════════════════
+     🎴 ساختار جدید:
+     - گوشه بالا-راست: عدد + علامت
+     - وسط: علامت بزرگ
+     - گوشه پایین-چپ: عدد + علامت (چرخیده ۱۸۰ درجه)
      ───────────────────────────────────────────── */
   function _renderCardHTML(card, opts = {}) {
     const classes = ['card-face'];
@@ -781,6 +675,14 @@
     `;
   }
 
+  /**
+   * محتوای داخلی کارت — طرح ساده‌ی جدید
+   *
+   * 🎴 فقط ۳ بخش:
+   *   1. گوشه بالا-راست (top) — عدد و علامت
+   *   2. علامت بزرگ وسط (center) — فقط علامت
+   *   3. گوشه پایین-چپ (bottom) — عدد و علامت
+   */
   function _cardInnerHTML(card) {
     const symbol = SUIT_SYMBOLS[card.suit] || '?';
     const rank = card.symbol || card.rank;
@@ -818,21 +720,17 @@
     const game = _game();
     if (!game) return;
 
-    // فقط یک بار bind کن
     if (game._uiBound) return;
     game._uiBound = true;
 
-    // ─── شروع بازی ───
     game.on('game:start', ({ players }) => {
       UI.renderGame();
     });
 
-    // ─── توزیع کارت ───
     game.on('cards:dealt', ({ hands }) => {
       UI.renderHand(hands[0], game.getState());
     });
 
-    // ─── انتخاب حکم ───
     game.on('hokm:waitingForUser', () => {
       UI.showHokmPicker();
     });
@@ -842,40 +740,32 @@
       UI.hideHokmPicker();
     });
 
-    // ─── نوبت ───
     game.on('turn:start', ({ playerIdx }) => {
       UI.highlightCurrentPlayer(playerIdx);
       UI.resetTimer();
       UI.renderHand(game.getMyHand(), game.getState());
 
-      // اگر نوبت من است، دکمه‌های اقدام
       const actions = _$('actionButtons');
       if (actions) {
         actions.style.display = playerIdx === 0 ? 'flex' : 'none';
       }
 
-      // صدای نوبت
       if (playerIdx === 0 && _audio()) {
         _audio().play('turn');
       }
     });
 
-    // ─── کارت بازی شد ───
     game.on('card:played', ({ playerIdx, card, trick }) => {
-      // ثبت در حافظه AI
       if (global.HokmAI) {
         global.HokmAI.recordPlayedCard(playerIdx, card);
       }
 
-      // رندر مجدد
       UI.renderHand(game.getMyHand(), game.getState());
       UI.renderTrick(trick, game.getState());
       UI.renderSeats(game.getState());
     });
 
-    // ─── پایان دور ───
     game.on('trick:completed', ({ winner }) => {
-      // هایلایت برنده
       const seatPositions = ['Bottom', 'Left', 'Top', 'Right'];
       const winnerPos = seatPositions[winner];
       const seat = _$('seat' + winnerPos);
@@ -884,12 +774,10 @@
         setTimeout(() => seat.classList.remove('winner-glow'), 1500);
       }
 
-      // هایلایت کارت‌های برنده
       const cards = document.querySelectorAll('#trickCenter .card-face');
       cards.forEach(c => c.classList.add('winner'));
     });
 
-    // ─── دور جدید ───
     game.on('trick:new', () => {
       setTimeout(() => {
         UI.renderTrick([], game.getState());
@@ -897,12 +785,10 @@
       }, 1200);
     });
 
-    // ─── امتیاز عوض شد ───
     game.on('score:changed', ({ scores, trickCount }) => {
       UI.updateScores(scores, trickCount);
     });
 
-    // ─── تایمر ───
     game.on('timer:start', ({ duration }) => {
       UI.resetTimer();
     });
@@ -915,26 +801,21 @@
       UI.resetTimer();
     });
 
-    // ─── پایان بازی ───
     game.on('game:ended', (result) => {
       state.inGame = false;
 
-      // مخفی کردن دکمه بازگشت
       const backBtn = _$('btnBackFromGame');
       if (backBtn) backBtn.classList.add('hidden');
 
-      // نمایش مودال
       setTimeout(() => {
         UI.showGameEnd(result);
       }, 1500);
     });
 
-    // ─── کارت نامعتبر ───
     game.on('card:invalid', () => {
       // خود game.js صدای error پخش می‌کنه
     });
 
-    // ─── تایم‌اوت ───
     game.on('turn:timeout', ({ playerIdx }) => {
       if (playerIdx === 0) {
         UI.showToast('وقتت تموم شد!', 'یک کارت تصادفی بازی شد', 'warning');
@@ -943,7 +824,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ورود به هر صفحه — رفتار خاص
+     ورود به هر صفحه
      ───────────────────────────────────────────── */
   function _onScreenEnter(screenName) {
     switch (screenName) {
@@ -980,10 +861,9 @@
   }
 
   /* ─────────────────────────────────────────────
-     Bind رویدادهای عمومی UI
+     Bind رویدادهای عمومی
      ───────────────────────────────────────────── */
   function _bindGlobalEvents() {
-    // تب‌ها
     _$$('.tab').forEach(tab => {
       if (tab.dataset.bound) return;
       tab.dataset.bound = '1';
@@ -997,7 +877,6 @@
       });
     });
 
-    // منو کارت‌ها
     _$$('.menu-card').forEach(card => {
       if (card.dataset.bound) return;
       card.dataset.bound = '1';
@@ -1007,7 +886,6 @@
       });
     });
 
-    // دکمه شروع بزرگ
     const startBtn = _$('btnStartGame');
     if (startBtn && !startBtn.dataset.bound) {
       startBtn.dataset.bound = '1';
@@ -1016,25 +894,22 @@
       });
     }
 
-    // دکمه بازگشت از بازی
     const backBtn = _$('btnBackFromGame');
     if (backBtn && !backBtn.dataset.bound) {
       backBtn.dataset.bound = '1';
       backBtn.addEventListener('click', () => {
-        if (confirm('از بازی خارج می‌شوید؟ پیشرفت شما ذخیره می‌شود.')) {
+        if (confirm('از بازی خارج می‌شوید؟')) {
           UI.exitGame();
         }
       });
     }
 
-    // دکمه‌های اقدام
     const passBtn = _$('btnPass');
     if (passBtn && !passBtn.dataset.bound) {
       passBtn.dataset.bound = '1';
       passBtn.addEventListener('click', () => UI.handlePass());
     }
 
-    // ورود / ثبت‌نام
     const authTabs = _$$('.auth-tab');
     authTabs.forEach(tab => {
       if (tab.dataset.bound) return;
@@ -1050,7 +925,6 @@
       });
     });
 
-    // دکمه ورود سریع
     const quickPlay = _$('btnQuickPlay');
     if (quickPlay && !quickPlay.dataset.bound) {
       quickPlay.dataset.bound = '1';
@@ -1059,7 +933,6 @@
       });
     }
 
-    // دکمه‌های آنلاین
     const createRoom = _$('btnCreateRoom');
     if (createRoom && !createRoom.dataset.bound) {
       createRoom.dataset.bound = '1';
@@ -1090,10 +963,8 @@
       });
     }
 
-    // شورتکات‌ها
     document.addEventListener('keydown', _handleKeyboard);
 
-    // بازگشت با Esc (فقط اگر modal باز نباشه)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !state.modalOpen) {
         if (state.currentScreen !== 'menu' && state.currentScreen !== 'game') {
@@ -1104,7 +975,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     منوی کارت‌ها
+     منو کارت‌ها
      ───────────────────────────────────────────── */
   function _handleMenuAction(action) {
     if (!action) return;
@@ -1137,7 +1008,6 @@
   function _handleKeyboard(e) {
     const isInGame = state.currentScreen === 'game';
 
-    // Alt+key
     if (e.altKey) {
       switch (e.key.toLowerCase()) {
         case 'm': e.preventDefault(); UI.navigate('menu'); break;
@@ -1152,9 +1022,7 @@
       return;
     }
 
-    // در بازی
     if (isInGame) {
-      // Esc
       if (e.key === 'Escape' && !state.modalOpen) {
         if (confirm('از بازی خارج می‌شوید؟')) {
           UI.exitGame();
@@ -1162,7 +1030,6 @@
         return;
       }
 
-      // اعداد ۱-۹ برای انتخاب کارت
       if (e.key >= '1' && e.key <= '9') {
         const idx = parseInt(e.key) - 1;
         const hand = _game()?.getMyHand() || [];
@@ -1172,7 +1039,6 @@
         return;
       }
 
-      // P برای پاس (اگر فعال)
       if (e.key.toLowerCase() === 'p') {
         UI.handlePass();
         return;
@@ -1194,7 +1060,6 @@
   function bootstrap() {
     _bindGlobalEvents();
 
-    // بارگذاری بازی ذخیره‌شده در startup (پیشنهاد)
     setTimeout(() => {
       if (_game() && _game().hasSavedGame()) {
         const resume = confirm('بازی قبلی ذخیره شده. ادامه می‌دهید؟');
@@ -1223,7 +1088,6 @@
 
   global.HokmUI = UI;
 
-  // Auto-init
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', bootstrap);
