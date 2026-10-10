@@ -363,23 +363,26 @@
       });
     },
 
+    /**
+     * 🎴 رندر کارت‌های وسط میز
+     * هر کارت با data-pos مشخص می‌شود تا کنار صاحبش بیفتد
+     */
     renderTrick(trick, gameState) {
       const center = _$('trickCenter');
       if (!center) return;
 
       center.innerHTML = '';
 
+      // نقشه موقعیت بازیکن‌ها به مکانی روی میز
+      // بازیکن 0 = خودت (پایین)، 1 = هم‌تیمی (چپ)، 2 = حریف (بالا)، 3 = حریف (راست)
+      const positionMap = ['bottom', 'left', 'top', 'right'];
+
       trick.forEach(({ playerIdx, card }) => {
         const el = document.createElement('div');
-        el.className = 'card-face card-played-anim';
+        el.className = 'card-face';
         el.dataset.cardId = card.id;
-        el.style.setProperty('--play-from-x', _getFromX(playerIdx));
-        el.style.setProperty('--play-from-y', _getFromY(playerIdx));
+        el.dataset.pos = positionMap[playerIdx] || 'bottom';
         el.innerHTML = _cardInnerHTML(card);
-
-        const positions = ['bottom', 'left', 'top', 'right'];
-        const pos = positions[playerIdx] || 'bottom';
-        el.dataset.pos = pos;
 
         center.appendChild(el);
       });
@@ -521,8 +524,6 @@
           : 'var(--text-muted)';
 
       const duration = result.durationMs || 0;
-      const mins = Math.floor(duration / 60000);
-      const secs = Math.floor((duration % 60000) / 1000);
 
       const title = win ? '🏆 بردی!' : '💔 باختی';
       const titleColor = win ? 'var(--color-success)' : 'var(--color-danger)';
@@ -648,10 +649,10 @@
   /* ─────────────────────────────────────────────
      رندر HTML کارت — طرح ساده
      ═════════════════════════════════════════════
-     🎴 ساختار جدید:
-     - گوشه بالا-راست: عدد + علامت
+     🎴 فقط:
+     - گوشه بالا-راست: عدد
      - وسط: علامت بزرگ
-     - گوشه پایین-چپ: عدد + علامت (چرخیده ۱۸۰ درجه)
+     - گوشه پایین-چپ: عدد
      ───────────────────────────────────────────── */
   function _renderCardHTML(card, opts = {}) {
     const classes = ['card-face'];
@@ -676,12 +677,7 @@
   }
 
   /**
-   * محتوای داخلی کارت — طرح ساده‌ی جدید
-   *
-   * 🎴 فقط ۳ بخش:
-   *   1. گوشه بالا-راست (top) — عدد و علامت
-   *   2. علامت بزرگ وسط (center) — فقط علامت
-   *   3. گوشه پایین-چپ (bottom) — عدد و علامت
+   * محتوای داخلی کارت — فقط عدد در گوشه‌ها + علامت وسط
    */
   function _cardInnerHTML(card) {
     const symbol = SUIT_SYMBOLS[card.suit] || '?';
@@ -690,27 +686,12 @@
     return `
       <div class="card-corner top">
         <span class="card-rank">${rank}</span>
-        <span class="card-suit-small">${symbol}</span>
       </div>
       <div class="card-suit">${symbol}</div>
       <div class="card-corner bottom">
         <span class="card-rank">${rank}</span>
-        <span class="card-suit-small">${symbol}</span>
       </div>
     `;
-  }
-
-  /* ─────────────────────────────────────────────
-     موقعیت شروع کارت‌ها
-     ───────────────────────────────────────────── */
-  function _getFromX(playerIdx) {
-    const positions = { 0: '0px', 1: '-300px', 2: '0px', 3: '300px' };
-    return positions[playerIdx] || '0px';
-  }
-
-  function _getFromY(playerIdx) {
-    const positions = { 0: '300px', 1: '0px', 2: '-300px', 3: '0px' };
-    return positions[playerIdx] || '0px';
   }
 
   /* ─────────────────────────────────────────────
