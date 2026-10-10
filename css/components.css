@@ -297,7 +297,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   ۲. کارت بازی (Card Face) — CSS خالص
+   ۲. کارت بازی (Card Face) — 🎴 طرح ساده
    ═══════════════════════════════════════════ */
 
 .card-face {
@@ -311,10 +311,7 @@
     0 6px 20px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 6px 8px;
+  padding: 0;
   font-family: var(--font-en);
   user-select: none;
   transition:
@@ -329,9 +326,9 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 30% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 55%);
+  background: radial-gradient(circle at 30% 15%, rgba(255, 255, 255, 0.55) 0%, transparent 55%);
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .card-face:hover {
@@ -346,54 +343,63 @@
   color: var(--card-red, #ef476f);
 }
 
-.card-face.red .card-suit {
-  color: var(--card-red, #ef476f);
-}
-
-/* گوشه‌های کارت */
+/* ═══ گوشه‌ها ═══ */
 .card-corner {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   line-height: 1;
   font-weight: 900;
+  z-index: 2;
 }
 
+/* گوشه بالا-راست */
 .card-corner.top {
-  align-self: flex-start;
+  top: 5px;
+  right: 6px;
+  text-align: center;
 }
 
+/* گوشه پایین-چپ */
 .card-corner.bottom {
-  align-self: flex-end;
-  transform: rotate(180deg);
+  bottom: 5px;
+  left: 6px;
+  text-align: center;
 }
 
 .card-rank {
-  font-size: 18px;
+  font-family: var(--font-en);
+  font-size: 16px;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .card-suit-small {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
   margin-top: 1px;
+  opacity: 0.95;
 }
 
-/* خال بزرگ وسط */
+/* ═══ علامت بزرگ وسط کارت ═══ */
 .card-suit {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 400;
   line-height: 1;
-  color: var(--card-rank, #1a1a1a);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  color: inherit;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.18));
   pointer-events: none;
+  z-index: 1;
 }
 
-/* کارت پشت (پشت‌رو) */
+/* ═══ کارت پشت (پشت‌رو) ═══ */
 .card-back {
   width: var(--card-w);
   height: var(--card-h);
@@ -420,18 +426,35 @@
   color: rgba(255, 214, 10, 0.4);
 }
 
-/* کارت کوچک (برای دست‌های حریف) */
+/* ═══ کارت کوچک (برای دست‌های حریف) ═══ */
 .card-face.small {
   width: var(--card-w-sm);
   height: var(--card-h-sm);
-  padding: 4px 6px;
 }
 
-.card-face.small .card-rank { font-size: 14px; }
-.card-face.small .card-suit { font-size: 28px; }
-.card-face.small .card-suit-small { font-size: 11px; }
+.card-face.small .card-rank {
+  font-size: 12px;
+}
 
-/* کارت انتخاب‌شده */
+.card-face.small .card-suit-small {
+  font-size: 9px;
+}
+
+.card-face.small .card-suit {
+  font-size: 22px;
+}
+
+.card-face.small .card-corner.top {
+  top: 3px;
+  right: 4px;
+}
+
+.card-face.small .card-corner.bottom {
+  bottom: 3px;
+  left: 4px;
+}
+
+/* ═══ کارت انتخاب‌شده ═══ */
 .card-face.selected {
   transform: translateY(-20px) scale(1.05);
   box-shadow:
@@ -441,7 +464,7 @@
   border-width: 2px;
 }
 
-/* کارت غیرقابل بازی */
+/* ═══ کارت غیرقابل بازی ═══ */
 .card-face.disabled {
   opacity: 0.4;
   filter: grayscale(0.6);
@@ -449,7 +472,7 @@
   cursor: not-allowed;
 }
 
-/* کارت برنده دور */
+/* ═══ کارت برنده دور ═══ */
 .card-face.winner {
   animation: cardWinner 0.8s var(--ease-bounce);
   box-shadow:
@@ -465,6 +488,78 @@
   30%  { transform: scale(1.15) rotate(-3deg); }
   60%  { transform: scale(1.08) rotate(3deg); }
   100% { transform: scale(1) rotate(0); }
+}
+
+/* ═══ تم‌های کارت ═══ */
+
+/* کلاسیک */
+[data-card-theme="classic"] .card-face {
+  background: linear-gradient(145deg, #fffdf7 0%, #f5f0e8 60%, #e6ddca 100%);
+  color: #1a1a1a;
+  border-color: #c0b8a0;
+}
+
+[data-card-theme="classic"] .card-face.red {
+  color: #ef476f;
+}
+
+/* تاریک */
+[data-card-theme="dark"] .card-face {
+  background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 60%, #0a0a0a 100%);
+  color: #f5f0e8;
+  border-color: #4a4a4a;
+}
+
+[data-card-theme="dark"] .card-face.red {
+  color: #ff5c8a;
+}
+
+/* چوبی */
+[data-card-theme="wooden"] .card-face {
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 3px,
+      transparent 3px, transparent 8px),
+    linear-gradient(145deg, #e0b483 0%, #d4a373 60%, #a87b50 100%);
+  color: #3a1f0a;
+  border-color: #8b5a2b;
+  font-weight: 700;
+}
+
+[data-card-theme="wooden"] .card-face.red {
+  color: #8b1a1a;
+}
+
+/* کارتونی */
+[data-card-theme="cartoon"] .card-face {
+  background: linear-gradient(145deg, #ffe4f0 0%, #e4f0ff 100%);
+  color: #2a2a2a;
+  border-color: #ff6b9d;
+  border-width: 2px;
+  font-weight: 900;
+}
+
+[data-card-theme="cartoon"] .card-face.red {
+  color: #ff006e;
+}
+
+/* نئون */
+[data-card-theme="neon"] .card-face {
+  background: linear-gradient(145deg, #0d1b2a 0%, #0a1420 100%);
+  color: #06d6a0;
+  border-color: #06d6a0;
+  box-shadow: 0 0 12px rgba(6, 214, 160, 0.5),
+              0 0 25px rgba(6, 214, 160, 0.25),
+              inset 0 0 12px rgba(6, 214, 160, 0.15);
+  text-shadow: 0 0 8px currentColor;
+}
+
+[data-card-theme="neon"] .card-face.red {
+  color: #ef476f;
+  border-color: #ef476f;
+  box-shadow: 0 0 12px rgba(239, 71, 111, 0.5),
+              0 0 25px rgba(239, 71, 111, 0.25),
+              inset 0 0 12px rgba(239, 71, 111, 0.15);
 }
 
 /* ═══════════════════════════════════════════
@@ -737,7 +832,6 @@
   line-height: 1.5;
 }
 
-/* انواع Toast */
 .toast-success { border-right-color: var(--color-success); }
 .toast-success .toast-icon { color: var(--color-success); }
 
@@ -963,7 +1057,7 @@ input:focus {
 }
 
 /* ═══════════════════════════════════════════
-   ۱۱. Setting Group (گروه تنظیمات)
+   ۱۱. Setting Group
    ═══════════════════════════════════════════ */
 .setting-group {
   display: flex;
@@ -1209,6 +1303,7 @@ input:focus {
   background: var(--bg-elevated);
   border: 2px solid var(--border-color);
   transition: all var(--t-normal) var(--ease-out);
+  overflow: hidden;
 }
 
 .seat-info {
@@ -1500,7 +1595,7 @@ input:focus {
 }
 
 /* ═══════════════════════════════════════════
-   ۲۶. اسکرول‌بار افقی برای Segmented
+   ۲۶. اسکرول‌بار افقی
    ═══════════════════════════════════════════ */
 .scroll-x {
   overflow-x: auto;
