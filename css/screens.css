@@ -21,7 +21,6 @@
   position: relative;
 }
 
-/* هر صفحه */
 .screen {
   display: none;
   width: 100%;
@@ -90,7 +89,6 @@
   }
 }
 
-/* لوگو دایره‌ای چرخان */
 .splash-logo-wrap {
   position: relative;
   width: 160px;
@@ -158,7 +156,6 @@
   margin-top: -8px;
 }
 
-/* نوار لودینگ */
 .splash-loading-bar {
   width: min(300px, 70vw);
   height: 5px;
@@ -190,7 +187,6 @@
   100% { background-position: 200% 0; }
 }
 
-/* دکمه Skip */
 .btn-skip {
   margin-top: var(--space-4);
   padding: 8px 18px;
@@ -255,13 +251,8 @@
   min-width: 0;
 }
 
-.top-bar-right {
-  justify-content: flex-start;
-}
-
-.top-bar-left {
-  justify-content: flex-end;
-}
+.top-bar-right { justify-content: flex-start; }
+.top-bar-left { justify-content: flex-end; }
 
 .top-logo {
   width: 32px;
@@ -340,7 +331,6 @@
   margin-bottom: var(--space-6);
 }
 
-/* پروفایل سریع */
 .quick-profile {
   display: flex;
   align-items: center;
@@ -364,6 +354,14 @@
   border: 2px solid var(--accent);
   box-shadow: 0 0 20px var(--accent-glow);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.quick-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .quick-info {
@@ -521,7 +519,6 @@
   transition: width var(--t-slow) var(--ease-out);
 }
 
-/* گرید آمار */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -529,7 +526,6 @@
   margin-bottom: var(--space-5);
 }
 
-/* تاریخچه */
 .history-list {
   display: flex;
   flex-direction: column;
@@ -599,7 +595,6 @@
   margin: 0 auto;
 }
 
-/* پیکر تم */
 .theme-color-picker {
   display: flex;
   gap: var(--space-3);
@@ -608,7 +603,6 @@
   padding: var(--space-2) 0;
 }
 
-/* دکمه‌های خطرناک */
 .danger-zone {
   display: flex;
   flex-direction: column;
@@ -677,7 +671,6 @@
   line-height: 1.7;
 }
 
-/* جدول شورتکات */
 .shortcuts-table {
   display: flex;
   flex-direction: column;
@@ -716,7 +709,7 @@ kbd {
 }
 
 /* ═══════════════════════════════════════════
-   ۷. صفحه بازی (Table)
+   ۷. صفحه بازی (Table) — 🎴 اصلاح کارت‌های میز
    ═══════════════════════════════════════════ */
 .screen[data-screen="game"] {
   padding: 0;
@@ -808,7 +801,7 @@ kbd {
   font-weight: 600;
 }
 
-/* ─── میز بازی ─── */
+/* ─── میز بازی (Grid) ─── */
 .table-area {
   flex: 1;
   position: relative;
@@ -834,7 +827,7 @@ kbd {
 .seat-right  { grid-area: right; justify-self: end; align-self: center; }
 .seat-bottom { grid-area: bottom; justify-self: center; align-self: end; }
 
-/* کارت‌های بازی‌شده */
+/* کارت‌های بازی‌شده — موقعیت نسبی */
 .played-card-slot {
   position: absolute;
   pointer-events: none;
@@ -842,13 +835,13 @@ kbd {
 }
 
 .seat-top .played-card-slot {
-  bottom: -60px;
+  bottom: -80px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .seat-bottom .played-card-slot {
-  top: -60px;
+  top: -80px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -857,43 +850,95 @@ kbd {
   top: 50%;
   left: 100%;
   transform: translateY(-50%);
-  margin-left: 8px;
+  margin-left: 12px;
 }
 
 .seat-right .played-card-slot {
   top: 50%;
   right: 100%;
   transform: translateY(-50%);
-  margin-right: 8px;
+  margin-right: 12px;
 }
 
-/* کارت وسط میز */
+/* ═══════════════════════════════════════════
+   🎴 مرکز میز — کارت‌ها کنار بازیکن هرکس
+   ═══════════════════════════════════════════ */
 .trick-center {
   grid-area: center;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 180px;
 }
 
+/* کارت‌های وسط — موقعیت بر اساس بازیکن */
 .trick-center .card-face {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 68px;
   height: 96px;
   font-size: 14px;
-  animation: cardPlayIn 0.45s var(--ease-bounce);
+  z-index: 2;
+  pointer-events: none;
+  animation: cardPlayIn 0.45s var(--ease-bounce) both;
+  transition: box-shadow 0.3s ease;
 }
 
-.trick-center .card-face:nth-child(1) { transform: translate(-34px, -46px) rotate(-8deg); }
-.trick-center .card-face:nth-child(2) { transform: translate(34px, -46px) rotate(8deg); }
-.trick-center .card-face:nth-child(3) { transform: translate(-34px, 46px) rotate(5deg); }
-.trick-center .card-face:nth-child(4) { transform: translate(34px, 46px) rotate(-5deg); }
+/* خودت (پایین) — کارت پایین مرکز */
+.trick-center .card-face[data-pos="bottom"] {
+  transform: translate(-50%, calc(-50% + 58px)) rotate(-2deg);
+}
 
+/* هم‌تیمی/بازیکن چپ — کارت چپ مرکز */
+.trick-center .card-face[data-pos="left"] {
+  transform: translate(calc(-50% - 78px), -50%) rotate(-6deg);
+}
+
+/* حریف بالا — کارت بالای مرکز */
+.trick-center .card-face[data-pos="top"] {
+  transform: translate(-50%, calc(-50% - 58px)) rotate(2deg);
+}
+
+/* حریف راست — کارت راست مرکز */
+.trick-center .card-face[data-pos="right"] {
+  transform: translate(calc(-50% + 78px), -50%) rotate(6deg);
+}
+
+/* انیمیشن ورود کارت — از سمت بازیکن */
 @keyframes cardPlayIn {
-  from {
+  0% {
     opacity: 0;
-    transform: translate(var(--from-x, 0), var(--from-y, 100px)) scale(0.6) rotate(30deg);
+    transform: translate(-50%, -50%) scale(0.4) rotate(-30deg);
   }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    /* به موقعیت نهایی که در data-pos تعریف شده می‌رسه */
+  }
+}
+
+/* ═══ جهت ورود کارت بر اساس بازیکن (اختیاری) ═══ */
+.trick-center .card-face[data-pos="bottom"] {
+  --from-x: 0px;
+  --from-y: 200px;
+}
+
+.trick-center .card-face[data-pos="top"] {
+  --from-x: 0px;
+  --from-y: -200px;
+}
+
+.trick-center .card-face[data-pos="left"] {
+  --from-x: -250px;
+  --from-y: 0px;
+}
+
+.trick-center .card-face[data-pos="right"] {
+  --from-x: 250px;
+  --from-y: 0px;
 }
 
 /* ─── دست بازیکن (پایین) ─── */
@@ -1167,6 +1212,7 @@ kbd {
   border: 1.5px solid var(--border-color);
   border-radius: 50%;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .lb-info {
@@ -1686,7 +1732,7 @@ kbd {
 }
 
 /* ═══════════════════════════════════════════
-   ۱۶. Secret: کارت‌های مینی دستاورد در پروفایل
+   ۱۶. کارت‌های مینی دستاورد
    ═══════════════════════════════════════════ */
 .achievements-mini-grid {
   display: grid;
