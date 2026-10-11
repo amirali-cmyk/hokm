@@ -336,7 +336,6 @@
   position: relative;
 }
 
-/* دکمه‌های آیکون در ردیف پایین */
 #btnThemeToggle,
 #btnSoundToggle,
 #btnBackFromGame {
@@ -381,7 +380,6 @@
   transform: scale(0.92);
 }
 
-/* ─── گروه دکمه‌های سمت چپ ─── */
 .top-bar-left {
   display: flex;
   align-items: center;
@@ -389,7 +387,6 @@
   justify-content: flex-end;
 }
 
-/* ─── تنظیم صفحه بازی ─── */
 .screen[data-screen="game"] .game-container {
   height: calc(100vh - var(--topbar-h));
   height: calc(100dvh - var(--topbar-h));
@@ -849,7 +846,7 @@ kbd {
 }
 
 /* ═══════════════════════════════════════════
-   ۷. صفحه بازی (Table) — 🎴 کارت‌ها کنار بازیکن
+   ۷. صفحه بازی (Table)
    ═══════════════════════════════════════════ */
 .screen[data-screen="game"] {
   padding: 0;
@@ -961,13 +958,11 @@ kbd {
   gap: var(--space-2);
 }
 
-/* ─── صندلی بازیکن ─── */
 .seat-top    { grid-area: top; justify-self: center; align-self: start; }
 .seat-left   { grid-area: left; justify-self: start; align-self: center; }
 .seat-right  { grid-area: right; justify-self: end; align-self: center; }
 .seat-bottom { grid-area: bottom; justify-self: center; align-self: end; }
 
-/* کارت‌های بازی‌شده — موقعیت نسبی */
 .played-card-slot {
   position: absolute;
   pointer-events: none;
@@ -1012,7 +1007,6 @@ kbd {
   min-height: 180px;
 }
 
-/* کارت‌های وسط — موقعیت بر اساس بازیکن */
 .trick-center .card-face {
   position: absolute;
   top: 50%;
@@ -1026,27 +1020,22 @@ kbd {
   transition: box-shadow 0.3s ease;
 }
 
-/* خودت (پایین) — کارت پایین مرکز */
 .trick-center .card-face[data-pos="bottom"] {
   transform: translate(-50%, calc(-50% + 58px)) rotate(-2deg);
 }
 
-/* هم‌تیمی/بازیکن چپ — کارت چپ مرکز */
 .trick-center .card-face[data-pos="left"] {
   transform: translate(calc(-50% - 78px), -50%) rotate(-6deg);
 }
 
-/* حریف بالا — کارت بالای مرکز */
 .trick-center .card-face[data-pos="top"] {
   transform: translate(-50%, calc(-50% - 58px)) rotate(2deg);
 }
 
-/* حریف راست — کارت راست مرکز */
 .trick-center .card-face[data-pos="right"] {
   transform: translate(calc(-50% + 78px), -50%) rotate(6deg);
 }
 
-/* انیمیشن ورود کارت */
 @keyframes cardPlayIn {
   0% {
     opacity: 0;
@@ -1060,7 +1049,9 @@ kbd {
   }
 }
 
-/* ─── دست بازیکن (پایین) ─── */
+/* ═══════════════════════════════════════════
+   🎴 دست بازیکن (پایین) — فاصله جدید
+   ═══════════════════════════════════════════ */
 .player-hand-wrapper {
   padding: var(--space-3) var(--space-2) var(--space-2);
   background: linear-gradient(0deg, rgba(13, 27, 42, 0.9) 0%, transparent 100%);
@@ -1072,16 +1063,17 @@ kbd {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: -20px;
   min-height: 108px;
   position: relative;
   padding: 0 var(--space-4);
 }
 
+/* 🎯 فاصله جدید کارت‌ها — کمتر روی هم */
 .player-hand .card-face {
-  margin: 0 -12px;
+  margin: 0 -6px;
   transition: all var(--t-normal) var(--ease-bounce);
   transform-origin: bottom center;
+  flex-shrink: 0;
 }
 
 .player-hand .card-face:nth-child(odd)  { transform: rotate(-2deg) translateY(2px); }
@@ -1102,6 +1094,27 @@ kbd {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
               0 0 30px var(--accent-glow),
               0 0 0 2px var(--accent);
+}
+
+/* 📱 موبایل متوسط: فاصله کمتر */
+@media (max-width: 600px) {
+  .player-hand .card-face {
+    margin: 0 -8px;
+  }
+}
+
+/* 📱 موبایل کوچک: فشرده‌تر */
+@media (max-width: 380px) {
+  .player-hand .card-face {
+    margin: 0 -10px;
+  }
+}
+
+/* 💻 دسکتاپ: فاصله بیشتر */
+@media (min-width: 1024px) {
+  .player-hand .card-face {
+    margin: 0 -3px;
+  }
 }
 
 /* ─── نوار اقدامات ─── */
@@ -1251,6 +1264,50 @@ kbd {
 
 .suit-spades, .suit-clubs     { color: var(--text-primary); }
 .suit-hearts, .suit-diamonds  { color: var(--color-danger); }
+
+/* ─── تاج حکم‌خوان ─── */
+.player-seat.hokm-caller {
+  position: relative;
+}
+
+.player-seat.hokm-caller .seat-avatar {
+  border-color: #ffd60a !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 214, 10, 0.3),
+    0 0 25px rgba(255, 214, 10, 0.6) !important;
+  animation: crownPulse 1.5s ease-in-out infinite;
+}
+
+.player-seat.hokm-caller::after {
+  content: '👑';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  animation: crownFloat 2s ease-in-out infinite;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.9));
+  z-index: 10;
+}
+
+@keyframes crownPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px rgba(255, 214, 10, 0.3),
+      0 0 25px rgba(255, 214, 10, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(255, 214, 10, 0.1),
+      0 0 40px rgba(255, 214, 10, 0.9);
+  }
+}
+
+@keyframes crownFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-6px); }
+}
 
 /* ═══════════════════════════════════════════
    ۸. صفحه لیدربورد
