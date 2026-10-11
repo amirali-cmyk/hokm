@@ -27,8 +27,7 @@
   <link rel="stylesheet" href="css/responsive.css" />
 
   <!-- ═══════════════════════════════════════════
-       🎨 Top Bar دو-ردیفی — استایل درون‌خطی
-       (بدون نیاز به تغییر screens.css)
+       🎨 Top Bar دو-ردیفی + اصلاحات کارت
        ═══════════════════════════════════════════ -->
   <style>
     /* ─── متغیر ارتفاع ─── */
@@ -63,7 +62,6 @@
       height: auto !important;
     }
 
-    /* ─── ردیف بالا ─── */
     .top-bar-row-top {
       display: flex;
       align-items: center;
@@ -80,7 +78,6 @@
       flex: 0 0 auto !important;
     }
 
-    /* ─── تب‌ها ─── */
     .top-bar-row-top .tabs {
       flex: 0 1 auto !important;
       display: flex !important;
@@ -91,7 +88,6 @@
       margin: 0 auto !important;
     }
 
-    /* ─── ردیف پایین ─── */
     .top-bar-row-bottom {
       display: flex;
       align-items: center;
@@ -108,7 +104,6 @@
       flex: 0 0 auto !important;
     }
 
-    /* ─── دکمه‌ها ─── */
     #btnThemeToggle,
     #btnSoundToggle,
     #btnBackFromGame {
@@ -149,18 +144,83 @@
       transform: scale(1.1) !important;
     }
 
-    /* ─── تنظیم فاصله اپ از بالا ─── */
     .app {
       padding-top: var(--topbar-h) !important;
     }
 
-    /* ─── تنظیم صفحه بازی ─── */
     .screen[data-screen="game"] .game-container {
       height: calc(100vh - var(--topbar-h)) !important;
       height: calc(100dvh - var(--topbar-h)) !important;
     }
 
-    /* ─── واکنش‌گرا ─── */
+    /* ═══ 🎴 اصلاح کارت‌های دست — بازتر ═══ */
+    .player-hand .card-face {
+      margin: 0 -6px !important;
+    }
+
+    @media (max-width: 600px) {
+      .player-hand .card-face {
+        margin: 0 -8px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .player-hand .card-face {
+        margin: 0 -10px !important;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .player-hand .card-face {
+        margin: 0 -4px !important;
+      }
+    }
+
+    /* ═══ 👑 تاج حکم‌خوان ═══ */
+    .player-seat.hokm-caller {
+      position: relative;
+    }
+
+    .player-seat.hokm-caller .seat-avatar {
+      border-color: #ffd60a !important;
+      box-shadow:
+        0 0 0 4px rgba(255, 214, 10, 0.3),
+        0 0 25px rgba(255, 214, 10, 0.6) !important;
+      animation: crownPulse 1.5s ease-in-out infinite !important;
+    }
+
+    .player-seat.hokm-caller::after {
+      content: '👑';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      animation: crownFloat 2s ease-in-out infinite;
+      pointer-events: none;
+      filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.9));
+      z-index: 10;
+    }
+
+    @keyframes crownPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 0 4px rgba(255, 214, 10, 0.3),
+          0 0 25px rgba(255, 214, 10, 0.6);
+      }
+      50% {
+        box-shadow:
+          0 0 0 8px rgba(255, 214, 10, 0.1),
+          0 0 40px rgba(255, 214, 10, 0.9);
+      }
+    }
+
+    @keyframes crownFloat {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(-6px); }
+    }
+
+    /* ═══ موبایل: Top Bar فشرده‌تر ═══ */
     @media (max-width: 600px) {
       .top-bar {
         padding: 4px 8px 6px !important;
@@ -267,10 +327,8 @@
 
       <!-- ─── ردیف پایین: دکمه شب/روز + دکمه صدا ─── -->
       <div class="top-bar-row-bottom">
-        <!-- سمت راست: شب/روز (زیر بازی) -->
         <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">🌙</button>
 
-        <!-- سمت چپ: صدا (زیر راهنما) + بازگشت -->
         <div class="top-bar-left">
           <button class="icon-btn hidden" id="btnBackFromGame" aria-label="بازگشت به منو" title="منو" type="button">↩</button>
           <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">🔊</button>
@@ -438,11 +496,11 @@
             </div>
           </div>
 
+          <!-- 🎯 تعداد بازیکنان — ۳ نفره حذف شد -->
           <div class="setting-group">
             <label class="setting-label">👥 تعداد بازیکنان</label>
             <div class="segmented" id="playerCountSegmented">
               <button data-count="2" type="button">۲ نفره</button>
-              <button data-count="3" type="button">۳ نفره</button>
               <button data-count="4" class="active" type="button">۴ نفره</button>
             </div>
           </div>
@@ -559,7 +617,7 @@
             <div class="player-seat seat-top" id="seatTop">
               <div class="seat-avatar" id="avatarTop">🤖</div>
               <div class="seat-info">
-                <span class="seat-name" id="nameTop">حریف</span>
+                <span class="seat-name" id="nameTop">هم‌تیمی</span>
                 <span class="seat-cards" id="cardsTop">۱۳</span>
               </div>
               <div class="played-card-slot" id="playedTop"></div>
@@ -568,7 +626,7 @@
             <div class="player-seat seat-left" id="seatLeft">
               <div class="seat-avatar" id="avatarLeft">🤖</div>
               <div class="seat-info">
-                <span class="seat-name" id="nameLeft">هم‌تیمی</span>
+                <span class="seat-name" id="nameLeft">P1</span>
                 <span class="seat-cards" id="cardsLeft">۱۳</span>
               </div>
               <div class="played-card-slot" id="playedLeft"></div>
@@ -577,7 +635,7 @@
             <div class="player-seat seat-right" id="seatRight">
               <div class="seat-avatar" id="avatarRight">🤖</div>
               <div class="seat-info">
-                <span class="seat-name" id="nameRight">حریف</span>
+                <span class="seat-name" id="nameRight">P2</span>
                 <span class="seat-cards" id="cardsRight">۱۳</span>
               </div>
               <div class="played-card-slot" id="playedRight"></div>
@@ -923,9 +981,7 @@
     (function () {
       'use strict';
 
-      var debugLog = [];
       var logEl = null;
-      var logActive = false;
 
       function createLogBox() {
         if (logEl) return;
@@ -954,7 +1010,6 @@
 
         document.body.appendChild(logEl);
 
-        // دکمه toggle
         var toggleBtn = document.createElement('button');
         toggleBtn.id = 'gameDebugToggle';
         toggleBtn.textContent = '🐛';
@@ -1008,7 +1063,11 @@
 
         HokmGame.on('game:start', function () {
           log('▶ GAME START', '#ffd60a');
-          logEl.innerHTML = '';
+          if (logEl) logEl.innerHTML = '';
+        });
+
+        HokmGame.on('hokm:selecting', function (data) {
+          log('👑 حکم‌خوان: ' + data.player.name + ' (صندلی ' + data.callerIdx + ')', '#ffd60a');
         });
 
         HokmGame.on('hokm:set', function (data) {
