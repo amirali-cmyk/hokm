@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0d1b2a" id="metaThemeColor" />
-  <meta name="description" content="بازی حکم ایرانی حرفه‌ای — آفلاین با هوش مصنوعی، آنلاین، تورنمنت و لیدربورد" />
+  <meta name="description" content="بازی حکم ایرانی حرفه‌ای" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="حکم" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>حکم حرفه‌ای — Hokm Pro</title>
 
@@ -31,7 +29,7 @@
 <body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
   <!-- ═══════════════════════════════════════════
-       صفحه Splash (لودینگ)
+       Splash Screen
        ═══════════════════════════════════════════ -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
@@ -54,39 +52,39 @@
        ═══════════════════════════════════════════ -->
   <div id="app" class="app hidden">
 
-    <!-- ───── Top Bar ───── -->
+    <!-- Top Bar -->
     <header class="top-bar" id="topBar">
       <div class="top-bar-right">
         <img src="assets/logo.svg" alt="" class="top-logo" />
         <span class="top-title">حُکم</span>
       </div>
 
-      <nav class="tabs" role="tablist" aria-label="ناوبری اصلی">
-        <button class="tab active" data-tab="game" role="tab" aria-selected="true" type="button">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="game" type="button">
           <span class="tab-icon">🎮</span><span class="tab-label">بازی</span>
         </button>
-        <button class="tab" data-tab="profile" role="tab" type="button">
+        <button class="tab" data-tab="profile" type="button">
           <span class="tab-icon">👤</span><span class="tab-label">پروفایل</span>
         </button>
-        <button class="tab" data-tab="settings" role="tab" type="button">
+        <button class="tab" data-tab="settings" type="button">
           <span class="tab-icon">⚙️</span><span class="tab-label">تنظیمات</span>
         </button>
-        <button class="tab" data-tab="help" role="tab" type="button">
+        <button class="tab" data-tab="help" type="button">
           <span class="tab-icon">📖</span><span class="tab-label">راهنما</span>
         </button>
       </nav>
 
       <div class="top-bar-left">
-        <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">🌙</button>
-        <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">🔊</button>
-        <button class="icon-btn hidden" id="btnBackFromGame" aria-label="بازگشت به منو" title="منو" type="button">↩</button>
+        <button class="icon-btn" id="btnThemeToggle" title="شب/روز" type="button">🌙</button>
+        <button class="icon-btn" id="btnSoundToggle" title="صدا" type="button">🔊</button>
+        <button class="icon-btn hidden" id="btnBackFromGame" title="منو" type="button">↩</button>
       </div>
     </header>
 
-    <!-- ───── محتوای اصلی ───── -->
+    <!-- محتوای اصلی -->
     <main class="main-content" id="mainContent">
 
-      <!-- ═══════ تب: بازی (منو) ═══════ -->
+      <!-- ═══════ منو ═══════ -->
       <section class="screen active" id="screen-menu" data-screen="menu">
         <div class="menu-container">
 
@@ -143,7 +141,7 @@
         </div>
       </section>
 
-      <!-- ═══════ تب: پروفایل ═══════ -->
+      <!-- ═══════ پروفایل ═══════ -->
       <section class="screen" id="screen-profile" data-screen="profile">
         <div class="profile-container">
           <div class="profile-header-card">
@@ -194,7 +192,7 @@
         </div>
       </section>
 
-      <!-- ═══════ تب: تنظیمات ═══════ -->
+      <!-- ═══════ تنظیمات ═══════ -->
       <section class="screen" id="screen-settings" data-screen="settings">
         <div class="settings-container">
           <h2 class="screen-title">⚙️ تنظیمات</h2>
@@ -293,7 +291,7 @@
         </div>
       </section>
 
-      <!-- ═══════ تب: راهنما ═══════ -->
+      <!-- ═══════ راهنما ═══════ -->
       <section class="screen" id="screen-help" data-screen="help">
         <div class="help-container">
           <h2 class="screen-title">📖 راهنمای بازی حکم</h2>
@@ -331,13 +329,11 @@
             <div class="shortcut-row"><kbd>Alt+P</kbd><span>پروفایل</span></div>
             <div class="shortcut-row"><kbd>Alt+S</kbd><span>تنظیمات</span></div>
             <div class="shortcut-row"><kbd>Alt+H</kbd><span>راهنما</span></div>
-            <div class="shortcut-row"><kbd>Alt+T</kbd><span>تغییر تم</span></div>
-            <div class="shortcut-row"><kbd>Enter</kbd><span>ارسال چت</span></div>
           </div>
         </div>
       </section>
 
-      <!-- ═══════ تب: بازی فعال ═══════ -->
+      <!-- ═══════ صفحه بازی ═══════ -->
       <section class="screen" id="screen-game" data-screen="game">
         <div class="game-container" id="gameContainer">
 
@@ -368,7 +364,6 @@
                 <span class="seat-name" id="nameTop">حریف</span>
                 <span class="seat-cards" id="cardsTop">۱۳</span>
               </div>
-              <div class="seat-timer" id="timerTop"></div>
               <div class="played-card-slot" id="playedTop"></div>
             </div>
 
@@ -378,7 +373,6 @@
                 <span class="seat-name" id="nameLeft">هم‌تیمی</span>
                 <span class="seat-cards" id="cardsLeft">۱۳</span>
               </div>
-              <div class="seat-timer" id="timerLeft"></div>
               <div class="played-card-slot" id="playedLeft"></div>
             </div>
 
@@ -388,7 +382,6 @@
                 <span class="seat-name" id="nameRight">حریف</span>
                 <span class="seat-cards" id="cardsRight">۱۳</span>
               </div>
-              <div class="seat-timer" id="timerRight"></div>
               <div class="played-card-slot" id="playedRight"></div>
             </div>
 
@@ -396,7 +389,6 @@
 
             <div class="player-seat seat-bottom" id="seatBottom">
               <div class="played-card-slot" id="playedBottom"></div>
-              <div class="seat-timer" id="timerBottom"></div>
             </div>
           </div>
 
@@ -426,7 +418,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه لیدربورد ═══════ -->
+      <!-- ═══════ لیدربورد ═══════ -->
       <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
         <div class="leaderboard-container">
           <h2 class="screen-title">🏆 جدول امتیازات</h2>
@@ -439,7 +431,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه دستاوردها ═══════ -->
+      <!-- ═══════ دستاوردها ═══════ -->
       <section class="screen" id="screen-achievements" data-screen="achievements">
         <div class="achievements-container">
           <h2 class="screen-title">🎖️ دستاوردها</h2>
@@ -449,7 +441,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه دوستان ═══════ -->
+      <!-- ═══════ دوستان ═══════ -->
       <section class="screen" id="screen-friends" data-screen="friends">
         <div class="friends-container">
           <h2 class="screen-title">👥 دوستان</h2>
@@ -463,7 +455,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه تورنمنت ═══════ -->
+      <!-- ═══════ تورنمنت ═══════ -->
       <section class="screen" id="screen-tournament" data-screen="tournament">
         <div class="tournament-container">
           <h2 class="screen-title">🏆 تورنمنت هفتگی</h2>
@@ -483,7 +475,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه ری‌پلی ═══════ -->
+      <!-- ═══════ ری‌پلی ═══════ -->
       <section class="screen" id="screen-replay" data-screen="replay">
         <div class="replay-container">
           <h2 class="screen-title">📼 پخش مجدد</h2>
@@ -493,7 +485,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه آنلاین ═══════ -->
+      <!-- ═══════ آنلاین ═══════ -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
           <h2 class="screen-title">🌐 بازی آنلاین</h2>
@@ -507,7 +499,7 @@
         </div>
       </section>
 
-      <!-- ═══════ صفحه ورود/ثبت‌نام ═══════ -->
+      <!-- ═══════ ورود/ثبت‌نام ═══════ -->
       <section class="screen" id="screen-auth" data-screen="auth">
         <div class="auth-container">
           <h2 class="screen-title">🔐 حساب کاربری</h2>
@@ -526,32 +518,25 @@
       </section>
     </main>
 
-    <!-- ───── Bottom Nav (موبایل) ───── -->
-    <nav class="bottom-nav" id="bottomNav" aria-label="ناوبری موبایل"></nav>
+    <nav class="bottom-nav" id="bottomNav"></nav>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       مودال عمومی
-       ═══════════════════════════════════════════ -->
+  <!-- مودال -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="modalBox">
-      <button class="modal-close" id="modalClose" aria-label="بستن" type="button">×</button>
+      <button class="modal-close" id="modalClose" type="button">×</button>
       <div class="modal-content" id="modalContent"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       Toast Container
-       ═══════════════════════════════════════════ -->
+  <!-- Toast -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ═══════════════════════════════════════════
-       لایه ذرات (برای برد)
-       ═══════════════════════════════════════════ -->
+  <!-- Particle Canvas -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
   <!-- ═══════════════════════════════════════════
-       📜 اسکریپت‌ها — به ترتیب لود
+       📜 اسکریپت‌ها — به ترتیب
        ═══════════════════════════════════════════ -->
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
@@ -566,6 +551,7 @@
   <script src="js/ai.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 
   <!-- ═══════════════════════════════════════════
@@ -575,7 +561,6 @@
     (function () {
       'use strict';
 
-      var bootTime = Date.now();
       var killed = false;
 
       function killSplash(reason) {
@@ -591,20 +576,15 @@
           splash.classList.add('hidden');
           splash.style.display = 'none';
         }
-        if (app) {
-          app.classList.remove('hidden');
-        }
+        if (app) app.classList.remove('hidden');
 
         try {
           if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
             window.HokmUI.navigate('menu', { force: true });
             return;
           }
-        } catch (e) {
-          console.warn('HokmUI failed:', e);
-        }
+        } catch (e) { }
 
-        // Fallback: نمایش دستی منو
         var screens = document.querySelectorAll('.screen');
         for (var i = 0; i < screens.length; i++) {
           screens[i].classList.remove('active');
@@ -613,7 +593,7 @@
         if (menu) menu.classList.add('active');
       }
 
-      // ۱. اسپلش خودکار بعد ۳.۵ ثانیه
+      // ۱. بعد ۳.۵ ثانیه
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
         if (splash && !splash.classList.contains('hidden')) {
@@ -621,7 +601,7 @@
         }
       }, 3500);
 
-      // ۲. تلاش دوم بعد ۶ ثانیه
+      // ۲. تلاش دوم ۶ ثانیه
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
         if (splash && !splash.classList.contains('hidden')) {
@@ -629,7 +609,7 @@
         }
       }, 6000);
 
-      // ۳. دکمه Skip Splash
+      // ۳. Skip
       setTimeout(function () {
         var skipBtn = document.getElementById('btnSkipSplash');
         if (skipBtn && !skipBtn.dataset.killerBound) {
@@ -642,7 +622,7 @@
         }
       }, 100);
 
-      // ۴. دکمه شروع بازی
+      // ۴. شروع بازی
       setTimeout(function () {
         var startBtn = document.getElementById('btnStartGame');
         if (startBtn && !startBtn.dataset.killerBound) {
@@ -672,32 +652,21 @@
           (function (tab) {
             if (tab.dataset.killerBound) return;
             tab.dataset.killerBound = '1';
-
             tab.addEventListener('click', function () {
               var name = tab.dataset.tab;
               try {
                 if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
-                  if (name === 'game') {
-                    window.HokmUI.navigate('menu');
-                  } else {
-                    window.HokmUI.navigate(name);
-                  }
+                  window.HokmUI.navigate(name === 'game' ? 'menu' : name);
                   return;
                 }
               } catch (e) { }
-
               var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) {
-                screens[j].classList.remove('active');
-              }
+              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
               var sid = 'screen-' + (name === 'game' ? 'menu' : name);
               var screen = document.getElementById(sid);
               if (screen) screen.classList.add('active');
-
               var allTabs = document.querySelectorAll('.tab');
-              for (var k = 0; k < allTabs.length; k++) {
-                allTabs[k].classList.remove('active');
-              }
+              for (var k = 0; k < allTabs.length; k++) allTabs[k].classList.remove('active');
               tab.classList.add('active');
             });
           })(tabs[i]);
@@ -711,7 +680,6 @@
           (function (card) {
             if (card.dataset.killerBound) return;
             card.dataset.killerBound = '1';
-
             card.addEventListener('click', function () {
               var action = card.dataset.action;
               try {
@@ -720,11 +688,8 @@
                   return;
                 }
               } catch (e) { }
-
               var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) {
-                screens[j].classList.remove('active');
-              }
+              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
               var screen = document.getElementById('screen-' + action);
               if (screen) screen.classList.add('active');
             });
@@ -732,13 +697,13 @@
         }
       }, 100);
 
-      // ۷. گزارش ماژول‌ها در Console
+      // ۷. گزارش ماژول‌ها
       setTimeout(function () {
         var modules = [
           'HokmStorage', 'HokmThemes', 'HokmAudio', 'HokmProfile',
           'HokmAchievements', 'HokmLeaderboard', 'HokmFriends',
           'HokmTournament', 'HokmReplay', 'HokmShare', 'HokmAI',
-          'HokmGame', 'HokmUI', 'HokmApp'
+          'HokmGame', 'HokmUI', 'HokmSettings', 'HokmApp'
         ];
         var ok = 0, missing = [];
         for (var i = 0; i < modules.length; i++) {
@@ -749,6 +714,134 @@
           'color: ' + (missing.length === 0 ? '#06d6a0' : '#ef476f') + '; font-weight: bold;');
         if (missing.length > 0) console.warn('Missing:', missing);
       }, 500);
+
+    })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════
+       🎴 DEBUG: نمایش زنده کارت‌های بازی‌شده
+       ═══════════════════════════════════════════ -->
+  <script>
+    (function () {
+      'use strict';
+
+      var debugLog = [];
+      var logEl = null;
+
+      function createLogBox() {
+        if (logEl) return;
+
+        logEl = document.createElement('div');
+        logEl.id = 'gameDebugLog';
+        logEl.style.cssText = [
+          'position:fixed',
+          'bottom:0', 'left:0', 'right:0',
+          'background:rgba(0,0,0,0.92)',
+          'color:#0f0',
+          'font-family:Menlo,Consolas,monospace',
+          'font-size:10px',
+          'padding:8px',
+          'z-index:99998',
+          'max-height:120px',
+          'overflow:auto',
+          'direction:ltr',
+          'text-align:left',
+          'line-height:1.4',
+          'display:none'
+        ].join(';');
+
+        document.body.appendChild(logEl);
+
+        // دکمه toggle
+        var toggleBtn = document.createElement('button');
+        toggleBtn.id = 'gameDebugToggle';
+        toggleBtn.textContent = '🐛';
+        toggleBtn.style.cssText = [
+          'position:fixed',
+          'bottom:8px',
+          'left:8px',
+          'width:36px',
+          'height:36px',
+          'border-radius:50%',
+          'background:#ffd60a',
+          'color:#000',
+          'border:0',
+          'font-size:18px',
+          'cursor:pointer',
+          'z-index:99999',
+          'box-shadow:0 4px 12px rgba(0,0,0,0.5)'
+        ].join(';');
+
+        toggleBtn.addEventListener('click', function () {
+          if (logEl.style.display === 'none') {
+            logEl.style.display = 'block';
+            toggleBtn.textContent = '✕';
+          } else {
+            logEl.style.display = 'none';
+            toggleBtn.textContent = '🐛';
+          }
+        });
+
+        document.body.appendChild(toggleBtn);
+      }
+
+      function log(msg) {
+        createLogBox();
+        var line = document.createElement('div');
+        line.textContent = msg;
+        logEl.appendChild(line);
+        logEl.scrollTop = logEl.scrollHeight;
+
+        // محدودیت ۳۰ خط
+        while (logEl.children.length > 30) {
+          logEl.removeChild(logEl.firstChild);
+        }
+      }
+
+      // اتصال به رویدادها
+      setTimeout(function () {
+        if (!window.HokmGame) return;
+
+        HokmGame.on('game:start', function () {
+          log('▶ GAME START');
+        });
+
+        HokmGame.on('hokm:set', function (data) {
+          log('👑 HOKM: ' + data.suit);
+        });
+
+        HokmGame.on('turn:start', function (data) {
+          log('⏱️ Turn: Player ' + data.playerIdx);
+        });
+
+        HokmGame.on('card:played', function (data) {
+          var suit = data.card.suit;
+          var rank = data.card.rank;
+          log('🎴 Player ' + data.playerIdx + ' → ' + suit + ' ' + rank +
+              ' | trick: ' + data.trick.length + '/' + 4);
+        });
+
+        HokmGame.on('card:invalid', function (data) {
+          log('❌ INVALID! Player ' + data.playerIdx + ' tried ' +
+              data.card.suit + ' ' + data.card.rank +
+              ' | lead: ' + data.leadSuit);
+        });
+
+        HokmGame.on('trick:completed', function (data) {
+          log('🏆 Trick won by Player ' + data.winner);
+        });
+
+        HokmGame.on('score:changed', function (data) {
+          log('📊 Score: A=' + data.scores.A + ' B=' + data.scores.B);
+        });
+
+        HokmGame.on('game:ended', function (data) {
+          log('🏁 GAME END — ' + (data.win ? 'WIN' : 'LOSE') +
+              ' | ' + data.myScore + '-' + data.opponentScore);
+        });
+
+        console.log('%c🐛 Game debug logger ready', 'color: #ffd60a; font-weight: bold;');
+      }, 2000);
 
     })();
   </script>
