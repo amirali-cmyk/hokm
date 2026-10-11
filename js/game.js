@@ -18,21 +18,22 @@
 
   const SUIT_LIST = ['spades', 'hearts', 'diamonds', 'clubs'];
   const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
+  const SUIT_NAMES_FA = { spades: 'پیک', hearts: 'دل', diamonds: 'خشت', clubs: 'گشنیز' };
 
   const RANKS = {
-    2:  { id: 2,  symbol: '2',  order: 2 },
-    3:  { id: 3,  symbol: '3',  order: 3 },
-    4:  { id: 4,  symbol: '4',  order: 4 },
-    5:  { id: 5,  symbol: '5',  order: 5 },
-    6:  { id: 6,  symbol: '6',  order: 6 },
-    7:  { id: 7,  symbol: '7',  order: 7 },
-    8:  { id: 8,  symbol: '8',  order: 8 },
-    9:  { id: 9,  symbol: '9',  order: 9 },
-    10: { id: 10, symbol: '10', order: 10 },
-    11: { id: 11, symbol: 'J',  order: 11 },
-    12: { id: 12, symbol: 'Q',  order: 12 },
-    13: { id: 13, symbol: 'K',  order: 13 },
-    14: { id: 14, symbol: 'A',  order: 14 }
+    2:  { id: 2,  symbol: '2' },
+    3:  { id: 3,  symbol: '3' },
+    4:  { id: 4,  symbol: '4' },
+    5:  { id: 5,  symbol: '5' },
+    6:  { id: 6,  symbol: '6' },
+    7:  { id: 7,  symbol: '7' },
+    8:  { id: 8,  symbol: '8' },
+    9:  { id: 9,  symbol: '9' },
+    10: { id: 10, symbol: '10' },
+    11: { id: 11, symbol: 'J' },
+    12: { id: 12, symbol: 'Q' },
+    13: { id: 13, symbol: 'K' },
+    14: { id: 14, symbol: 'A' }
   };
 
   const PHASES = {
@@ -59,31 +60,29 @@
   const state = {
     phase: PHASES.IDLE,
     playerCount: 4,
-    players: [],              // [{id, name, avatar, hand, isAI, aiLevel, team}]
+    players: [],
     deck: [],
-    hokm: null,               // suit id
-    hokmCaller: null,         // index بازیکنی که حکم خواند
-    currentPlayer: 0,         // index
-    leader: 0,                // شروع‌کننده دور
-    trick: [],                // [{playerIdx, card}]
+    hokm: null,
+    hokmCaller: null,
+    currentPlayer: 0,
+    leader: 0,
+    trick: [],
     trickWinner: null,
     trickCount: 0,
     scores: { A: 0, B: 0 },
-    rounds: [],               // [{winner, cards}]
+    rounds: [],
     timer: null,
     timerRemaining: 0,
     timerSpeed: 'normal',
-    passCount: 0,
-    isWaitingForPass: false,
     gameStartTime: 0,
     listeners: [],
     aiThinking: false,
     isPaused: false,
-    savedState: null
+    turnCount: 0
   };
 
   /* ─────────────────────────────────────────────
-     ابزارها
+     کمکی‌ها
      ───────────────────────────────────────────── */
   function _storage() { return global.HokmStorage; }
   function _profile() { return global.HokmProfile; }
@@ -134,9 +133,6 @@
      تیم‌بندی
      ───────────────────────────────────────────── */
   function _assignTeams(count) {
-    // ۴ نفره: صندلی ۰ و ۲ → تیم A، صندلی ۱ و ۳ → تیم B
-    // ۳ نفره: بازیکنان ۰ و ۲ هم‌تیمی، ۱ تیم مقابل
-    // ۲ نفره: نفر به نفر
     const teams = [];
     for (let i = 0; i < count; i++) {
       if (count === 4) teams.push(i % 2 === 0 ? 'A' : 'B');
@@ -195,27 +191,24 @@
   function _dealCards() {
     const deck = _shuffle(_createDeck());
     const count = state.playerCount;
-    const handSize = Math.floor(52 / count); // 13 | 17 | 26
 
-    // در ۴ نفره: ۱۳ کارت هر نفر
-    // در ۳ نفره: ۱۷ کارت هر نفر (۵۱ از ۵۲)
-    // در ۲ نفره: ۲۶ کارت هر نفر (۵۲ دقیق)
+    let handSize;
+    if (count === 2) handSize = 26;
+    else if (count === 3) handSize = 17;
+    else handSize = 13;
 
     let idx = 0;
     for (let i = 0; i < count; i++) {
       state.players[i].hand = [];
     }
 
-    // توزیع یکی یکی (مثل واقعیت)
     for (let round = 0; round < handSize; round++) {
       for (let p = 0; p < count; p++) {
         state.players[p].hand.push(deck[idx++]);
       }
     }
 
-    // مرتب‌سازی دست خودت
     _sortHand(state.players[0]);
-
     state.deck = deck.slice(idx);
     return state.players.map(p => p.hand);
   }
@@ -237,24 +230,21 @@
   }
 
   function _calculateSuitStrength(hand, suit) {
-    // قدرت یک خال در دست = تعداد + آس‌ها + پادشاه‌ها
     let strength = 0;
     hand.forEach(card => {
       if (card.suit === suit) {
         strength += card.rank;
-        if (card.rank === 14) strength += 5; // A
-        if (card.rank === 13) strength += 2; // K
+        if (card.rank === 14) strength += 5;
+        if (card.rank === 13) strength += 2;
       }
     });
     return strength;
   }
 
   async function _autoSelectHokm(callerIdx) {
-    // AI یا بازیکن، بهترین خال را انتخاب می‌کند
     const player = state.players[callerIdx];
 
     if (player.isAI) {
-      // کمی فکر کن
       await _delay(800);
 
       const strengths = SUIT_LIST.map(suit => ({
@@ -277,11 +267,10 @@
     _emit('hokm:set', { suit, callerIdx, player: state.players[callerIdx] });
 
     if (_audio()) _audio().play('claimHokm');
-    if (_ui() && _ui().showHokmDisplay) {
-      _ui().showHokmDisplay(suit);
+    if (_ui() && _ui().updateHokmDisplay) {
+      _ui().updateHokmDisplay(suit);
     }
 
-    // شروع بازی
     await _delay(1200);
     _startPlaying();
   }
@@ -295,9 +284,9 @@
     state.scores = { A: 0, B: 0 };
     state.rounds = [];
 
-    // شروع‌کننده: نفر بعد از حکم‌خوان
     state.leader = (state.hokmCaller + 1) % state.playerCount;
     state.currentPlayer = state.leader;
+    state.trick = [];
 
     _emit('phase:changed', { phase: PHASES.PLAYING });
     _emit('game:started', { hokm: state.hokm, leader: state.leader });
@@ -305,13 +294,103 @@
     _startTurn();
   }
 
+  /* ═══════════════════════════════════════════════════════════
+     🎯 قانون طلایی: پیروی از خال
+     ═══════════════════════════════════════════════════════════
+
+     این تابع قلب قانون بازیه و تضمین می‌کنه که هیچ بازیکنی
+     (خواه AI، خواه انسان) نتونه کارت غیرمجاز بازی کنه.
+     ═══════════════════════════════════════════════════════════ */
+
+  /**
+   * 🎯 کارت‌های مجاز برای بازی
+   *
+   * قانون:
+   *   ۱. اگر تو اولین نفر دور هستی → همه کارت‌ها مجاز
+   *   ۲. اگر پیروی می‌کنی:
+   *      الف) هم‌خال خالِ جاری داری → فقط هم‌خال‌ها مجاز
+   *      ب) هم‌خال نداری → همه کارت‌ها مجاز
+   */
+  function _getValidCards(playerIdx) {
+    const player = state.players[playerIdx];
+    if (!player || !player.hand || player.hand.length === 0) return [];
+
+    // حالت ۱: اولین نفر دور → همه کارت‌ها مجاز
+    if (state.trick.length === 0) {
+      return player.hand.slice();
+    }
+
+    // حالت ۲: پیرو
+    const leadSuit = state.trick[0].card.suit;
+
+    // کارت‌های هم‌خال
+    const sameSuit = player.hand.filter(c => c.suit === leadSuit);
+
+    if (sameSuit.length > 0) {
+      // 🔴 قانون سخت: فقط هم‌خال
+      return sameSuit;
+    }
+
+    // خال جاری نداره → همه مجاز
+    return player.hand.slice();
+  }
+
+  /**
+   * 🎯 بررسی اعتبار یک کارت خاص
+   */
+  function _isValidCard(playerIdx, card) {
+    if (!card) return false;
+    const valid = _getValidCards(playerIdx);
+    return valid.some(c => c.id === card.id);
+  }
+
+  /* ─────────────────────────────────────────────
+     برنده دور
+     ───────────────────────────────────────────── */
+  function _determineTrickWinner() {
+    if (state.trick.length === 0) return null;
+
+    const leadSuit = state.trick[0].card.suit;
+    const hokm = state.hokm;
+
+    let winner = state.trick[0];
+
+    for (let i = 1; i < state.trick.length; i++) {
+      const current = state.trick[i];
+      const wCard = winner.card;
+      const cCard = current.card;
+
+      const wIsHokm = wCard.suit === hokm;
+      const cIsHokm = cCard.suit === hokm;
+
+      // کارت حکم برنده می‌شه
+      if (cIsHokm && !wIsHokm) {
+        winner = current;
+        continue;
+      }
+
+      if (cIsHokm === wIsHokm) {
+        // اگر هر دو همون خال هستن → بالاترین رتبه
+        if (cCard.suit === wCard.suit) {
+          if (cCard.rank > wCard.rank) {
+            winner = current;
+          }
+        }
+        // اگر کارت جدید خال جاریه و برنده قبلی نه
+        else if (cCard.suit === leadSuit && wCard.suit !== leadSuit) {
+          winner = current;
+        }
+      }
+    }
+
+    return winner;
+  }
+
   /* ─────────────────────────────────────────────
      نوبت
      ───────────────────────────────────────────── */
   function _startTurn() {
     if (state.phase !== PHASES.PLAYING) return;
-
-    state.trick = [];
 
     // بررسی پایان بازی
     if (state.scores.A >= ROUNDS_TO_WIN || state.scores.B >= ROUNDS_TO_WIN) {
@@ -322,9 +401,6 @@
       _endGame();
       return;
     }
-
-    state.isWaitingForPass = false;
-    state.passCount = 0;
 
     _emit('turn:start', {
       playerIdx: state.currentPlayer,
@@ -359,7 +435,6 @@
         duration
       });
 
-      // هشدار در ۱۰ ثانیه آخر
       if (state.timerRemaining === 10 && _audio()) {
         _audio().play('countdown');
       }
@@ -384,96 +459,19 @@
 
     if (_audio()) _audio().play('timeout');
 
-    // اگر بازیکن خودت هستی، یک کارت معتبر تصادفی بازی کن
     const player = state.players[state.currentPlayer];
+
     if (!player.isAI) {
-      const valid = Game.getValidCards(state.currentPlayer);
+      // بازیکن خودت → یک کارت معتبر تصادفی
+      const valid = _getValidCards(state.currentPlayer);
       if (valid.length > 0) {
         const card = valid[Math.floor(Math.random() * valid.length)];
         Game.playCard(state.currentPlayer, card);
       }
     } else {
+      // AI → از تابع AI استفاده کن
       _aiPlay();
     }
-  }
-
-  /* ─────────────────────────────────────────────
-     قوانین اعتبارسنجی کارت
-     ───────────────────────────────────────────── */
-  function _getValidCards(playerIdx) {
-    const player = state.players[playerIdx];
-    if (!player || !player.hand) return [];
-
-    // اگر اولین نفر در دور است، همه کارت‌ها مجازند
-    if (state.trick.length === 0) {
-      return player.hand.slice();
-    }
-
-    // خال جاری
-    const leadSuit = state.trick[0].card.suit;
-
-    // کارت‌های هم‌خال
-    const sameSuit = player.hand.filter(c => c.suit === leadSuit);
-
-    if (sameSuit.length > 0) {
-      return sameSuit;
-    }
-
-    // اگر خال جاری نداریم، همه مجازند
-    return player.hand.slice();
-  }
-
-  function _isValidCard(playerIdx, card) {
-    const valid = _getValidCards(playerIdx);
-    return valid.some(c => c.id === card.id);
-  }
-
-  /* ─────────────────────────────────────────────
-     برنده دور
-     ───────────────────────────────────────────── */
-  function _determineTrickWinner() {
-    if (state.trick.length === 0) return null;
-
-    const leadSuit = state.trick[0].card.suit;
-    const hokm = state.hokm;
-
-    let winner = state.trick[0];
-
-    for (let i = 1; i < state.trick.length; i++) {
-      const current = state.trick[i];
-      const wCard = winner.card;
-      const cCard = current.card;
-
-      const wIsHokm = wCard.suit === hokm;
-      const cIsHokm = cCard.suit === hokm;
-
-      // اگر کارت فعلی حکم است
-      if (cIsHokm && !wIsHokm) {
-        winner = current;
-        continue;
-      }
-
-      // اگر هر دو حکم یا هیچکدام حکم نیستند
-      if (cIsHokm === wIsHokm) {
-        // اگر هر دو همون خال جاری هستند
-        if (cCard.suit === wCard.suit) {
-          if (cCard.rank > wCard.rank) {
-            winner = current;
-          }
-        }
-        // اگر کارت فعلی هم‌خال جاری است ولی برنده قبلی نه
-        else if (cCard.suit === leadSuit && wCard.suit !== leadSuit) {
-          winner = current;
-        }
-      }
-    }
-
-    return winner;
-  }
-
-  function _getTrickWinnerTeam() {
-    if (state.trickWinner === null) return null;
-    return state.players[state.trickWinner].team;
   }
 
   /* ─────────────────────────────────────────────
@@ -490,22 +488,41 @@
       // کمی فکر کن
       await _delay(600 + Math.random() * 800);
 
-      if (state.phase !== PHASES.PLAYING) return;
-      if (state.currentPlayer !== playerIdx) return;
+      // چک کن نوبت هنوز همونه
+      if (state.phase !== PHASES.PLAYING) {
+        state.aiThinking = false;
+        return;
+      }
+      if (state.currentPlayer !== playerIdx) {
+        state.aiThinking = false;
+        return;
+      }
+
+      // کارت‌های مجاز
+      const valid = _getValidCards(playerIdx);
+      if (valid.length === 0) {
+        console.warn('⚠️ AI has no valid cards!');
+        state.aiThinking = false;
+        return;
+      }
 
       let card;
 
+      // اگر AI در دسترسه، ازش بپرس
       if (_ai() && typeof _ai().selectCard === 'function') {
-        card = _ai().selectCard(player, state, _getValidCards(playerIdx));
+        card = _ai().selectCard(player, state, valid);
       } else {
-        // fallback: تصادفی از کارت‌های مجاز
-        const valid = _getValidCards(playerIdx);
+        // fallback: تصادفی
         card = valid[Math.floor(Math.random() * valid.length)];
       }
 
-      if (card) {
-        Game.playCard(playerIdx, card);
+      // 🔴 اطمینان نهایی: کارت انتخابی باید در valid باشه
+      if (!card || !valid.some(c => c.id === card.id)) {
+        console.warn('⚠️ AI selected invalid card, using fallback');
+        card = valid[0];
       }
+
+      Game.playCard(playerIdx, card);
 
     } finally {
       state.aiThinking = false;
@@ -517,6 +534,7 @@
      ───────────────────────────────────────────── */
   async function _endTrick() {
     state.phase = PHASES.ROUND_END;
+
     _emit('trick:end', {
       trick: state.trick.slice(),
       winner: state.trickWinner
@@ -544,7 +562,6 @@
       trickCount: state.trickCount
     });
 
-    // انیمیشن کارت‌های برنده
     if (_ui() && _ui().animateTrickWinner) {
       _ui().animateTrickWinner(state.trickWinner, state.trick);
     }
@@ -565,6 +582,7 @@
     state.leader = state.trickWinner;
     state.currentPlayer = state.trickWinner;
     state.trickWinner = null;
+    state.trick = [];  // ⬅️ مهم: پاک کردن میز
     state.phase = PHASES.PLAYING;
 
     _emit('trick:new', { leader: state.leader });
@@ -589,9 +607,8 @@
     // محاسبه ELO
     let eloChange = 0;
     if (_profile() && typeof _profile().calculateElo === 'function') {
-      // ELO حریف (متوسط تیم مقابل)
       const aiLevelElos = { easy: 900, medium: 1100, hard: 1400, master: 1700 };
-      const aiElo = aiLevelElos[state.players[1].aiLevel] || 1100;
+      const aiElo = aiLevelElos[state.players[1]?.aiLevel] || 1100;
       eloChange = _profile().calculateElo(aiElo, win);
     }
 
@@ -605,7 +622,7 @@
       eloChange,
       durationMs: duration,
       mode: 'ai',
-      aiLevel: state.players[1].aiLevel
+      aiLevel: state.players[1]?.aiLevel
     };
 
     _emit('game:ended', result);
@@ -615,7 +632,7 @@
       _audio().play(win ? 'win' : 'lose');
     }
 
-    // ذخیره در storage (خودکار دستاوردها هم چک می‌شن)
+    // ذخیره در storage
     if (_storage() && typeof _storage().recordGame === 'function') {
       _storage().recordGame({
         ...result,
@@ -625,19 +642,17 @@
       });
     }
 
-    // پاک کردن بازی ذخیره‌شده
     if (_storage() && typeof _storage().clearSave === 'function') {
       _storage().clearSave();
     }
 
-    // نمایش مودال پایان
     if (_ui() && _ui().showGameEnd) {
       _ui().showGameEnd(result);
     }
   }
 
   /* ─────────────────────────────────────────────
-     ذخیره/بارگذاری بازی
+     ذخیره/بارگذاری
      ───────────────────────────────────────────── */
   function _saveCurrentGame() {
     if (state.phase === PHASES.IDLE || state.phase === PHASES.GAME_END) return;
@@ -696,24 +711,22 @@
     return true;
   }
 
-  /* ─────────────────────────────────────────────
+  /* ═══════════════════════════════════════════
      API عمومی
-     ───────────────────────────────────────────── */
+     ═══════════════════════════════════════════ */
   const Game = {
 
     PHASES,
     SUITS,
     SUIT_LIST,
     SUIT_SYMBOLS,
+    SUIT_NAMES_FA,
     RANKS,
     ROUNDS_TO_WIN,
     TOTAL_ROUNDS,
 
     /* ─── راه‌اندازی ─── */
 
-    /**
-     * شروع بازی جدید
-     */
     async start(options = {}) {
       const settings = _storage()?.getSettings() || {};
 
@@ -721,11 +734,7 @@
       state.timerSpeed = options.timerSpeed || settings.timerSpeed || 'normal';
       const aiLevel = options.aiLevel || settings.aiLevel || 'medium';
 
-      if (_profile() && typeof _profile().getStreak === 'function') {
-        // فقط برای اطمینان
-      }
-
-      // ریست
+      // ریست کامل
       state.phase = PHASES.IDLE;
       state.deck = [];
       state.hokm = null;
@@ -739,14 +748,16 @@
       state.rounds = [];
       state.gameStartTime = Date.now();
       state.isPaused = false;
+      state.turnCount = 0;
+      state.aiThinking = false;
 
-      // بازیکنان
+      // ساخت بازیکنان
       state.players = _createPlayers(state.playerCount, aiLevel);
 
       // صدای شروع
       if (_audio()) _audio().play('gameStart');
 
-      // توزیع
+      // فاز توزیع
       state.phase = PHASES.DEALING;
       _emit('phase:changed', { phase: PHASES.DEALING });
       _emit('game:start', {
@@ -756,11 +767,10 @@
 
       await _delay(300);
 
-      // صدای بُر زدن
       if (_audio()) _audio().play('shuffle');
       await _delay(600);
 
-      // توزیع کارت‌ها با انیمیشن
+      // توزیع کارت‌ها
       const hands = _dealCards();
 
       _emit('cards:dealt', {
@@ -787,23 +797,15 @@
         player: state.players[callerIdx]
       });
 
-      // اگر بازیکن خودت هستی، از UI بخواه انتخاب کنه
       if (callerIdx === 0) {
         _emit('hokm:waitingForUser', { player: state.players[0] });
       } else {
-        // AI خودکار انتخاب می‌کنه
         _autoSelectHokm(callerIdx);
       }
-
-      // Autosave
-      _saveCurrentGame();
 
       return state;
     },
 
-    /**
-     * توقف بازی
-     */
     pause() {
       state.isPaused = true;
       _emit('game:paused');
@@ -814,9 +816,6 @@
       _emit('game:resumed');
     },
 
-    /**
-     * خروج از بازی
-     */
     quit() {
       _stopTimer();
       state.phase = PHASES.IDLE;
@@ -826,9 +825,6 @@
 
     /* ─── کاربر ─── */
 
-    /**
-     * بازیکن خودت حکم انتخاب کن
-     */
     selectHokm(suit) {
       if (state.phase !== PHASES.HOKM_SELECT) return false;
       if (state.hokmCaller !== 0) return false;
@@ -839,24 +835,60 @@
     },
 
     /**
-     * بازی یک کارت توسط بازیکن
+     * 🎯 بازی یک کارت با بررسی اعتبار
      */
     playCard(playerIdx, card) {
-      if (state.phase !== PHASES.PLAYING) return false;
-      if (state.currentPlayer !== playerIdx) return false;
-      if (!card) return false;
+      // چک‌های اولیه
+      if (state.phase !== PHASES.PLAYING) {
+        console.warn('❌ Not playing');
+        return false;
+      }
+      if (state.currentPlayer !== playerIdx) {
+        console.warn('❌ Not your turn');
+        return false;
+      }
+      if (!card) {
+        console.warn('❌ No card');
+        return false;
+      }
 
       const player = state.players[playerIdx];
       if (!player) return false;
 
-      // بررسی اعتبار
-      if (!_isValidCard(playerIdx, card)) {
-        _emit('card:invalid', { playerIdx, card });
+      // 🔴 بررسی قانون پیروی از خال
+      const validCards = _getValidCards(playerIdx);
+      const validIds = validCards.map(c => c.id);
+
+      if (!validIds.includes(card.id)) {
+        const leadSuit = state.trick[0]?.card.suit;
+        const leadName = SUIT_NAMES_FA[leadSuit] || '?';
+
+        console.warn(
+          `❌ کارت غیرمجاز! بازیکن ${playerIdx} می‌خواد ${card.id} بازی کنه ولی باید از ${leadSuit} (${leadName}) بازی کنه`
+        );
+
+        _emit('card:invalid', {
+          playerIdx,
+          card,
+          leadSuit,
+          validCards: validIds
+        });
+
         if (_audio()) _audio().play('error');
+
+        if (_ui() && playerIdx === 0) {
+          _ui().showToast(
+            '❌ کارت غیرمجاز',
+            `باید از خال ${leadName} بازی کنی!`,
+            'error',
+            2500
+          );
+        }
+
         return false;
       }
 
-      // حذف از دست
+      // حذف کارت از دست
       const idx = player.hand.findIndex(c => c.id === card.id);
       if (idx === -1) return false;
       player.hand.splice(idx, 1);
@@ -866,6 +898,7 @@
 
       _stopTimer();
 
+      // رویداد
       _emit('card:played', {
         playerIdx,
         player,
@@ -877,7 +910,6 @@
 
       // آیا همه بازی کردن؟
       if (state.trick.length === state.playerCount) {
-        // تعیین برنده
         const winner = _determineTrickWinner();
         state.trickWinner = winner.playerIdx;
 
@@ -893,15 +925,10 @@
         setTimeout(() => _startTurn(), 350);
       }
 
-      // Autosave
       _saveCurrentGame();
-
       return true;
     },
 
-    /**
-     * کارت‌های مجاز برای بازیکن
-     */
     getValidCards(playerIdx) {
       return _getValidCards(playerIdx);
     },
@@ -987,6 +1014,28 @@
       state.listeners = state.listeners.filter(
         l => !(l.event === event && l.handler === handler)
       );
+    },
+
+    /**
+     * 🆘 دیباگ: نمایش وضعیت کامل
+     */
+    debug() {
+      const leadSuit = state.trick[0]?.card?.suit;
+      const myValid = _getValidCards(0).map(c => c.id);
+
+      console.log('%c═══ GAME DEBUG ═══', 'color: #ffd60a; font-weight: bold; font-size: 14px;');
+      console.log('Phase:', state.phase);
+      console.log('Hokm:', state.hokm, '(' + (SUIT_NAMES_FA[state.hokm] || '?') + ')');
+      console.log('Current Player:', state.currentPlayer);
+      console.log('Trick Cards:', state.trick.map(t => ({
+        player: t.playerIdx,
+        card: t.card.id
+      })));
+      console.log('Lead Suit:', leadSuit, '(' + (SUIT_NAMES_FA[leadSuit] || '?') + ')');
+      console.log('Valid Cards for me:', myValid);
+      console.log('My Hand:', state.players[0]?.hand.map(c => c.id));
+      console.log('Scores:', state.scores);
+      console.log('%c═══════════════════', 'color: #ffd60a; font-weight: bold; font-size: 14px;');
     }
   };
 
@@ -996,8 +1045,8 @@
   global.HokmGame = Game;
 
   console.log(
-    '%c🎮 Game logic loaded',
-    'color: #ef476f; font-weight: bold;'
+    '%c🎮 Game logic loaded (سخت‌گیرانه با پیروی از خال)',
+    'color: #ef476f; font-weight: bold; font-size: 13px;'
   );
 
 })(typeof window !== 'undefined' ? window : globalThis);
