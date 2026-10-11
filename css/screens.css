@@ -221,67 +221,77 @@
 }
 
 /* ═══════════════════════════════════════════
-   ۲. Top Bar
+   ۲. Top Bar (دو-ردیفی)
    ═══════════════════════════════════════════ */
+
+:root {
+  --topbar-h: 96px;
+}
+
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--topbar-h);
   z-index: var(--z-sticky);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: 0 var(--space-4);
   background: rgba(13, 27, 42, 0.85);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  padding: 6px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.top-bar-right,
-.top-bar-left {
+/* ─── ردیف بالا: لوگو + تب‌ها ─── */
+.top-bar-row-top {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  flex: 1;
-  min-width: 0;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
 }
 
-.top-bar-right { justify-content: flex-start; }
-.top-bar-left { justify-content: flex-end; }
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
 
 .top-logo {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
   filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.4));
 }
 
 .top-title {
   font-family: var(--font-fa);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
   color: var(--accent);
   letter-spacing: -0.02em;
   text-shadow: 0 0 12px var(--accent-glow);
 }
 
+/* ─── تب‌ها ─── */
 .tabs {
-  flex-shrink: 0;
+  flex: 1;
   display: flex;
   gap: 2px;
   padding: 3px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-full);
+  max-width: fit-content;
+  margin: 0 auto;
 }
 
 .tab {
   padding: 6px 12px;
-  min-height: 36px;
+  min-height: 34px;
   font-size: 12.5px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -293,6 +303,7 @@
   align-items: center;
   gap: 5px;
   transition: all var(--t-normal) var(--ease-out);
+  white-space: nowrap;
 }
 
 .tab:hover {
@@ -313,6 +324,135 @@
 
 .tab-label {
   font-size: 12px;
+}
+
+/* ─── ردیف پایین: دکمه‌های شب/روز و صدا ─── */
+.top-bar-row-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+  position: relative;
+}
+
+/* دکمه‌های آیکون در ردیف پایین */
+#btnThemeToggle,
+#btnSoundToggle,
+#btnBackFromGame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 17px;
+  line-height: 1;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+#btnThemeToggle:hover,
+#btnSoundToggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+#btnBackFromGame {
+  margin-right: 4px;
+}
+
+#btnBackFromGame:hover {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+#btnThemeToggle:active,
+#btnSoundToggle:active,
+#btnBackFromGame:active {
+  transform: scale(0.92);
+}
+
+/* ─── گروه دکمه‌های سمت چپ ─── */
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* ─── تنظیم صفحه بازی ─── */
+.screen[data-screen="game"] .game-container {
+  height: calc(100vh - var(--topbar-h));
+  height: calc(100dvh - var(--topbar-h));
+}
+
+/* ─── واکنش‌گرایی Top Bar ─── */
+@media (max-width: 600px) {
+  :root {
+    --topbar-h: 90px;
+  }
+
+  .top-bar {
+    padding: 4px 8px 6px;
+    gap: 3px;
+  }
+
+  .top-title {
+    display: none;
+  }
+
+  .tab {
+    padding: 5px 8px;
+    min-height: 32px;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-icon {
+    font-size: 16px;
+  }
+
+  #btnThemeToggle,
+  #btnSoundToggle,
+  #btnBackFromGame {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --topbar-h: 86px;
+  }
+
+  .tab {
+    padding: 4px 6px;
+    min-height: 30px;
+  }
+
+  .tab-icon {
+    font-size: 15px;
+  }
+
+  #btnThemeToggle,
+  #btnSoundToggle,
+  #btnBackFromGame {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -709,7 +849,7 @@ kbd {
 }
 
 /* ═══════════════════════════════════════════
-   ۷. صفحه بازی (Table) — 🎴 اصلاح کارت‌های میز
+   ۷. صفحه بازی (Table) — 🎴 کارت‌ها کنار بازیکن
    ═══════════════════════════════════════════ */
 .screen[data-screen="game"] {
   padding: 0;
@@ -906,7 +1046,7 @@ kbd {
   transform: translate(calc(-50% + 78px), -50%) rotate(6deg);
 }
 
-/* انیمیشن ورود کارت — از سمت بازیکن */
+/* انیمیشن ورود کارت */
 @keyframes cardPlayIn {
   0% {
     opacity: 0;
@@ -916,29 +1056,8 @@ kbd {
     opacity: 1;
   }
   100% {
-    /* به موقعیت نهایی که در data-pos تعریف شده می‌رسه */
+    opacity: 1;
   }
-}
-
-/* ═══ جهت ورود کارت بر اساس بازیکن (اختیاری) ═══ */
-.trick-center .card-face[data-pos="bottom"] {
-  --from-x: 0px;
-  --from-y: 200px;
-}
-
-.trick-center .card-face[data-pos="top"] {
-  --from-x: 0px;
-  --from-y: -200px;
-}
-
-.trick-center .card-face[data-pos="left"] {
-  --from-x: -250px;
-  --from-y: 0px;
-}
-
-.trick-center .card-face[data-pos="right"] {
-  --from-x: 250px;
-  --from-y: 0px;
 }
 
 /* ─── دست بازیکن (پایین) ─── */
