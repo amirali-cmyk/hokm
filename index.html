@@ -30,7 +30,6 @@
        🎨 Top Bar دو-ردیفی + اصلاحات کارت
        ═══════════════════════════════════════════ -->
   <style>
-    /* ─── متغیر ارتفاع ─── */
     :root {
       --topbar-h: 96px;
     }
@@ -43,7 +42,6 @@
       :root { --topbar-h: 86px; }
     }
 
-    /* ─── ساختار Top Bar ─── */
     .top-bar {
       position: fixed !important;
       top: 0 !important;
@@ -220,7 +218,6 @@
       50%      { transform: translateX(-50%) translateY(-6px); }
     }
 
-    /* ═══ موبایل: Top Bar فشرده‌تر ═══ */
     @media (max-width: 600px) {
       .top-bar {
         padding: 4px 8px 6px !important;
@@ -285,12 +282,12 @@
         <img src="assets/logo.svg" alt="حکم" class="splash-logo" />
       </div>
       <h1 class="splash-title">حُکم</h1>
-      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۰</p>
+      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۱</p>
       <div class="splash-loading-bar">
         <div class="splash-loading-fill" id="splashFill"></div>
       </div>
       <button class="btn-skip" id="btnSkipSplash" type="button">ورود سریع ⏭</button>
-      <p class="splash-version">v6.0.0</p>
+      <p class="splash-version">v6.1.1</p>
     </div>
   </div>
 
@@ -496,7 +493,6 @@
             </div>
           </div>
 
-          <!-- 🎯 تعداد بازیکنان — ۳ نفره حذف شد -->
           <div class="setting-group">
             <label class="setting-label">👥 تعداد بازیکنان</label>
             <div class="segmented" id="playerCountSegmented">
@@ -808,6 +804,7 @@
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/ads.js"></script>       <!-- 🆕 Tapsell Ads -->
   <script src="js/main.js"></script>
 
   <!-- ═══════════════════════════════════════════
@@ -959,7 +956,7 @@
           'HokmStorage', 'HokmThemes', 'HokmAudio', 'HokmProfile',
           'HokmAchievements', 'HokmLeaderboard', 'HokmFriends',
           'HokmTournament', 'HokmReplay', 'HokmShare', 'HokmAI',
-          'HokmGame', 'HokmUI', 'HokmSettings', 'HokmApp'
+          'HokmGame', 'HokmUI', 'HokmSettings', 'HokmAds', 'HokmApp'
         ];
         var ok = 0, missing = [];
         for (var i = 0; i < modules.length; i++) {
@@ -970,145 +967,6 @@
           'color: ' + (missing.length === 0 ? '#06d6a0' : '#ef476f') + '; font-weight: bold;');
         if (missing.length > 0) console.warn('Missing:', missing);
       }, 500);
-
-    })();
-  </script>
-
-  <!-- ═══════════════════════════════════════════
-       🎴 DEBUG: نمایش زنده کارت‌های بازی‌شده
-       ═══════════════════════════════════════════ -->
-  <script>
-    (function () {
-      'use strict';
-
-      var logEl = null;
-
-      function createLogBox() {
-        if (logEl) return;
-
-        logEl = document.createElement('div');
-        logEl.id = 'gameDebugLog';
-        logEl.style.cssText = [
-          'position:fixed',
-          'bottom:60px',
-          'left:8px',
-          'right:8px',
-          'background:rgba(0,0,0,0.92)',
-          'color:#0f0',
-          'font-family:Menlo,Consolas,monospace',
-          'font-size:10px',
-          'padding:8px',
-          'border-radius:8px',
-          'z-index:99998',
-          'max-height:120px',
-          'overflow:auto',
-          'direction:ltr',
-          'text-align:left',
-          'line-height:1.4',
-          'display:none'
-        ].join(';');
-
-        document.body.appendChild(logEl);
-
-        var toggleBtn = document.createElement('button');
-        toggleBtn.id = 'gameDebugToggle';
-        toggleBtn.textContent = '🐛';
-        toggleBtn.style.cssText = [
-          'position:fixed',
-          'bottom:8px',
-          'left:8px',
-          'width:40px',
-          'height:40px',
-          'border-radius:50%',
-          'background:#ffd60a',
-          'color:#000',
-          'border:0',
-          'font-size:20px',
-          'cursor:pointer',
-          'z-index:99999',
-          'box-shadow:0 4px 12px rgba(0,0,0,0.5)',
-          'display:flex',
-          'align-items:center',
-          'justify-content:center'
-        ].join(';');
-
-        toggleBtn.addEventListener('click', function () {
-          if (logEl.style.display === 'none') {
-            logEl.style.display = 'block';
-            toggleBtn.textContent = '✕';
-          } else {
-            logEl.style.display = 'none';
-            toggleBtn.textContent = '🐛';
-          }
-        });
-
-        document.body.appendChild(toggleBtn);
-      }
-
-      function log(msg, color) {
-        createLogBox();
-        var line = document.createElement('div');
-        line.textContent = msg;
-        if (color) line.style.color = color;
-        logEl.appendChild(line);
-        logEl.scrollTop = logEl.scrollHeight;
-
-        while (logEl.children.length > 40) {
-          logEl.removeChild(logEl.firstChild);
-        }
-      }
-
-      setTimeout(function () {
-        if (!window.HokmGame) return;
-
-        HokmGame.on('game:start', function () {
-          log('▶ GAME START', '#ffd60a');
-          if (logEl) logEl.innerHTML = '';
-        });
-
-        HokmGame.on('hokm:selecting', function (data) {
-          log('👑 حکم‌خوان: ' + data.player.name + ' (صندلی ' + data.callerIdx + ')', '#ffd60a');
-        });
-
-        HokmGame.on('hokm:set', function (data) {
-          log('👑 HOKM: ' + data.suit, '#ffd60a');
-        });
-
-        HokmGame.on('turn:start', function (data) {
-          log('⏱️ Turn: P' + data.playerIdx);
-        });
-
-        HokmGame.on('card:played', function (data) {
-          var suit = data.card.suit;
-          var rank = data.card.rank;
-          var leadSuit = data.trick.length > 1 ? data.trick[0].card.suit : '—';
-          log(
-            '🎴 P' + data.playerIdx + ' → ' + suit + ' ' + rank +
-            ' | trick: ' + data.trick.length + '/4 | lead: ' + leadSuit,
-            suit === leadSuit || data.trick.length === 1 ? '#0f0' : '#f4a259'
-          );
-        });
-
-        HokmGame.on('card:invalid', function (data) {
-          log('❌ INVALID! P' + data.playerIdx + ' → ' + data.card.suit + ' ' + data.card.rank +
-              ' | lead: ' + data.leadSuit, '#ef476f');
-        });
-
-        HokmGame.on('trick:completed', function (data) {
-          log('🏆 Trick won by P' + data.winner, '#06d6a0');
-        });
-
-        HokmGame.on('score:changed', function (data) {
-          log('📊 A=' + data.scores.A + ' B=' + data.scores.B);
-        });
-
-        HokmGame.on('game:ended', function (data) {
-          log('🏁 ' + (data.win ? 'WIN' : 'LOSE') +
-              ' | ' + data.myScore + '-' + data.opponentScore, data.win ? '#06d6a0' : '#ef476f');
-        });
-
-        console.log('%c🐛 Game debug logger ready', 'color: #ffd60a; font-weight: bold;');
-      }, 2000);
 
     })();
   </script>
