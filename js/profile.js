@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   👤 HOKM PRO v6.0 — profile.js
-   پروفایل کاربر، ELO FIDE، ۷ سطح رتبه، آواتار، آمار
+   👤 HOKM PRO v6.1.1 — profile.js
+   پروفایل کاربر، ELO FIDE، ۷ سطح رتبه، آواتار، سکه، جایزه روزانه
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -10,13 +10,13 @@
      ثابت‌ها — ۷ سطح رتبه
      ───────────────────────────────────────────── */
   const RANKS = [
-    { id: 'legend',    name: 'افسانه',        icon: '🔥', min: 2000, color: '#ef476f', gradient: 'linear-gradient(135deg, #ef476f, #b8304e)' },
-    { id: 'grandmaster', name: 'استاد بزرگ',  icon: '👑', min: 1800, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffe97a, #b8860b)' },
-    { id: 'master',    name: 'استاد',         icon: '💎', min: 1600, color: '#9b5de5', gradient: 'linear-gradient(135deg, #c195f0, #7a3dbd)' },
-    { id: 'pro',       name: 'حرفه‌ای',        icon: '🥇', min: 1400, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffd60a, #b8860b)' },
-    { id: 'intermediate', name: 'متوسط',      icon: '🥈', min: 1200, color: '#e0e0e0', gradient: 'linear-gradient(135deg, #e0e0e0, #909090)' },
-    { id: 'rookie',    name: 'تازه‌کار',       icon: '🥉', min: 1000, color: '#d4a373', gradient: 'linear-gradient(135deg, #d4a373, #8b5a2b)' },
-    { id: 'beginner',  name: 'مبتدی',         icon: '🌱', min: 0,    color: '#06d6a0', gradient: 'linear-gradient(135deg, #5cf0c2, #059669)' }
+    { id: 'legend',      name: 'افسانه',       icon: '🔥', min: 2000, color: '#ef476f', gradient: 'linear-gradient(135deg, #ef476f, #b8304e)' },
+    { id: 'grandmaster', name: 'استاد بزرگ',   icon: '👑', min: 1800, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffe97a, #b8860b)' },
+    { id: 'master',      name: 'استاد',         icon: '💎', min: 1600, color: '#9b5de5', gradient: 'linear-gradient(135deg, #c195f0, #7a3dbd)' },
+    { id: 'pro',         name: 'حرفه‌ای',        icon: '🥇', min: 1400, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffd60a, #b8860b)' },
+    { id: 'intermediate',name: 'متوسط',         icon: '🥈', min: 1200, color: '#e0e0e0', gradient: 'linear-gradient(135deg, #e0e0e0, #909090)' },
+    { id: 'rookie',      name: 'تازه‌کار',       icon: '🥉', min: 1000, color: '#d4a373', gradient: 'linear-gradient(135deg, #d4a373, #8b5a2b)' },
+    { id: 'beginner',    name: 'مبتدی',         icon: '🌱', min: 0,    color: '#06d6a0', gradient: 'linear-gradient(135deg, #5cf0c2, #059669)' }
   ];
 
   const AVATAR_PRESETS = [
@@ -26,8 +26,12 @@
   ];
 
   const ELO_K_FACTOR = 32;
-  const ELO_MIN_CHANGE = 5;  // حداقل تغییر
-  const ELO_MAX_LOSS = -5;   // حداکثر منفی (یعنی حداقل -5)
+  const ELO_MIN_CHANGE = 5;
+  const ELO_MAX_LOSS = -5;
+
+  // 🎁 جایزه روزانه
+  const DAILY_BONUS_AMOUNT = 50;
+  const DAILY_BONUS_INTERVAL = 24 * 60 * 60 * 1000; // ۲۴ ساعت
 
   /* ─────────────────────────────────────────────
      وضعیت
@@ -40,9 +44,9 @@
   /* ─────────────────────────────────────────────
      کمکی‌ها
      ───────────────────────────────────────────── */
-  function _storage() {
-    return global.HokmStorage;
-  }
+  function _storage() { return global.HokmStorage; }
+  function _ui() { return global.HokmUI; }
+  function _audio() { return global.HokmAudio; }
 
   function _emit(event, data) {
     state.listeners.forEach(({ event: e, handler }) => {
@@ -84,7 +88,7 @@
       avatar: '🌱',
       elo: 1000,
       level: 1,
-      coins: 100,
+      coins: 500,
       rank: 'تازه‌کار',
       rankId: 'rookie',
       createdAt: Date.now(),
@@ -106,14 +110,8 @@
     const expected = _calculateExpected(playerElo, opponentElo);
     let change = ELO_K_FACTOR * (actual - expected);
 
-    // حداقل برد +5
-    if (actual === 1 && change < ELO_MIN_CHANGE) {
-      change = ELO_MIN_CHANGE;
-    }
-    // حداکثر باخت -5
-    if (actual === 0 && change > ELO_MAX_LOSS) {
-      change = ELO_MAX_LOSS;
-    }
+    if (actual === 1 && change < ELO_MIN_CHANGE) change = ELO_MIN_CHANGE;
+    if (actual === 0 && change > ELO_MAX_LOSS) change = ELO_MAX_LOSS;
 
     return Math.round(change);
   }
@@ -146,6 +144,41 @@
   }
 
   /* ─────────────────────────────────────────────
+     🎁 جایزه روزانه
+     ───────────────────────────────────────────── */
+  function _checkDailyBonus() {
+    const storage = _storage();
+    if (!storage) return;
+
+    const lastBonusRaw = storage.getRaw('hokm_daily_bonus');
+    const now = Date.now();
+
+    if (!lastBonusRaw || (now - parseInt(lastBonusRaw, 10)) >= DAILY_BONUS_INTERVAL) {
+      // 🎁 اعطای جایزه
+      Profile.addCoins(DAILY_BONUS_AMOUNT);
+      storage.setRaw('hokm_daily_bonus', String(now));
+
+      console.log(`%c🎁 +${DAILY_BONUS_AMOUNT} سکه روزانه اعطا شد`,
+        'color: #ffd60a; font-weight: bold; font-size: 13px;');
+
+      // نمایش اعلان بعد از لود کامل UI
+      setTimeout(() => {
+        if (_ui() && typeof _ui().showToast === 'function') {
+          _ui().showToast(
+            '🎁 جایزه روزانه!',
+            `+${_toPersianNumber(DAILY_BONUS_AMOUNT)} سکه رایگان دریافت کردی`,
+            'success',
+            5000
+          );
+        }
+        if (_audio()) _audio().play('coin');
+      }, 2000);
+
+      _emit('daily:bonus', { amount: DAILY_BONUS_AMOUNT });
+    }
+  }
+
+  /* ─────────────────────────────────────────────
      API عمومی
      ───────────────────────────────────────────── */
   const Profile = {
@@ -153,11 +186,12 @@
     /* ─── راه‌اندازی ─── */
     init() {
       _load();
+      _checkDailyBonus();   // 🎁 چک جایزه روزانه
       Profile.updateUI();
       _bindEvents();
 
       console.log(
-        `%c👤 Profile: ${state.data.name} (${state.data.elo} ELO)`,
+        `%c👤 Profile: ${state.data.name} (${state.data.elo} ELO, ${state.data.coins} سکه)`,
         'color: #118ab2; font-weight: bold;'
       );
       return state.data;
@@ -166,7 +200,7 @@
     /* ─── Get ─── */
 
     get() {
-      return { ...state.data };
+      return Object.assign({}, state.data);
     },
 
     getName() {
@@ -213,16 +247,13 @@
 
     setAvatar(avatar) {
       if (!avatar) return false;
-      state.data.avatar = String(avatar).slice(0, 8);
+      state.data.avatar = String(avatar).slice(0, 2048);
       _save();
       Profile.updateUI();
       _emit('profile:avatar-changed', { avatar: state.data.avatar });
       return true;
     },
 
-    /**
-     * آواتار با فایل تصویری
-     */
     setAvatarFromFile(file) {
       return new Promise((resolve, reject) => {
         if (!file || !file.type.startsWith('image/')) {
@@ -230,7 +261,6 @@
           return;
         }
 
-        // حداکثر ۲۰۰ کیلوبایت
         if (file.size > 200 * 1024) {
           reject(new Error('حجم فایل بیش از ۲۰۰ کیلوبایت'));
           return;
@@ -238,7 +268,6 @@
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          // فشرده‌سازی با Canvas
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
@@ -247,7 +276,6 @@
             canvas.height = size;
             const ctx = canvas.getContext('2d');
 
-            // محاسبه crop مربع
             const min = Math.min(img.width, img.height);
             const sx = (img.width - min) / 2;
             const sy = (img.height - min) / 2;
@@ -271,17 +299,11 @@
 
     /* ─── ELO ─── */
 
-    /**
-     * محاسبه تغییر ELO قبل از بازی
-     */
     calculateElo(opponentElo, expectedWin) {
       const actual = expectedWin ? 1 : 0;
       return _calculateEloChange(state.data.elo, opponentElo, actual);
     },
 
-    /**
-     * اعمال تغییر ELO
-     */
     applyEloChange(change) {
       const oldElo = state.data.elo;
       const oldRank = _getRankFromElo(oldElo);
@@ -334,15 +356,8 @@
 
     /* ─── ورود/خروج ─── */
 
-    /**
-     * تنظیم از سرور (بعد از ورود)
-     */
     setFromServer(data) {
-      state.data = {
-        ...state.data,
-        ...data,
-        isGuest: false
-      };
+      state.data = Object.assign({}, state.data, data, { isGuest: false });
       state.data.rankId = _getRankFromElo(state.data.elo).id;
       state.data.rank = _getRankFromElo(state.data.elo).name;
       _save();
@@ -351,9 +366,6 @@
       return state.data;
     },
 
-    /**
-     * خروج و بازگشت به مهمان
-     */
     logout() {
       const guestProfile = _defaultProfile();
       state.data = guestProfile;
@@ -380,7 +392,7 @@
     },
 
     getAvatarPresets() {
-      return [...AVATAR_PRESETS];
+      return AVATAR_PRESETS.slice();
     },
 
     /* ─── آمار ─── */
@@ -425,22 +437,21 @@
       const rank = _getRankFromElo(elo);
       const progress = _getRankProgress(elo);
 
-      // پروفایل سریع (Top Bar منو)
+      // پروفایل سریع
       _setText('quickName', state.data.name);
       _setText('quickElo', _toPersianNumber(elo));
       _setText('quickRank', rank.name);
+      _setText('quickCoins', _toPersianNumber(state.data.coins));  // 🆕 سکه
       _setAvatarHTML('quickAvatar', state.data.avatar);
 
       // پروفایل کامل
       _setText('profileName', state.data.name);
       _setText('profileRank', `${rank.name} — ${_toPersianNumber(elo)}`);
+      _setText('statCoins', _toPersianNumber(state.data.coins));   // 🆕 سکه
       _setAvatarHTML('profileAvatarBig', state.data.avatar);
 
-      // ELO bar
       const eloBar = document.getElementById('profileEloFill');
-      if (eloBar) {
-        eloBar.style.width = `${progress.percent}%`;
-      }
+      if (eloBar) eloBar.style.width = `${progress.percent}%`;
 
       // دکمه ورود/خروج
       const loginBtn = document.getElementById('btnLogin');
@@ -467,14 +478,9 @@
 
       // تاریخچه
       Profile.renderHistory();
-
-      // دستاوردها (minigrid)
       _renderAchievementsMini();
     },
 
-    /**
-     * رندر تاریخچه بازی‌ها
-     */
     renderHistory() {
       const el = document.getElementById('historyList');
       if (!el) return;
@@ -521,20 +527,6 @@
           </div>
         `;
       }).join('');
-    },
-
-    /* ─── رویدادها ─── */
-
-    on(event, handler) {
-      const entry = { event, handler };
-      state.listeners.push(entry);
-      return () => Profile.off(event, handler);
-    },
-
-    off(event, handler) {
-      state.listeners = state.listeners.filter(
-        l => !(l.event === event && l.handler === handler)
-      );
     }
   };
 
@@ -550,9 +542,8 @@
     const el = document.getElementById(id);
     if (!el) return;
 
-    // اگر data URL باشه
     if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
-      el.innerHTML = `<img src="${avatar}" alt="آواتار" />`;
+      el.innerHTML = `<img src="${avatar}" alt="آواتار" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
     } else {
       el.textContent = avatar || '🌱';
     }
@@ -590,7 +581,6 @@
     const achData = storage.getAchievements();
     const unlocked = achData.unlocked || {};
 
-    // لیست مختصر ۱۲ دستاورد
     const ACH_LIST = [
       { id: 'first_game', icon: '🎬' },
       { id: 'first_win', icon: '⭐' },
@@ -619,7 +609,6 @@
       `;
     }).join('');
 
-    // آپدیت label در منو
     const label = document.getElementById('achCountLabel');
     if (label) {
       label.textContent = `${_toPersianNumber(unlockedCount)} / ${_toPersianNumber(ACH_LIST.length)}`;
@@ -630,7 +619,6 @@
      Bind رویدادهای DOM
      ───────────────────────────────────────────── */
   function _bindEvents() {
-    // کليک روي آواتار بزرگ
     const bigAvatar = document.getElementById('profileAvatarBig');
     if (bigAvatar && !bigAvatar.dataset.bound) {
       bigAvatar.dataset.bound = '1';
@@ -640,7 +628,6 @@
       });
     }
 
-    // دکمه تغییر آواتار
     const changeBtn = document.getElementById('btnChangeAvatar');
     if (changeBtn && !changeBtn.dataset.bound) {
       changeBtn.dataset.bound = '1';
@@ -649,7 +636,6 @@
       });
     }
 
-    // آپلود فایل
     const uploadInput = document.getElementById('avatarUpload');
     if (uploadInput && !uploadInput.dataset.bound) {
       uploadInput.dataset.bound = '1';
@@ -658,7 +644,7 @@
         if (!file) return;
         try {
           await Profile.setAvatarFromFile(file);
-          if (global.HokmAudio) global.HokmAudio.play('success');
+          if (_audio()) _audio().play('success');
           _toast('آواتار با موفقیت تغییر کرد', 'success');
         } catch (err) {
           _toast(err.message || 'خطا در بارگذاری', 'error');
@@ -666,13 +652,12 @@
       });
     }
 
-    // دکمه ورود/خروج
     const loginBtn = document.getElementById('btnLogin');
     if (loginBtn && !loginBtn.dataset.bound) {
       loginBtn.dataset.bound = '1';
       loginBtn.addEventListener('click', () => {
         if (Profile.isGuest()) {
-          if (global.HokmUI) global.HokmUI.navigate('auth');
+          if (_ui()) _ui().navigate('auth');
         } else {
           if (confirm('از حساب خود خارج می‌شوید؟')) {
             Profile.logout();
@@ -682,7 +667,6 @@
       });
     }
 
-    // تغییر نام با کلیک روی اسم
     const nameEl = document.getElementById('profileName');
     if (nameEl && !nameEl.dataset.bound) {
       nameEl.dataset.bound = '1';
@@ -703,7 +687,7 @@
 
     if (newName && newName.trim() && newName.trim() !== current) {
       if (Profile.setName(newName.trim())) {
-        if (global.HokmAudio) global.HokmAudio.play('success');
+        if (_audio()) _audio().play('success');
         _toast('نام با موفقیت تغییر کرد', 'success');
       }
     }
@@ -754,28 +738,25 @@
 
     overlay.classList.remove('hidden');
 
-    // Bind انتخاب
     picker.querySelectorAll('.avatar-picker-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const avatar = btn.dataset.avatar;
         Profile.setAvatar(avatar);
-        if (global.HokmAudio) global.HokmAudio.play('softClick');
+        if (_audio()) _audio().play('softClick');
         overlay.classList.add('hidden');
         _toast('آواتار تغییر کرد', 'success');
       });
     });
 
-    // تصادفی
     const randBtn = document.getElementById('btnRandomAvatar');
     if (randBtn) {
       randBtn.addEventListener('click', () => {
         Profile.randomAvatar();
-        if (global.HokmAudio) global.HokmAudio.play('click');
+        if (_audio()) _audio().play('click');
         overlay.classList.add('hidden');
       });
     }
 
-    // آپلود
     const uploadBtn = document.getElementById('btnUploadAvatar');
     if (uploadBtn) {
       uploadBtn.addEventListener('click', () => {
@@ -790,8 +771,8 @@
      Toast کمکی
      ───────────────────────────────────────────── */
   function _toast(msg, type) {
-    if (global.HokmUI && typeof global.HokmUI.showToast === 'function') {
-      global.HokmUI.showToast('اطلاع', msg, type || 'info');
+    if (_ui() && typeof _ui().showToast === 'function') {
+      _ui().showToast('اطلاع', msg, type || 'info');
     } else {
       console.log(`[${type}] ${msg}`);
     }
@@ -803,14 +784,16 @@
   function bootstrap() {
     Profile.init();
 
-    // اگر نام مهمان بود، درخواست تعیین نام
-    if (state.data.name === 'مهمان' && state.data.isGuest) {
+    // 🎯 اگه مهمان بود، اسمش رو بپرس
+    if (state.data.name === 'مهمان' || state.data.isGuest) {
       setTimeout(() => {
-        const name = prompt('اسمت چیه؟ (برای ذخیره در پروفایل)', '');
-        if (name && name.trim()) {
-          Profile.setName(name.trim());
+        if (state.data.name === 'مهمان') {
+          const name = prompt('اسمت چیه؟ (برای اینکه پیشرفتت ذخیره بشه)', '');
+          if (name && name.trim()) {
+            Profile.setName(name.trim());
+          }
         }
-      }, 1500);
+      }, 2500);
     }
   }
 
@@ -819,14 +802,13 @@
      ───────────────────────────────────────────── */
   Profile.RANKS = RANKS;
   Profile.AVATAR_PRESETS = AVATAR_PRESETS;
+  Profile.DAILY_BONUS_AMOUNT = DAILY_BONUS_AMOUNT;
 
   global.HokmProfile = Profile;
 
-  // Auto-init
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        // کمی تأخیر تا Storage لود شود
         setTimeout(bootstrap, 50);
       });
     } else {
