@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    🎨 HOKM PRO v6.1.1 — ui.js
-   ناوبری + رندر کامل بازی + مودال راهنما + آمار + Toast
+   ناوبری + رندر کامل بازی + Modal + Toast + انیمیشن
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -17,8 +17,7 @@
     game: 'screen-game',
     profile: 'screen-profile',
     settings: 'screen-settings',
-    stats: 'screen-stats',        // 🎯 جدید — جایگزین help
-    help: 'screen-help',          // 🎯 هنوز هست ولی مخفی
+    help: 'screen-help',
     leaderboard: 'screen-leaderboard',
     achievements: 'screen-achievements',
     friends: 'screen-friends',
@@ -28,7 +27,15 @@
     auth: 'screen-auth'
   };
 
-  const SEAT_MAP = { Bottom: 0, Left: 1, Top: 2, Right: 3 };
+  const TAB_SCREENS = ['menu', 'profile', 'settings', 'help'];
+
+  const SEAT_MAP = {
+    Bottom: 0,
+    Left:   1,
+    Top:    2,
+    Right:  3
+  };
+
   const SEAT_POSITIONS = ['Bottom', 'Left', 'Top', 'Right'];
 
   /* ─────────────────────────────────────────────
@@ -49,7 +56,6 @@
   function _game() { return global.HokmGame; }
   function _audio() { return global.HokmAudio; }
   function _profile() { return global.HokmProfile; }
-  function _storage() { return global.HokmStorage; }
 
   function _emit(event, data) {
     state.listeners.forEach(({ event: e, handler }) => {
@@ -217,95 +223,7 @@
     },
 
     /* ═══════════════════════════════════════════
-       📖 مودال راهنما (جدید در ۶.۱.۱)
-       ═══════════════════════════════════════════ */
-
-    openHelpModal() {
-      const html = `
-        <h2 class="modal-title" style="margin-bottom: 16px;">📖 راهنمای بازی حکم</h2>
-        
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-          
-          <!-- هدف بازی -->
-          <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md);">
-            <h3 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">
-              🎯 هدف بازی
-            </h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin: 0;">
-              ۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید تا برنده بشید.
-            </p>
-          </div>
-
-          <!-- ترتیب کارت‌ها -->
-          <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md);">
-            <h3 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">
-              🃏 ترتیب کارت‌ها
-            </h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin: 0;">
-              <strong style="color: var(--accent);">A</strong> (14) &gt; 
-              <strong style="color: var(--accent);">K</strong> (13) &gt; 
-              <strong style="color: var(--accent);">Q</strong> (12) &gt; 
-              <strong style="color: var(--accent);">J</strong> (11) &gt; 
-              10 &gt; 9 &gt; ... &gt; 2
-            </p>
-          </div>
-
-          <!-- حکم‌خوانی -->
-          <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md);">
-            <h3 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">
-              👑 حکم‌خوانی
-            </h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin: 0;">
-              یک نفر به‌عنوان «حکم‌خوان» یکی از ۴ خال (♠ ♥ ♦ ♣) رو حکم انتخاب می‌کنه. 
-              کارت‌های حکم از همه کارت‌های دیگه قوی‌ترن.
-            </p>
-          </div>
-
-          <!-- قوانین طلایی -->
-          <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md);">
-            <h3 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">
-              ⚖️ قوانین طلایی
-            </h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7; margin: 0;">
-              ۱. پیروی از خال الزامی است — اگه کارت هم‌خال داری، باید همون رو بازی کنی.<br>
-              ۲. اگه هم‌خال نداری، می‌تونی هر کارتی (یا حکم) بازی کنی.<br>
-              ۳. بالاترین کارت هم‌خال، برنده‌ی دوره.
-            </p>
-          </div>
-
-          <!-- شورتکات‌ها -->
-          <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md);">
-            <h3 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">
-              ⌨️ شورتکات‌های کیبورد
-            </h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; color: var(--text-secondary);">
-              <div><kbd>Alt+M</kbd> → منو</div>
-              <div><kbd>Alt+P</kbd> → پروفایل</div>
-              <div><kbd>Alt+S</kbd> → تنظیمات</div>
-              <div><kbd>Alt+T</kbd> → تغییر تم</div>
-              <div><kbd>Esc</kbd> → بازگشت</div>
-              <div><kbd>1-9</kbd> → انتخاب کارت</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-actions" style="margin-top: 20px;">
-          <button class="btn btn-primary btn-block btn-large" id="btnCloseHelp">
-            فهمیدم ✅
-          </button>
-        </div>
-      `;
-
-      UI.openModal(html);
-
-      setTimeout(() => {
-        const btn = _$('btnCloseHelp');
-        if (btn) btn.addEventListener('click', UI.closeModal);
-      }, 100);
-    },
-
-    /* ═══════════════════════════════════════════
-       🎮 بازی — شروع و خروج
+       بازی — شروع و خروج
        ═══════════════════════════════════════════ */
 
     async startGame(options = {}) {
@@ -339,6 +257,7 @@
       }
 
       state.inGame = false;
+
       UI.resetGameView();
 
       const backBtn = _$('btnBackFromGame');
@@ -409,6 +328,8 @@
       const validIds = new Set(valid.map(c => c.id));
       const isMyTurn = gameState.currentPlayer === 0 &&
                        gameState.phase === 'playing';
+      const isSelectingHokm = gameState.phase === 'hokmSelect';
+      const isHokmCaller = isSelectingHokm && gameState.hokmCaller === 0;
 
       hand.innerHTML = cards.map((card, i) => {
         const isValid = validIds.has(card.id);
@@ -422,10 +343,16 @@
           onclick: playable ? `HokmUI.handleCardClick('${card.id}')` : ''
         });
       }).join('');
+
+      if (isHokmCaller) {
+        console.log('%c🎴 کارت‌های تو برای انتخاب حکم آماده‌ست',
+          'color: #06d6a0; font-weight: bold;');
+      }
     },
 
     renderSeats(gameState) {
       const players = gameState.players;
+
       const seatMap = {
         Bottom: players[0],
         Left: players[1],
@@ -500,6 +427,10 @@
       });
     },
 
+    /* ═══════════════════════════════════════════
+       حکم‌خوانی
+       ═══════════════════════════════════════════ */
+
     showHokmPicker() {
       const picker = _$('hokmPicker');
       if (!picker) return;
@@ -509,12 +440,19 @@
       if (state.hokmPickerBound) return;
       state.hokmPickerBound = true;
 
-      picker.querySelectorAll('.suit-btn').forEach(btn => {
+      const buttons = picker.querySelectorAll('.suit-btn');
+      buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           const suit = btn.dataset.suit;
-          if (suit) UI.handleHokmSelect(suit);
+          if (!suit) return;
+          console.log('%c👑 حکم انتخاب شد: ' + suit,
+            'color: #ffd60a; font-weight: bold; font-size: 14px;');
+          UI.handleHokmSelect(suit);
         });
       });
+
+      console.log('%c👑 پنجره انتخاب حکم باز شد',
+        'color: #06d6a0; font-weight: bold;');
     },
 
     hideHokmPicker() {
@@ -537,8 +475,14 @@
           'success',
           2500
         );
+      } else {
+        UI.showToast('خطا', 'انتخاب حکم ناموفق', 'error');
       }
     },
+
+    /* ═══════════════════════════════════════════
+       رویدادهای کاربر
+       ═══════════════════════════════════════════ */
 
     handleCardClick(cardId) {
       if (!_game()) return;
@@ -572,8 +516,13 @@
     },
 
     handlePass() {
+      if (!_game()) return;
       UI.showToast('باید حکم تعیین کنی', '', 'warning', 2000);
     },
+
+    /* ═══════════════════════════════════════════
+       تایمر
+       ═══════════════════════════════════════════ */
 
     updateTimer(remaining, duration) {
       const fill = _$('timerFill');
@@ -607,6 +556,7 @@
       const myScore = result.myScore;
       const opponentScore = result.opponentScore;
       const eloChange = result.eloChange || 0;
+      const coinsReward = result.coinsReward || 0;
       const eloSign = eloChange >= 0 ? '+' : '';
       const eloColor = eloChange > 0
         ? 'var(--color-success)'
@@ -636,8 +586,8 @@
 
         <div style="
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
           margin-bottom: 20px;
         ">
           <div class="stat-card">
@@ -645,6 +595,12 @@
               ${_toPersianNumber(eloSign + eloChange)}
             </div>
             <div class="stat-label">تغییر ELO</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="color: var(--accent);">
+              🪙 ${_toPersianNumber(coinsReward)}
+            </div>
+            <div class="stat-label">سکه</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">${_toPersianNumber(Math.floor(duration / 1000))}s</div>
@@ -787,7 +743,7 @@
     if (game._uiBound) return;
     game._uiBound = true;
 
-    game.on('game:start', () => {
+    game.on('game:start', ({ players }) => {
       UI.renderGame();
     });
 
@@ -802,7 +758,14 @@
 
       const pos = SEAT_POSITIONS[callerIdx];
       const seat = _$('seat' + pos);
-      if (seat) seat.classList.add('hokm-caller');
+      if (seat) {
+        seat.classList.add('hokm-caller');
+      }
+
+      console.log(
+        `%c👑 حکم‌خوان: ${player.name} (صندلی ${pos})`,
+        'color: #ffd60a; font-weight: bold; font-size: 14px;'
+      );
 
       if (callerIdx === 0) {
         UI.showToast('👑 نوبت توئه!', 'یه خال رو انتخاب کن', 'info', 3000);
@@ -815,13 +778,18 @@
       UI.showHokmPicker();
     });
 
-    game.on('hokm:set', ({ suit }) => {
+    game.on('hokm:set', ({ suit, callerIdx }) => {
       UI.updateHokmDisplay(suit);
       UI.hideHokmPicker();
 
       document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
         s.classList.remove('hokm-caller');
       });
+
+      console.log(
+        `%c👑 حکم نهایی: ${SUIT_SYMBOLS[suit]} ${SUIT_FA[suit] || suit}`,
+        'color: #ffd60a; font-weight: bold; font-size: 14px;'
+      );
     });
 
     game.on('turn:start', ({ playerIdx }) => {
@@ -849,8 +817,16 @@
       UI.renderSeats(game.getState());
     });
 
+    game.on('card:invalid', ({ playerIdx, card, leadSuit }) => {
+      console.warn(
+        `%c❌ کارت غیرمجاز از ${playerIdx}: ${card.id} | خال جاری: ${leadSuit}`,
+        'color: #ef476f; font-weight: bold;'
+      );
+    });
+
     game.on('trick:completed', ({ winner }) => {
-      const winnerPos = SEAT_POSITIONS[winner];
+      const seatPositions = SEAT_POSITIONS;
+      const winnerPos = seatPositions[winner];
       const seat = _$('seat' + winnerPos);
       if (seat) {
         seat.classList.add('winner-glow');
@@ -872,9 +848,17 @@
       UI.updateScores(scores, trickCount);
     });
 
-    game.on('timer:start', () => UI.resetTimer());
-    game.on('timer:tick', ({ remaining, duration }) => UI.updateTimer(remaining, duration));
-    game.on('timer:stop', () => UI.resetTimer());
+    game.on('timer:start', () => {
+      UI.resetTimer();
+    });
+
+    game.on('timer:tick', ({ remaining, duration }) => {
+      UI.updateTimer(remaining, duration);
+    });
+
+    game.on('timer:stop', () => {
+      UI.resetTimer();
+    });
 
     game.on('game:ended', (result) => {
       state.inGame = false;
@@ -894,71 +878,6 @@
     });
   }
 
-  /* ═══════════════════════════════════════════
-     📊 رندر صفحه آمار (جدید در ۶.۱.۱)
-     ═══════════════════════════════════════════ */
-  function _renderStats() {
-    const storage = _storage();
-    if (!storage) return;
-
-    const stats = storage.getStats();
-    const profile = _profile()?.get() || {};
-
-    const setText = (id, value) => {
-      const el = $(id);
-      if (el) el.textContent = _toPersianNumber(value);
-    };
-
-    setText('statsTotalGames', stats.gamesPlayed || 0);
-    setText('statsTotalWins', stats.wins || 0);
-    setText('statsTotalLosses', stats.losses || 0);
-    setText('statsWinRate', (stats.winRate || 0) + '٪');
-    setText('statsBestStreak', stats.bestStreak || 0);
-    setText('statsCurrentStreak', stats.currentStreak || 0);
-    setText('statsRoundsWon', stats.roundsWon || 0);
-    setText('statsHokmClaimed', stats.hokmClaimed || 0);
-    setText('statsElo', profile.elo || 1000);
-    setText('statsPlayTime', Math.floor((stats.totalTimePlayed || 0) / 60000));
-
-    // تاریخچه آخرین بازی
-    const history = storage.getHistory();
-    const games = (history.games || []).slice(0, 5);
-
-    const historyEl = $('statsHistory');
-    if (historyEl) {
-      if (games.length === 0) {
-        historyEl.innerHTML = '<p class="empty-msg">هنوز بازی نکردی</p>';
-      } else {
-        historyEl.innerHTML = games.map(g => {
-          const win = g.win;
-          const icon = win ? '🏆' : '💔';
-          const cls = win ? 'win' : 'loss';
-          const eloChange = g.eloChange || 0;
-          const eloSign = eloChange >= 0 ? '+' : '';
-          const eloColor = eloChange > 0
-            ? 'var(--color-success)'
-            : eloChange < 0
-              ? 'var(--color-danger)'
-              : 'var(--text-muted)';
-
-          return `
-            <div class="history-item ${cls}">
-              <div class="history-result">${icon}</div>
-              <div class="history-info">
-                <div class="history-title">
-                  ${win ? 'برد' : 'باخت'} — ${_toPersianNumber(g.scoreA || 0)} به ${_toPersianNumber(g.scoreB || 0)}
-                </div>
-              </div>
-              <div class="history-elo" style="color: ${eloColor}">
-                ${_toPersianNumber(eloSign + eloChange)}
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-  }
-
   /* ─────────────────────────────────────────────
      ورود به هر صفحه
      ───────────────────────────────────────────── */
@@ -968,10 +887,6 @@
         if (_profile() && typeof _profile().updateUI === 'function') {
           _profile().updateUI();
         }
-        break;
-
-      case 'stats':
-        _renderStats();
         break;
 
       case 'leaderboard':
@@ -1050,16 +965,6 @@
       passBtn.addEventListener('click', () => UI.handlePass());
     }
 
-    // 🎯 دکمه راهنما
-    const helpBtn = _$('btnOpenHelp');
-    if (helpBtn && !helpBtn.dataset.bound) {
-      helpBtn.dataset.bound = '1';
-      helpBtn.addEventListener('click', () => {
-        UI.openHelpModal();
-      });
-    }
-
-    // تب‌های auth
     const authTabs = _$$('.auth-tab');
     authTabs.forEach(tab => {
       if (tab.dataset.bound) return;
@@ -1083,116 +988,47 @@
       });
     }
 
+    const createRoom = _$('btnCreateRoom');
+    if (createRoom && !createRoom.dataset.bound) {
+      createRoom.dataset.bound = '1';
+      createRoom.addEventListener('click', () => {
+        if (global.HokmOnline && typeof global.HokmOnline.createRoom === 'function') {
+          global.HokmOnline.createRoom();
+        } else {
+          UI.showToast('آنلاین', 'به‌زودی در دسترس خواهد بود', 'info');
+        }
+      });
+    }
+
+    const joinRoom = _$('btnJoinRoom');
+    if (joinRoom && !joinRoom.dataset.bound) {
+      joinRoom.dataset.bound = '1';
+      joinRoom.addEventListener('click', () => {
+        const input = _$('roomCodeInput');
+        const code = input?.value?.trim();
+        if (!code || code.length !== 6) {
+          UI.showToast('خطا', 'کد اتاق باید ۶ رقم باشد', 'error');
+          return;
+        }
+        if (global.HokmOnline && typeof global.HokmOnline.joinRoom === 'function') {
+          global.HokmOnline.joinRoom(code);
+        } else {
+          UI.showToast('آنلاین', 'به‌زودی در دسترس خواهد بود', 'info');
+        }
+      });
+    }
+
     document.addEventListener('keydown', _handleKeyboard);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !state.modalOpen) {
+        if (state.currentScreen !== 'menu' && state.currentScreen !== 'game') {
+          UI.navigate('menu');
+        }
+      }
+    });
   }
 
   /* ─────────────────────────────────────────────
      منو کارت‌ها
-     ───────────────────────────────────────────── */
-  function _handleMenuAction(action) {
-    if (!action) return;
-
-    switch (action) {
-      case 'online':        UI.navigate('online'); break;
-      case 'tournament':    UI.navigate('tournament'); break;
-      case 'leaderboard':   UI.navigate('leaderboard'); break;
-      case 'achievements':  UI.navigate('achievements'); break;
-      case 'friends':       UI.navigate('friends'); break;
-      case 'replay':        UI.navigate('replay'); break;
-    }
-  }
-
-  /* ─────────────────────────────────────────────
-     شورتکات‌ها
-     ───────────────────────────────────────────── */
-  function _handleKeyboard(e) {
-    const isInGame = state.currentScreen === 'game';
-
-    if (e.altKey) {
-      switch (e.key.toLowerCase()) {
-        case 'm': e.preventDefault(); UI.navigate('menu'); break;
-        case 'p': e.preventDefault(); UI.navigate('profile'); break;
-        case 's': e.preventDefault(); UI.navigate('settings'); break;
-        case 'h': e.preventDefault(); UI.openHelpModal(); break;
-        case 't':
-          e.preventDefault();
-          if (global.HokmThemes) global.HokmThemes.toggle();
-          break;
-      }
-      return;
-    }
-
-    if (isInGame) {
-      if (e.key === 'Escape' && !state.modalOpen) {
-        if (confirm('از بازی خارج می‌شوید؟')) UI.exitGame();
-        return;
-      }
-
-      if (e.key >= '1' && e.key <= '9') {
-        const idx = parseInt(e.key, 10) - 1;
-        const hand = _game()?.getMyHand() || [];
-        if (hand[idx]) UI.handleCardClick(hand[idx].id);
-        return;
-      }
-
-      if (e.key.toLowerCase() === 'p') {
-        UI.handlePass();
-        return;
-      }
-    }
-  }
-
-  /* ─────────────────────────────────────────────
-     setText
-     ───────────────────────────────────────────── */
-  function _setText(id, text) {
-    const el = _$(id);
-    if (el) el.textContent = text;
-  }
-
-  /* ─────────────────────────────────────────────
-     Bootstrap
-     ───────────────────────────────────────────── */
-  function bootstrap() {
-    _bindGlobalEvents();
-
-    setTimeout(() => {
-      if (_game() && _game().hasSavedGame()) {
-        const resume = confirm('بازی قبلی ذخیره شده. ادامه می‌دهید؟');
-        if (resume) {
-          UI.startGame();
-          setTimeout(() => {
-            _game().loadSaved();
-            UI.renderGame();
-          }, 500);
-        } else {
-          _game().clearSaved();
-        }
-      }
-    }, 2000);
-
-    console.log(
-      '%c🎨 UI v6.1.1 ready',
-      'color: #118ab2; font-weight: bold; font-size: 13px;'
-    );
-  }
-
-  /* ─────────────────────────────────────────────
-     Export
-     ───────────────────────────────────────────── */
-  UI.SCREENS = SCREENS;
-  UI.SEAT_MAP = SEAT_MAP;
-  UI.SEAT_POSITIONS = SEAT_POSITIONS;
-  UI.openHelpModal = UI.openHelpModal;
-
-  global.HokmUI = UI;
-
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', bootstrap);
-    } else {
-      bootstrap();
-    }
-  }
-
-})(typeof window !== 'undefined' ? window : globalThis);
+     ─────────────────────────────────
