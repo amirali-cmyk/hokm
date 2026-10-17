@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   🤖 HOKM PRO v6.0 — ai.js
+   🤖 HOKM PRO v6.0 — ai.js (نسخه نهایی با ارتقای Master)
    هوش مصنوعی ۴ سطحی: Easy / Medium / Hard / Master
    ═══════════════════════════════════════════════════════════ */
 
@@ -125,14 +125,12 @@
      کارت‌های "برنده" در trick فعلی
      ───────────────────────────────────────────── */
   function _canWin(card, trick, hokm) {
-    // آیا این کارت می‌تواند trick فعلی را ببرد؟
     if (trick.length === 0) return true;
 
     const leadSuit = trick[0].card.suit;
     const isHokm = card.suit === hokm;
     const isLead = card.suit === leadSuit;
 
-    // بهترین کارت فعلی
     let best = trick[0].card;
     for (let i = 1; i < trick.length; i++) {
       const c = trick[i].card;
@@ -145,14 +143,9 @@
     const bestIsHokm = best.suit === hokm;
     const bestIsLead = best.suit === leadSuit;
 
-    // اگر کارت ما حکمه
     if (isHokm && !bestIsHokm) return true;
     if (isHokm && bestIsHokm) return card.rank > best.rank;
-
-    // اگر کارت ما همون خال برنده فعلی
     if (card.suit === best.suit) return card.rank > best.rank;
-
-    // اگر کارت ما همون خال جاریه ولی بهترین فعلی خال دیگه
     if (isLead && !bestIsLead && !bestIsHokm) return true;
 
     return false;
@@ -200,7 +193,6 @@
      ───────────────────────────────────────────── */
   function _easySelectHokm(hand) {
     const analysis = _analyzeHand(hand);
-    // فقط اگر خال قوی داره (بیشتر از ۴ کارت هم‌خال)
     const sorted = ALL_SUITS.map(s => ({
       suit: s,
       count: analysis.bySuit[s].count,
@@ -223,7 +215,6 @@
   function _mediumSelectHokm(hand) {
     const analysis = _analyzeHand(hand);
     const best = analysis.strongestSuit;
-    // اگر قدرت خال بیش از ۴۰ باشه
     if (analysis.strongestStrength > 40) {
       return best;
     }
@@ -235,12 +226,9 @@
     const hokm = gameState.hokm;
     const myIdx = player.seat;
 
-    // اگر اولین نفر هستی
     if (trick.length === 0) {
-      // کارت متوسط (نه کمترین، نه بیشترین)
       const sorted = valid.slice().sort(_byRankAsc);
       const midIdx = Math.floor(sorted.length / 2);
-      // A با ۵۰٪ احتمال
       const aces = valid.filter(c => c.rank === 14);
       if (aces.length > 0 && Math.random() < 0.5) {
         return aces[0];
@@ -248,35 +236,28 @@
       return sorted[midIdx];
     }
 
-    // آیا می‌تونیم ببریم؟
     const winning = valid.filter(c => _canWin(c, trick, hokm));
 
-    // اگر هم‌تیمی برنده است
     if (_isTeammateWinning(trick, myIdx, gameState)) {
-      // کمترین کارت غیرحکم
       const nonHokm = valid.filter(c => c.suit !== hokm);
       if (nonHokm.length > 0) return nonHokm.sort(_byRankAsc)[0];
       return valid.sort(_byRankAsc)[0];
     }
 
-    // اگر می‌تونیم ببریم، با کمترین ببر
     if (winning.length > 0) {
       return winning.sort(_byRankAsc)[0];
     }
 
-    // نتونستیم، کمترین بازی کن
     return valid.sort(_byRankAsc)[0];
   }
 
   /* ─────────────────────────────────────────────
-     🥇 سطح ۳: HARD
+     🥇 سطح ۳: HARD (هم‌تیمی + حفظ حکم)
      ───────────────────────────────────────────── */
   function _hardSelectHokm(hand) {
     const analysis = _analyzeHand(hand);
 
-    // اگر ۲ آس یا بیشتر داری و قدرت > ۳۵
     if (analysis.aces >= 2) {
-      // بهترین خال با آس
       const aceSuits = ALL_SUITS.map(s => ({
         suit: s,
         aceCount: analysis.bySuit[s].cards.filter(c => c.rank === 14).length,
@@ -304,16 +285,9 @@
       const aces = valid.filter(c => c.rank === 14);
       const kings = valid.filter(c => c.rank === 13);
 
-      // A با ۷۰٪ احتمال
-      if (aces.length > 0 && Math.random() < 0.7) {
-        return aces[0];
-      }
-      // K اگر A نداری
-      if (aces.length === 0 && kings.length > 0) {
-        return kings[0];
-      }
+      if (aces.length > 0 && Math.random() < 0.7) return aces[0];
+      if (aces.length === 0 && kings.length > 0) return kings[0];
 
-      // از ضعیف‌ترین خال شروع کن
       const groups = _groupBySuit(valid);
       const sortedByCount = ALL_SUITS.map(s => ({
         suit: s,
@@ -323,7 +297,6 @@
 
       if (sortedByCount.length > 0) {
         const weakest = sortedByCount[0];
-        // از قوی‌ترین کارت خال ضعیف
         return weakest.cards.sort(_byRankDesc)[0];
       }
 
@@ -331,7 +304,6 @@
     }
 
     // ─── پیرو ───
-
     // ۱. تشخیص هم‌تیمی برنده
     if (_isTeammateWinning(trick, myIdx, gameState)) {
       const nonHokm = valid.filter(c => c.suit !== hokm);
@@ -345,49 +317,34 @@
       const sorted = winning.sort(_byRankAsc);
       const lowest = sorted[0];
 
-      // اگر حکم داری، فقط در صورت لزوم استفاده کن
-      const isHokm = lowest.suit === hokm;
-      const leadSuit = trick[0].card.suit;
-
-      // اگر با کارت غیرحکم هم می‌بریم، حکم رو نگه‌دار
-      if (isHokm) {
+      if (lowest.suit === hokm) {
         const nonHokmWinners = winning.filter(c => c.suit !== hokm);
         if (nonHokmWinners.length > 0) {
           return nonHokmWinners.sort(_byRankAsc)[0];
         }
       }
-
       return lowest;
     }
 
-    // ۳. نتونستیم → کمترین
     return valid.sort(_byRankAsc)[0];
   }
 
   /* ─────────────────────────────────────────────
-     👑 سطح ۴: MASTER
+     👑 سطح ۴: MASTER (حافظه + بلوف + استراتژی)
      ───────────────────────────────────────────── */
   function _masterSelectHokm(hand) {
     const analysis = _analyzeHand(hand);
 
-    // استراتژی چندلایه
     const candidates = ALL_SUITS.map(suit => {
       const info = analysis.bySuit[suit];
       let score = info.strength;
-
-      // امتیاز اضافه برای آس‌ها
       score += info.cards.filter(c => c.rank === 14).length * 15;
-      // پادشاه‌ها
       score += info.cards.filter(c => c.rank === 13).length * 8;
-      // طول خال
       score += info.count * 5;
-      // جریمه برای خالی بودن
       if (info.count === 0) score = -100;
-
       return { suit, score, info };
     }).sort((a, b) => b.score - a.score);
 
-    // اگر ۱ آس یا بیشتر داری
     if (analysis.aces >= 1 && candidates[0].score > 30) {
       return candidates[0].suit;
     }
@@ -403,7 +360,6 @@
     const trick = gameState.trick;
     const hokm = gameState.hokm;
     const myIdx = player.seat;
-    const hand = player.hand;
 
     // ─── شروع دور ───
     if (trick.length === 0) {
@@ -411,15 +367,13 @@
     }
 
     // ─── پیرو ───
-
     // ۱. اگر هم‌تیمی برنده است
     if (_isTeammateWinning(trick, myIdx, gameState)) {
-      // Bluffing: گاهی کارت متوسط بازی کن تا ضعیف به نظر بیای
+      // 🎭 Bluffing: ۱۵٪ احتمال کارت متوسط برای گول زدن حریف
       if (Math.random() < 0.15) {
         const sorted = valid.slice().sort(_byRankAsc);
         return sorted[Math.floor(sorted.length / 2)];
       }
-      // کمترین کارت غیرحکم
       const nonHokm = valid.filter(c => c.suit !== hokm);
       const pool = nonHokm.length > 0 ? nonHokm : valid;
       return pool.sort(_byRankAsc)[0];
@@ -429,11 +383,10 @@
     const winning = valid.filter(c => _canWin(c, trick, hokm));
 
     if (winning.length > 0) {
-      // تلاش برای بردن با کمترین (economic win)
       const sorted = winning.sort(_byRankAsc);
       const cheapest = sorted[0];
 
-      // اگر حکم است ولی با غیرحکم هم می‌بریم، حکم رو ذخیره کن
+      // حفظ حکم
       if (cheapest.suit === hokm) {
         const nonHokmWinners = winning.filter(c => c.suit !== hokm);
         if (nonHokmWinners.length > 0) {
@@ -441,7 +394,7 @@
         }
       }
 
-      // Bluffing: ۱۰٪ کارت متوسط بازی کن
+      // 🎭 Bluffing: ۱۰٪ احتمال کارت متوسط برای گول زدن حریف
       if (Math.random() < 0.10 && sorted.length > 1) {
         return sorted[1];
       }
@@ -453,13 +406,8 @@
     return _masterDiscard(player, gameState, valid);
   }
 
-  /**
-   * Master: انتخاب کارت شروع
-   */
   function _masterLeadCard(player, gameState, valid) {
-    const hand = player.hand;
     const hokm = gameState.hokm;
-    const opponentAces = _countRemainingAces(valid);
 
     // ۱. آس‌های غیرحکم
     const acesNonHokm = valid.filter(c => c.rank === 14 && c.suit !== hokm);
@@ -467,16 +415,14 @@
       return acesNonHokm[0];
     }
 
-    // ۲. آس‌های حکم (اگر داری)
+    // ۲. آس‌های حکم
     const acesHokm = valid.filter(c => c.rank === 14 && c.suit === hokm);
     if (acesHokm.length > 0 && Math.random() < 0.6) {
       return acesHokm[0];
     }
 
-    // ۳. استراتژی: خالی کردن یک خال برای ساختن حکم
+    // ۳. خالی کردن خال‌های کوتاه
     const groups = _groupBySuit(valid);
-
-    // اگر یک خال داریم که فقط ۱ کارت داره، ازش شروع کن
     const shortSuits = ALL_SUITS
       .filter(s => s !== hokm)
       .map(s => ({ suit: s, cards: groups[s] }))
@@ -486,7 +432,7 @@
       return shortSuits[0].cards[0];
     }
 
-    // ۴. از ضعیف‌ترین خال شروع کن
+    // ۴. شروع از ضعیف‌ترین خال
     const sortedByCount = ALL_SUITS
       .filter(s => s !== hokm)
       .map(s => ({
@@ -499,49 +445,25 @@
 
     if (sortedByCount.length > 0) {
       const weakest = sortedByCount[0];
-      // از قوی‌ترین کارت خال ضعیف (برای محافظت)
       return weakest.cards.sort(_byRankDesc)[0];
     }
 
     return valid[0];
   }
 
-  /**
-   * Master: دور انداختن (نتونستیم ببریم)
-   */
   function _masterDiscard(player, gameState, valid) {
     const hokm = gameState.hokm;
     const trick = gameState.trick;
-
-    // اگر مجبوریم خال جاری بدیم، کمترین رو بذار
     const leadSuit = trick[0]?.card.suit;
 
     if (leadSuit) {
-      // از خال‌هایی که کم داریم دور کن
       const sorted = valid.sort(_byRankAsc);
-
-      // کارت‌های غیرحکم اول
       const nonHokm = sorted.filter(c => c.suit !== hokm);
-      if (nonHokm.length > 0) {
-        return nonHokm[0];
-      }
-
+      if (nonHokm.length > 0) return nonHokm[0];
       return sorted[0];
     }
 
     return valid.sort(_byRankAsc)[0];
-  }
-
-  /**
-   * شمارش آس‌های باقی‌مانده
-   */
-  function _countRemainingAces(myCards) {
-    const myAces = myCards.filter(c => c.rank === 14).map(c => c.suit);
-    const remaining = {};
-    ALL_SUITS.forEach(suit => {
-      remaining[suit] = !myAces.includes(suit) && !memory.playedCards.has(`${suit}_14`);
-    });
-    return remaining;
   }
 
   /* ─────────────────────────────────────────────
@@ -551,9 +473,6 @@
 
     LEVELS,
 
-    /**
-     * انتخاب حکم
-     */
     selectHokm(player, gameState) {
       const hand = player.hand || [];
       const level = player.aiLevel || 'medium';
@@ -567,9 +486,6 @@
       }
     },
 
-    /**
-     * انتخاب کارت برای بازی
-     */
     selectCard(player, gameState, valid) {
       if (!valid || valid.length === 0) return null;
       if (valid.length === 1) return valid[0];
@@ -585,36 +501,21 @@
         default:       card = _mediumSelectCard(player, gameState, valid);
       }
 
-      // ثبت در حافظه (Master)
-      if (level === 'master') {
-        // خودمان یک کارت انتخاب کردیم، اما بعداً ثبت واقعی در game.js انجام می‌شود
-      }
-
       return card || valid[0];
     },
 
-    /**
-     * ثبت کارت بازی‌شده (از game.js صدا زده می‌شود)
-     */
     recordPlayedCard(playerIdx, card) {
       _recordPlayedCard(playerIdx, card);
     },
 
-    /**
-     * ریست حافظه (در شروع بازی جدید)
-     */
     resetMemory() {
       _resetMemory();
     },
 
-    /**
-     * مقداردهی حافظه از state بازی
-     */
     syncMemory(gameState) {
       if (!gameState) return;
       _resetMemory();
 
-      // کارت‌های بازی‌شده تا الان
       if (gameState.rounds) {
         gameState.rounds.forEach(r => {
           if (r.trick) {
@@ -623,15 +524,11 @@
         });
       }
 
-      // کارت‌های دور فعلی
       if (gameState.trick) {
         gameState.trick.forEach(t => _recordPlayedCard(t.playerIdx, t.card));
       }
     },
 
-    /**
-     * دیباگ: نمایش حافظه
-     */
     debugMemory() {
       return {
         playedCards: Array.from(memory.playedCards),
@@ -640,9 +537,6 @@
       };
     },
 
-    /**
-     * پیشنهاد حکم (برای نمایش به کاربر)
-     */
     suggestHokm(hand) {
       const analysis = _analyzeHand(hand);
       const suggestions = ALL_SUITS.map(suit => ({
@@ -657,27 +551,15 @@
       };
     },
 
-    /**
-     * پیشنهاد کارت (برای راهنما)
-     */
     suggestCard(player, gameState, valid) {
-      // با استفاده از Master برای پیشنهاد بهترین
       const tempPlayer = { ...player, aiLevel: 'master' };
       return _masterSelectCard(tempPlayer, gameState, valid);
     },
 
-    /* ─── اطلاعات ─── */
-
-    /**
-     * اطلاعات سطح
-     */
     getLevelInfo(level) {
       return LEVELS[level] || LEVELS.medium;
     },
 
-    /**
-     * لیست همه سطوح
-     */
     listLevels() {
       return Object.entries(LEVELS).map(([key, val]) => ({
         key,
@@ -685,9 +567,6 @@
       }));
     },
 
-    /**
-     * توضیحات هر سطح
-     */
     getLevelDescription(level) {
       const descriptions = {
         easy:   'بازی تصادفی — مناسب مبتدیان',
