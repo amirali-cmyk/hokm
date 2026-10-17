@@ -9,16 +9,13 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <title>حکم حرفه‌ای — Hokm Pro</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
 
-  <!-- فونت‌ها -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
 
-  <!-- استایل‌ها -->
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/themes.css" />
   <link rel="stylesheet" href="css/components.css" />
@@ -26,27 +23,14 @@
   <link rel="stylesheet" href="css/animations.css" />
   <link rel="stylesheet" href="css/responsive.css" />
 
-  <!-- ═══════════════════════════════════════════
-       🎨 Top Bar دو-ردیفی + اصلاحات کارت
-       ═══════════════════════════════════════════ -->
   <style>
-    :root {
-      --topbar-h: 96px;
-    }
-
-    @media (max-width: 600px) {
-      :root { --topbar-h: 90px; }
-    }
-
-    @media (max-width: 380px) {
-      :root { --topbar-h: 86px; }
-    }
+    :root { --topbar-h: 96px; }
+    @media (max-width: 600px) { :root { --topbar-h: 90px; } }
+    @media (max-width: 380px) { :root { --topbar-h: 86px; } }
 
     .top-bar {
       position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
+      top: 0 !important; left: 0 !important; right: 0 !important;
       z-index: var(--z-sticky) !important;
       background: rgba(13, 27, 42, 0.85) !important;
       backdrop-filter: blur(16px) saturate(160%) !important;
@@ -59,205 +43,102 @@
       gap: 4px !important;
       height: auto !important;
     }
-
     .top-bar-row-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; width: 100%;
     }
-
     .top-bar-row-top .top-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      flex: 0 0 auto !important;
+      display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; flex: 0 0 auto !important;
     }
-
     .top-bar-row-top .tabs {
-      flex: 0 1 auto !important;
-      display: flex !important;
-      gap: 2px !important;
-      padding: 3px !important;
+      flex: 0 1 auto !important; display: flex !important;
+      gap: 2px !important; padding: 3px !important;
       background: rgba(0, 0, 0, 0.2) !important;
-      border-radius: 9999px !important;
-      margin: 0 auto !important;
+      border-radius: 9999px !important; margin: 0 auto !important;
     }
-
     .top-bar-row-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 0 4px;
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 0 4px;
     }
-
     .top-bar-row-bottom .top-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      justify-content: flex-end;
-      flex: 0 0 auto !important;
+      display: flex; align-items: center; gap: 6px;
+      justify-content: flex-end; flex: 0 0 auto !important;
     }
-
-    #btnThemeToggle,
-    #btnSoundToggle,
-    #btnBackFromGame {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      width: 34px !important;
-      height: 34px !important;
-      padding: 0 !important;
-      font-size: 17px !important;
-      line-height: 1 !important;
+    #btnThemeToggle, #btnSoundToggle, #btnBackFromGame {
+      display: inline-flex !important; align-items: center !important;
+      justify-content: center !important; width: 34px !important;
+      height: 34px !important; padding: 0 !important;
+      font-size: 17px !important; line-height: 1 !important;
       color: var(--text-primary) !important;
       background: rgba(255, 255, 255, 0.04) !important;
       border: 1px solid var(--border-color) !important;
-      border-radius: 50% !important;
-      cursor: pointer !important;
-      transition: all 0.15s ease !important;
-      flex-shrink: 0 !important;
+      border-radius: 50% !important; cursor: pointer !important;
+      transition: all 0.15s ease !important; flex-shrink: 0 !important;
     }
-
-    #btnThemeToggle:hover,
-    #btnSoundToggle:hover {
+    #btnThemeToggle:hover, #btnSoundToggle:hover {
       background: var(--accent-soft) !important;
       border-color: var(--accent) !important;
       transform: scale(1.1) !important;
     }
-
-    #btnThemeToggle:active,
-    #btnSoundToggle:active,
-    #btnBackFromGame:active {
+    #btnThemeToggle:active, #btnSoundToggle:active, #btnBackFromGame:active {
       transform: scale(0.92) !important;
     }
-
     #btnBackFromGame:hover {
       background: var(--color-danger) !important;
       border-color: var(--color-danger) !important;
-      color: #fff !important;
-      transform: scale(1.1) !important;
+      color: #fff !important; transform: scale(1.1) !important;
     }
-
-    .app {
-      padding-top: var(--topbar-h) !important;
-    }
-
+    .app { padding-top: var(--topbar-h) !important; }
     .screen[data-screen="game"] .game-container {
       height: calc(100vh - var(--topbar-h)) !important;
       height: calc(100dvh - var(--topbar-h)) !important;
     }
+    .player-hand .card-face { margin: 0 -6px !important; }
+    @media (max-width: 600px) { .player-hand .card-face { margin: 0 -8px !important; } }
+    @media (max-width: 380px) { .player-hand .card-face { margin: 0 -10px !important; } }
+    @media (min-width: 1024px) { .player-hand .card-face { margin: 0 -4px !important; } }
 
-    .player-hand .card-face {
-      margin: 0 -6px !important;
-    }
-
-    @media (max-width: 600px) {
-      .player-hand .card-face {
-        margin: 0 -8px !important;
-      }
-    }
-
-    @media (max-width: 380px) {
-      .player-hand .card-face {
-        margin: 0 -10px !important;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      .player-hand .card-face {
-        margin: 0 -4px !important;
-      }
-    }
-
-    .player-seat.hokm-caller {
-      position: relative;
-    }
-
+    .player-seat.hokm-caller { position: relative; }
     .player-seat.hokm-caller .seat-avatar {
       border-color: #ffd60a !important;
-      box-shadow:
-        0 0 0 4px rgba(255, 214, 10, 0.3),
-        0 0 25px rgba(255, 214, 10, 0.6) !important;
+      box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.3), 0 0 25px rgba(255, 214, 10, 0.6) !important;
       animation: crownPulse 1.5s ease-in-out infinite !important;
     }
-
     .player-seat.hokm-caller::after {
-      content: '👑';
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 24px;
+      content: '👑'; position: absolute; top: -12px; left: 50%;
+      transform: translateX(-50%); font-size: 24px;
       animation: crownFloat 2s ease-in-out infinite;
       pointer-events: none;
       filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.9));
       z-index: 10;
     }
-
     @keyframes crownPulse {
-      0%, 100% {
-        box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.3), 0 0 25px rgba(255, 214, 10, 0.6);
-      }
-      50% {
-        box-shadow: 0 0 0 8px rgba(255, 214, 10, 0.1), 0 0 40px rgba(255, 214, 10, 0.9);
-      }
+      0%, 100% { box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.3), 0 0 25px rgba(255, 214, 10, 0.6); }
+      50% { box-shadow: 0 0 0 8px rgba(255, 214, 10, 0.1), 0 0 40px rgba(255, 214, 10, 0.9); }
     }
-
     @keyframes crownFloat {
       0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%      { transform: translateX(-50%) translateY(-6px); }
+      50% { transform: translateX(-50%) translateY(-6px); }
     }
 
     @media (max-width: 600px) {
-      .top-bar {
-        padding: 4px 8px 6px !important;
-        gap: 3px !important;
-      }
-
+      .top-bar { padding: 4px 8px 6px !important; gap: 3px !important; }
       .top-title { display: none !important; }
-
-      .top-bar-row-top .tab {
-        padding: 5px 8px !important;
-        min-height: 32px !important;
-      }
-
+      .top-bar-row-top .tab { padding: 5px 8px !important; min-height: 32px !important; }
       .top-bar-row-top .tab-label { display: none !important; }
       .top-bar-row-top .tab-icon { font-size: 16px !important; }
-
-      #btnThemeToggle,
-      #btnSoundToggle,
-      #btnBackFromGame {
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 16px !important;
-      }
+      #btnThemeToggle, #btnSoundToggle, #btnBackFromGame { width: 32px !important; height: 32px !important; font-size: 16px !important; }
     }
-
     @media (max-width: 380px) {
-      .top-bar-row-top .tab {
-        padding: 4px 6px !important;
-        min-height: 30px !important;
-      }
-
+      .top-bar-row-top .tab { padding: 4px 6px !important; min-height: 30px !important; }
       .top-bar-row-top .tab-icon { font-size: 15px !important; }
-
-      #btnThemeToggle,
-      #btnSoundToggle,
-      #btnBackFromGame {
-        width: 30px !important;
-        height: 30px !important;
-        font-size: 15px !important;
-      }
+      #btnThemeToggle, #btnSoundToggle, #btnBackFromGame { width: 30px !important; height: 30px !important; font-size: 15px !important; }
     }
   </style>
 </head>
 <body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
-  <!-- Splash Screen -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-logo-wrap">
@@ -274,12 +155,9 @@
     </div>
   </div>
 
-  <!-- اپلیکیشن اصلی -->
   <div id="app" class="app hidden">
 
-    <!-- ───── Top Bar (دو-ردیفی) ───── -->
     <header class="top-bar" id="topBar">
-
       <div class="top-bar-row-top">
         <div class="top-bar-right">
           <img src="assets/logo.svg" alt="" class="top-logo" />
@@ -293,36 +171,31 @@
           <button class="tab" data-tab="profile" role="tab" type="button">
             <span class="tab-icon">👤</span><span class="tab-label">پروفایل</span>
           </button>
-          <button class="tab" data-tab="stats" role="tab" type="button">
-            <span class="tab-icon">📊</span><span class="tab-label">آمار</span>
-          </button>
           <button class="tab" data-tab="settings" role="tab" type="button">
             <span class="tab-icon">⚙️</span><span class="tab-label">تنظیمات</span>
+          </button>
+          <button class="tab" data-tab="stats" role="tab" type="button">
+            <span class="tab-icon">📊</span><span class="tab-label">آمار</span>
           </button>
         </nav>
       </div>
 
       <div class="top-bar-row-bottom">
         <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">🌙</button>
-
         <div class="top-bar-left">
           <button class="icon-btn hidden" id="btnBackFromGame" aria-label="بازگشت به منو" title="منو" type="button">↩</button>
           <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">🔊</button>
         </div>
       </div>
-
     </header>
 
-    <!-- ───── محتوای اصلی ───── -->
     <main class="main-content" id="mainContent">
 
-      <!-- منو -->
       <section class="screen active" id="screen-menu" data-screen="menu">
         <div class="menu-container">
-
           <button class="btn-start-big" id="btnStartGame" type="button">
             <span class="btn-start-icon">🎮</span>
-            <span class="btn-start-text">بازی جدید</span>
+            <span class="btn-start-text">شروع بازی</span>
             <span class="btn-start-sub">آفلاین با هوش مصنوعی</span>
           </button>
 
@@ -366,6 +239,9 @@
               <div class="quick-elo">
                 <span id="quickElo">۱۰۰۰</span>
                 <span class="quick-rank" id="quickRank">تازه‌کار</span>
+                <span style="color: var(--accent); font-family: var(--font-num); margin-right: auto; font-weight: 700;">
+                  🪙 <span id="quickCoins">۵۰۰</span>
+                </span>
               </div>
             </div>
             <button class="quick-login-btn" id="btnLogin" type="button">ورود / ثبت‌نام</button>
@@ -373,7 +249,6 @@
         </div>
       </section>
 
-      <!-- پروفایل -->
       <section class="screen" id="screen-profile" data-screen="profile">
         <div class="profile-container">
           <div class="profile-header-card">
@@ -388,6 +263,10 @@
           </div>
 
           <div class="stats-grid">
+            <div class="stat-card" style="grid-column: span 2; background: linear-gradient(135deg, #ffd60a, #b8860b);">
+              <div class="stat-value" id="statCoins" style="color: #1a1a1a; font-size: 32px;">۵۰۰</div>
+              <div class="stat-label" style="color: #1a1a1a; font-weight: 700;">🪙 سکه‌های من</div>
+            </div>
             <div class="stat-card">
               <div class="stat-value" id="statWins">۰</div>
               <div class="stat-label">برد</div>
@@ -424,62 +303,6 @@
         </div>
       </section>
 
-      <!-- 📊 آمار کامل -->
-      <section class="screen" id="screen-stats" data-screen="stats">
-        <div class="menu-container">
-          <h2 class="screen-title">📊 آمار کامل</h2>
-
-          <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
-            <div class="stat-card">
-              <div class="stat-value" id="statsTotalGames">۰</div>
-              <div class="stat-label">کل بازی‌ها</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsTotalWins">۰</div>
-              <div class="stat-label">بردها</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsTotalRounds">۰</div>
-              <div class="stat-label">دست‌های برده</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsHokmClaimed">۰</div>
-              <div class="stat-label">حکم‌های خوانده</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsBestStreak">۰</div>
-              <div class="stat-label">رکورد پیاپی</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsPlayTime">۰</div>
-              <div class="stat-label">دقیقه بازی</div>
-            </div>
-          </div>
-
-          <h3 class="section-title">🏆 آخرین رتبه‌ها</h3>
-          <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px;">
-            <div class="stat-card">
-              <div class="stat-value" id="statsElo">۱۰۰۰</div>
-              <div class="stat-label">ELO فعلی</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statsRank">تازه‌کار</div>
-              <div class="stat-label">رتبه</div>
-            </div>
-          </div>
-
-          <h3 class="section-title">🎯 دستاوردها</h3>
-          <div class="stat-card" style="margin-top: 8px;">
-            <div class="stat-value" id="statsAchCount">۰ / ۱۲</div>
-            <div class="stat-label">دستاوردهای باز شده</div>
-            <div class="ach-progress-bar" style="width: 100%; margin-top: 12px;">
-              <div class="ach-progress-fill" id="statsAchFill"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- تنظیمات -->
       <section class="screen" id="screen-settings" data-screen="settings">
         <div class="settings-container">
           <h2 class="screen-title">⚙️ تنظیمات</h2>
@@ -544,14 +367,6 @@
             </div>
           </div>
 
-          <!-- 📖 دکمه راهنما — 🆕 در نسخه ۶.۱.۱ -->
-          <div class="setting-group">
-            <label class="setting-label">📖 راهنما</label>
-            <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
-              مشاهده راهنمای بازی
-            </button>
-          </div>
-
           <div class="setting-group row">
             <label class="setting-label">🔊 صداهای بازی</label>
             <label class="switch">
@@ -578,6 +393,14 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
+          <!-- 📖 دکمه راهنما -->
+          <div class="setting-group">
+            <label class="setting-label">📖 راهنما</label>
+            <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
+              مشاهده راهنمای بازی
+            </button>
+          </div>
+
           <div class="danger-zone">
             <button class="btn-danger" id="btnResetStats" type="button">🗑️ پاک‌کردن آمار</button>
             <button class="btn-danger" id="btnResetAll" type="button">⚠️ بازنشانی کامل</button>
@@ -585,10 +408,70 @@
         </div>
       </section>
 
-      <!-- صفحه بازی -->
+      <!-- 📊 صفحه آمار -->
+      <section class="screen" id="screen-stats" data-screen="stats">
+        <div class="menu-container">
+          <h2 class="screen-title">📊 آمار کامل</h2>
+          
+          <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalGames">۰</div>
+              <div class="stat-label">کل بازی‌ها</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalWins">۰</div>
+              <div class="stat-label">بردها</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalRounds">۰</div>
+              <div class="stat-label">دست‌های برده</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsHokmClaimed">۰</div>
+              <div class="stat-label">حکم‌های خوانده</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsBestStreak">۰</div>
+              <div class="stat-label">رکورد پیاپی</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsPlayTime">۰</div>
+              <div class="stat-label">دقیقه بازی</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-help" data-screen="help">
+        <div class="help-container">
+          <h2 class="screen-title">📖 راهنمای بازی حکم</h2>
+          <div class="tutorial-grid" id="tutorialGrid">
+            <div class="tutorial-card" data-step="1">
+              <img src="assets/tutorial/step1.svg" alt="هدف بازی" />
+              <h3>هدف بازی</h3>
+              <p>۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.</p>
+            </div>
+            <div class="tutorial-card" data-step="2">
+              <img src="assets/tutorial/step2.svg" alt="ترتیب کارت‌ها" />
+              <h3>ترتیب کارت‌ها</h3>
+              <p>A(14) &gt; K(13) &gt; Q(12) &gt; J(11) &gt; 10 … &gt; 2</p>
+            </div>
+            <div class="tutorial-card" data-step="3">
+              <img src="assets/tutorial/step3.svg" alt="حکم‌خوانی" />
+              <h3>حکم‌خوانی</h3>
+              <p>یک نفر حکم تعیین می‌کند، خال حکم بر همه چیز برتری دارد.</p>
+            </div>
+            <div class="tutorial-card" data-step="4">
+              <img src="assets/tutorial/step4.svg" alt="قوانین" />
+              <h3>قوانین طلایی</h3>
+              <p>پیروی از خال الزامی است. باید کارت هم‌خال بازی کنی اگر داری.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="screen" id="screen-game" data-screen="game">
         <div class="game-container" id="gameContainer">
-
           <div class="game-info-bar">
             <div class="team-score team-a">
               <span class="team-label">تیم ما</span>
@@ -618,7 +501,6 @@
               </div>
               <div class="played-card-slot" id="playedTop"></div>
             </div>
-
             <div class="player-seat seat-left" id="seatLeft">
               <div class="seat-avatar" id="avatarLeft">🤖</div>
               <div class="seat-info">
@@ -627,7 +509,6 @@
               </div>
               <div class="played-card-slot" id="playedLeft"></div>
             </div>
-
             <div class="player-seat seat-right" id="seatRight">
               <div class="seat-avatar" id="avatarRight">🤖</div>
               <div class="seat-info">
@@ -636,9 +517,7 @@
               </div>
               <div class="played-card-slot" id="playedRight"></div>
             </div>
-
             <div class="trick-center" id="trickCenter"></div>
-
             <div class="player-seat seat-bottom" id="seatBottom">
               <div class="played-card-slot" id="playedBottom"></div>
             </div>
@@ -670,7 +549,6 @@
         </div>
       </section>
 
-      <!-- لیدربورد -->
       <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
         <div class="leaderboard-container">
           <h2 class="screen-title">🏆 جدول امتیازات</h2>
@@ -683,7 +561,6 @@
         </div>
       </section>
 
-      <!-- دستاوردها -->
       <section class="screen" id="screen-achievements" data-screen="achievements">
         <div class="achievements-container">
           <h2 class="screen-title">🎖️ دستاوردها</h2>
@@ -693,7 +570,6 @@
         </div>
       </section>
 
-      <!-- دوستان -->
       <section class="screen" id="screen-friends" data-screen="friends">
         <div class="friends-container">
           <h2 class="screen-title">👥 دوستان</h2>
@@ -707,7 +583,6 @@
         </div>
       </section>
 
-      <!-- تورنمنت -->
       <section class="screen" id="screen-tournament" data-screen="tournament">
         <div class="tournament-container">
           <h2 class="screen-title">🏆 تورنمنت هفتگی</h2>
@@ -727,7 +602,6 @@
         </div>
       </section>
 
-      <!-- ری‌پلی -->
       <section class="screen" id="screen-replay" data-screen="replay">
         <div class="replay-container">
           <h2 class="screen-title">📼 پخش مجدد</h2>
@@ -737,7 +611,6 @@
         </div>
       </section>
 
-      <!-- آنلاین -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
           <h2 class="screen-title">🌐 بازی آنلاین</h2>
@@ -751,7 +624,6 @@
         </div>
       </section>
 
-      <!-- ورود/ثبت‌نام -->
       <section class="screen" id="screen-auth" data-screen="auth">
         <div class="auth-container">
           <h2 class="screen-title">🔐 حساب کاربری</h2>
@@ -773,7 +645,6 @@
     <nav class="bottom-nav" id="bottomNav"></nav>
   </div>
 
-  <!-- مودال -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="modalBox">
       <button class="modal-close" id="modalClose" type="button">×</button>
@@ -781,13 +652,9 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast-container" id="toastContainer"></div>
-
-  <!-- Particle Canvas -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
-  <!-- اسکریپت‌ها -->
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/audio.js"></script>
@@ -804,69 +671,45 @@
   <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 
-  <!-- Emergency Splash Killer -->
   <script>
     (function () {
       'use strict';
-
       var killed = false;
-
       function killSplash(reason) {
         if (killed) return;
         killed = true;
-
         var splash = document.getElementById('splashScreen');
         var app = document.getElementById('app');
-
-        console.log('[Emergency Killer] ' + reason);
-
-        if (splash) {
-          splash.classList.add('hidden');
-          splash.style.display = 'none';
-        }
+        if (splash) { splash.classList.add('hidden'); splash.style.display = 'none'; }
         if (app) app.classList.remove('hidden');
-
         try {
           if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
             window.HokmUI.navigate('menu', { force: true });
             return;
           }
         } catch (e) { }
-
         var screens = document.querySelectorAll('.screen');
-        for (var i = 0; i < screens.length; i++) {
-          screens[i].classList.remove('active');
-        }
+        for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
         var menu = document.getElementById('screen-menu');
         if (menu) menu.classList.add('active');
       }
-
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
-        if (splash && !splash.classList.contains('hidden')) {
-          killSplash('Timeout 3.5s');
-        }
+        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 3.5s');
       }, 3500);
-
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
-        if (splash && !splash.classList.contains('hidden')) {
-          killSplash('Timeout 6s');
-        }
+        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 6s');
       }, 6000);
-
       setTimeout(function () {
         var skipBtn = document.getElementById('btnSkipSplash');
         if (skipBtn && !skipBtn.dataset.killerBound) {
           skipBtn.dataset.killerBound = '1';
           skipBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            killSplash('Skip clicked');
+            e.preventDefault(); e.stopPropagation(); killSplash('Skip clicked');
           });
         }
       }, 100);
-
       setTimeout(function () {
         var startBtn = document.getElementById('btnStartGame');
         if (startBtn && !startBtn.dataset.killerBound) {
@@ -874,21 +717,13 @@
           startBtn.addEventListener('click', function (e) {
             e.preventDefault();
             try {
-              if (window.HokmUI && typeof window.HokmUI.startGame === 'function') {
-                window.HokmUI.startGame();
-              } else if (window.HokmGame && typeof window.HokmGame.start === 'function') {
-                window.HokmGame.start();
-              } else {
-                alert('موتور بازی آماده نیست');
-              }
-            } catch (err) {
-              console.error('Start error:', err);
-              alert('خطا: ' + err.message);
-            }
+              if (window.HokmUI && typeof window.HokmUI.startGame === 'function') window.HokmUI.startGame();
+              else if (window.HokmGame && typeof window.HokmGame.start === 'function') window.HokmGame.start();
+              else alert('موتور بازی آماده نیست');
+            } catch (err) { console.error(err); alert('خطا: ' + err.message); }
           });
         }
       }, 100);
-
       setTimeout(function () {
         var tabs = document.querySelectorAll('.tab');
         for (var i = 0; i < tabs.length; i++) {
@@ -915,7 +750,6 @@
           })(tabs[i]);
         }
       }, 100);
-
       setTimeout(function () {
         var cards = document.querySelectorAll('.menu-card');
         for (var i = 0; i < cards.length; i++) {
@@ -938,152 +772,7 @@
           })(cards[i]);
         }
       }, 100);
-
-      setTimeout(function () {
-        var modules = [
-          'HokmStorage', 'HokmThemes', 'HokmAudio', 'HokmProfile',
-          'HokmAchievements', 'HokmLeaderboard', 'HokmFriends',
-          'HokmTournament', 'HokmReplay', 'HokmShare', 'HokmAI',
-          'HokmGame', 'HokmUI', 'HokmSettings', 'HokmApp'
-        ];
-        var ok = 0, missing = [];
-        for (var i = 0; i < modules.length; i++) {
-          if (window[modules[i]] && typeof window[modules[i]] === 'object') ok++;
-          else missing.push(modules[i]);
-        }
-        console.log('%c📦 Modules: ' + ok + '/' + modules.length,
-          'color: ' + (missing.length === 0 ? '#06d6a0' : '#ef476f') + '; font-weight: bold;');
-        if (missing.length > 0) console.warn('Missing:', missing);
-      }, 500);
-
     })();
   </script>
-
-  <!-- Debug Logger -->
-  <script>
-    (function () {
-      'use strict';
-
-      var logEl = null;
-
-      function createLogBox() {
-        if (logEl) return;
-
-        logEl = document.createElement('div');
-        logEl.id = 'gameDebugLog';
-        logEl.style.cssText = [
-          'position:fixed',
-          'bottom:60px',
-          'left:8px',
-          'right:8px',
-          'background:rgba(0,0,0,0.92)',
-          'color:#0f0',
-          'font-family:Menlo,Consolas,monospace',
-          'font-size:10px',
-          'padding:8px',
-          'border-radius:8px',
-          'z-index:99998',
-          'max-height:120px',
-          'overflow:auto',
-          'direction:ltr',
-          'text-align:left',
-          'line-height:1.4',
-          'display:none'
-        ].join(';');
-
-        document.body.appendChild(logEl);
-
-        var toggleBtn = document.createElement('button');
-        toggleBtn.id = 'gameDebugToggle';
-        toggleBtn.textContent = '🐛';
-        toggleBtn.style.cssText = [
-          'position:fixed',
-          'bottom:8px',
-          'left:8px',
-          'width:40px',
-          'height:40px',
-          'border-radius:50%',
-          'background:#ffd60a',
-          'color:#000',
-          'border:0',
-          'font-size:20px',
-          'cursor:pointer',
-          'z-index:99999',
-          'box-shadow:0 4px 12px rgba(0,0,0,0.5)',
-          'display:flex',
-          'align-items:center',
-          'justify-content:center'
-        ].join(';');
-
-        toggleBtn.addEventListener('click', function () {
-          if (logEl.style.display === 'none') {
-            logEl.style.display = 'block';
-            toggleBtn.textContent = '✕';
-          } else {
-            logEl.style.display = 'none';
-            toggleBtn.textContent = '🐛';
-          }
-        });
-
-        document.body.appendChild(toggleBtn);
-      }
-
-      function log(msg, color) {
-        createLogBox();
-        var line = document.createElement('div');
-        line.textContent = msg;
-        if (color) line.style.color = color;
-        logEl.appendChild(line);
-        logEl.scrollTop = logEl.scrollHeight;
-
-        while (logEl.children.length > 40) {
-          logEl.removeChild(logEl.firstChild);
-        }
-      }
-
-      setTimeout(function () {
-        if (!window.HokmGame) return;
-
-        HokmGame.on('game:start', function () {
-          log('▶ GAME START', '#ffd60a');
-          if (logEl) logEl.innerHTML = '';
-        });
-
-        HokmGame.on('hokm:selecting', function (data) {
-          log('👑 حکم‌خوان: ' + data.player.name, '#ffd60a');
-        });
-
-        HokmGame.on('hokm:set', function (data) {
-          log('👑 HOKM: ' + data.suit, '#ffd60a');
-        });
-
-        HokmGame.on('card:played', function (data) {
-          var leadSuit = data.trick.length > 1 ? data.trick[0].card.suit : '—';
-          log(
-            '🎴 P' + data.playerIdx + ' → ' + data.card.suit + ' ' + data.card.rank +
-            ' | ' + data.trick.length + '/4 | lead: ' + leadSuit,
-            data.card.suit === leadSuit || data.trick.length === 1 ? '#0f0' : '#f4a259'
-          );
-        });
-
-        HokmGame.on('card:invalid', function (data) {
-          log('❌ INVALID! P' + data.playerIdx + ' → ' + data.card.suit + ' ' + data.card.rank, '#ef476f');
-        });
-
-        HokmGame.on('trick:completed', function (data) {
-          log('🏆 Trick won by P' + data.winner, '#06d6a0');
-        });
-
-        HokmGame.on('game:ended', function (data) {
-          log('🏁 ' + (data.win ? 'WIN' : 'LOSE') +
-              ' | ' + data.myScore + '-' + data.opponentScore, data.win ? '#06d6a0' : '#ef476f');
-        });
-
-        console.log('%c🐛 Game debug logger ready', 'color: #ffd60a; font-weight: bold;');
-      }, 2000);
-
-    })();
-  </script>
-
 </body>
 </html>
