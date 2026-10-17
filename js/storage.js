@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   💾 HOKM PRO v6.0 — storage.js
+   💾 HOKM PRO v6.1.1 — storage.js
    مدیریت localStorage با ۶ کلید اصلی + Migration + Events
    ═══════════════════════════════════════════════════════════ */
 
@@ -10,7 +10,7 @@
      ثابت‌ها
      ───────────────────────────────────────────── */
   const PREFIX = 'hokm_';
-  const VERSION = '6.0.0';
+  const VERSION = '6.1.1';
   const SAVE_EXPIRY_DAYS = 7;
 
   const KEYS = {
@@ -20,7 +20,6 @@
     STATS:        PREFIX + 'stats',
     HISTORY:      PREFIX + 'history',
     ACHIEVEMENTS: PREFIX + 'achievements',
-    // کلیدهای تکمیلی
     VERSION:      PREFIX + 'version',
     AUTH_TOKEN:   PREFIX + 'auth_token',
     FRIENDS:      PREFIX + 'friends',
@@ -36,7 +35,7 @@
       avatar: '🌱',
       elo: 1000,
       level: 1,
-      coins: 100,
+      coins: 500,               // 🎯 سکه اولیه ۵۰۰
       rank: 'مبتدی',
       createdAt: Date.now(),
       lastPlayedAt: null,
@@ -45,13 +44,13 @@
     },
 
     settings: {
-      theme: 'auto',            // 'auto' | 'dark' | 'light'
-      accent: 'gold',           // 'gold' | 'emerald' | 'ocean' | 'royal' | 'ruby'
-      cardTheme: 'classic',     // 'classic' | 'dark' | 'wooden' | 'cartoon' | 'neon'
-      bgTheme: 'gradient',      // 'gradient' | 'wooden' | 'checker' | 'night' | 'crystal'
-      aiLevel: 'medium',        // 'easy' | 'medium' | 'hard' | 'master'
-      playerCount: 4,           // 2 | 3 | 4
-      timerSpeed: 'normal',     // 'fast' | 'normal' | 'slow'
+      theme: 'auto',
+      accent: 'gold',
+      cardTheme: 'classic',
+      bgTheme: 'gradient',
+      aiLevel: 'medium',
+      playerCount: 4,
+      timerSpeed: 'normal',
       soundEnabled: true,
       musicEnabled: false,
       musicVolume: 15,
@@ -73,20 +72,20 @@
       roundsWon: 0,
       hokmClaimed: 0,
       hokmWon: 0,
-      totalTimePlayed: 0,        // به میلی‌ثانیه
-      eloHistory: [],           // [{elo, timestamp}]
+      totalTimePlayed: 0,
+      eloHistory: [],
       firstGameAt: null,
       lastGameAt: null
     },
 
     achievements: {
-      unlocked: {},             // { achId: { unlockedAt, progress } }
-      progress: {},             // { achId: number }
+      unlocked: {},
+      progress: {},
       lastCheck: Date.now()
     },
 
     history: {
-      games: [],                // ۵۰ بازی آخر
+      games: [],
       maxSize: 50
     }
   };
@@ -105,12 +104,8 @@
     }
   })();
 
-  // حافظه پشتیبان اگر localStorage نبود
   const memoryStore = {};
 
-  /**
-   * خواندن مقدار خام
-   */
   function rawGet(key) {
     if (!hasLS) return memoryStore[key] || null;
     try {
@@ -121,9 +116,6 @@
     }
   }
 
-  /**
-   * نوشتن مقدار خام
-   */
   function rawSet(key, value) {
     if (!hasLS) {
       memoryStore[key] = value;
@@ -133,7 +125,6 @@
       localStorage.setItem(key, value);
       return true;
     } catch (e) {
-      // احتمالاً فضا پر است
       if (e.name === 'QuotaExceededError') {
         console.warn('[Storage] Quota exceeded, cleaning history...');
         _handleQuotaExceeded();
@@ -150,9 +141,6 @@
     }
   }
 
-  /**
-   * حذف مقدار خام
-   */
   function rawRemove(key) {
     if (!hasLS) {
       delete memoryStore[key];
@@ -166,45 +154,32 @@
     }
   }
 
-  /**
-   * فشرده‌سازی حافظه در صورت پر شدن
-   */
   function _handleQuotaExceeded() {
     try {
-      // پاک‌سازی تاریخچه قدیمی
       const h = _readJSON(KEYS.HISTORY, DEFAULTS.history);
       if (h.games && h.games.length > 10) {
         h.games = h.games.slice(0, 10);
         rawSet(KEYS.HISTORY, JSON.stringify(h));
       }
-      // پاک‌سازی بازی ذخیره‌شده
       rawRemove(KEYS.SAVE);
     } catch (e) {
-      // شکست خورد → همه چیز را پاک کن جز پروفایل
       Object.values(KEYS).forEach(k => {
         if (k !== KEYS.PROFILE) rawRemove(k);
       });
     }
   }
 
-  /**
-   * خواندن JSON با fallback
-   */
   function _readJSON(key, fallback) {
     const raw = rawGet(key);
     if (raw === null) return _deepClone(fallback);
     try {
-      const parsed = JSON.parse(raw);
-      return parsed;
+      return JSON.parse(raw);
     } catch (e) {
       console.warn(`[Storage] JSON parse error for ${key}:`, e);
       return _deepClone(fallback);
     }
   }
 
-  /**
-   * نوشتن JSON
-   */
   function _writeJSON(key, value) {
     try {
       return rawSet(key, JSON.stringify(value));
@@ -214,23 +189,16 @@
     }
   }
 
-  /**
-   * کپی عمیق
-   */
   function _deepClone(obj) {
     if (obj === null || typeof obj !== 'object') return obj;
     try {
       return JSON.parse(JSON.stringify(obj));
     } catch (e) {
-      // fallback ساده
       if (Array.isArray(obj)) return obj.slice();
       return Object.assign({}, obj);
     }
   }
 
-  /**
-   * ادغام عمیق دو object
-   */
   function _deepMerge(target, source) {
     const out = _deepClone(target);
     if (!source || typeof source !== 'object') return out;
@@ -256,34 +224,21 @@
      ───────────────────────────────────────────── */
   const Storage = {
 
-    /* ─── کلیدها ─── */
     KEYS,
     VERSION,
 
-    /**
-     * بررسی وجود کلید
-     */
     has(key) {
       return rawGet(key) !== null;
     },
 
-    /**
-     * خواندن مقدار خام
-     */
     getRaw(key) {
       return rawGet(key);
     },
 
-    /**
-     * نوشتن مقدار خام
-     */
     setRaw(key, value) {
       return rawSet(key, value);
     },
 
-    /**
-     * حذف کلید
-     */
     remove(key) {
       return rawRemove(key);
     },
@@ -341,7 +296,6 @@
       const raw = _readJSON(KEYS.SAVE, null);
       if (!raw) return null;
 
-      // بررسی انقضا (۷ روز)
       const now = Date.now();
       const expiryMs = SAVE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
       if (raw.savedAt && (now - raw.savedAt) > expiryMs) {
@@ -353,11 +307,10 @@
     },
 
     setSave(save) {
-      const wrapped = {
-        ...save,
+      const wrapped = Object.assign({}, save, {
         savedAt: Date.now(),
         _v: VERSION
-      };
+      });
       return _writeJSON(KEYS.SAVE, wrapped);
     },
 
@@ -380,18 +333,13 @@
       return _writeJSON(KEYS.STATS, merged);
     },
 
-    /**
-     * ثبت نتیجه یک بازی
-     */
     recordGame(result) {
-      // result: { win: bool, scoreA, scoreB, rounds: [], eloChange, durationMs, mode }
       const stats = Storage.getStats();
       const profile = Storage.getProfile();
       const history = Storage.getHistory();
 
       const isWin = !!result.win;
 
-      // آمار
       stats.gamesPlayed++;
       stats.totalRounds += (result.rounds ? result.rounds.length : 0);
       stats.roundsWon += (result.roundsWon || 0);
@@ -416,14 +364,12 @@
         ? Math.round((stats.wins / stats.gamesPlayed) * 100)
         : 0;
 
-      // تاریخچه ELO
       if (result.eloChange !== undefined) {
         stats.eloHistory.push({
           elo: profile.elo + result.eloChange,
           change: result.eloChange,
           timestamp: Date.now()
         });
-        // فقط ۱۰۰ مورد آخر
         if (stats.eloHistory.length > 100) {
           stats.eloHistory = stats.eloHistory.slice(-100);
         }
@@ -431,7 +377,6 @@
 
       Storage.setStats(stats);
 
-      // پروفایل
       if (result.eloChange) {
         profile.elo = Math.max(0, profile.elo + result.eloChange);
         profile.rank = _getRankFromElo(profile.elo);
@@ -440,7 +385,6 @@
       profile.lastPlayedAt = Date.now();
       Storage.setProfile(profile);
 
-      // تاریخچه
       history.games.unshift({
         id: 'game_' + Date.now(),
         win: isWin,
@@ -501,7 +445,6 @@
         progress: progress || 0
       };
 
-      // حذف از پیشرفت
       delete a.progress[achId];
 
       Storage.setAchievements(a);
@@ -546,11 +489,10 @@
       return _writeJSON(KEYS.FRIENDS, friends);
     },
 
-    /* ─── لیدربورد (کش محلی) ─── */
+    /* ─── لیدربورد ─── */
     getLeaderboardCache() {
       const cached = _readJSON(KEYS.LEADERBOARD, null);
       if (!cached) return null;
-      // اعتبار ۱ ساعت
       if (cached.cachedAt && (Date.now() - cached.cachedAt) > 60 * 60 * 1000) {
         return null;
       }
@@ -565,18 +507,12 @@
     },
 
     /* ─── مدیریت کل ─── */
-    /**
-     * پاک‌کردن همه چیز (factory reset)
-     */
     clearAll() {
       Object.values(KEYS).forEach(k => rawRemove(k));
       _emit('all:cleared');
       return true;
     },
 
-    /**
-     * پاک‌کردن آمار و تاریخچه (حفظ پروفایل)
-     */
     clearStats() {
       rawRemove(KEYS.STATS);
       rawRemove(KEYS.HISTORY);
@@ -585,9 +521,6 @@
       return true;
     },
 
-    /**
-     * خروجی گرفتن از همه داده‌ها
-     */
     exportAll() {
       const data = { _v: VERSION, exportedAt: Date.now() };
       Object.entries(KEYS).forEach(([name, key]) => {
@@ -603,9 +536,6 @@
       return data;
     },
 
-    /**
-     * بازیابی از خروجی
-     */
     importAll(data) {
       if (!data || typeof data !== 'object') return false;
       let count = 0;
@@ -623,21 +553,15 @@
       return count > 0;
     },
 
-    /**
-     * اندازه کل حافظه مصرفی (تقریبی)
-     */
     getSize() {
       let total = 0;
       Object.values(KEYS).forEach(k => {
         const raw = rawGet(k);
         if (raw) total += raw.length + k.length;
       });
-      return total; // بایت (تقریبی، UTF-16)
+      return total;
     },
 
-    /**
-     * بررسی نسخه و Migration
-     */
     checkVersion() {
       const storedVersion = rawGet(KEYS.VERSION);
       const current = VERSION;
@@ -659,7 +583,6 @@
       }
     },
 
-    /* ─── رویدادها ─── */
     on(event, handler) {
       if (!_listeners[event]) _listeners[event] = [];
       _listeners[event].push(handler);
@@ -682,25 +605,22 @@
   function _migrate(from, to) {
     console.log(`[Storage] Migrating from ${from} to ${to}`);
 
-    // مثال: از 5.x به 6.0
-    if (from.startsWith('5.') || from === '0.0.0') {
-      // افزودن فیلدهای جدید به پروفایل
+    // از نسخه ۶.۰ به ۶.۱.۱
+    if (from === '6.0.0' || from.startsWith('6.0') || from === '0.0.0') {
+      // 🎯 افزایش سکه به ۵۰۰ برای کاربران فعلی
       const profile = _readJSON(KEYS.PROFILE, DEFAULTS.profile);
-      if (!profile.coins) profile.coins = 100;
-      if (!profile.rank) profile.rank = _getRankFromElo(profile.elo || 1000);
-      if (!profile.level) profile.level = 1;
+      if (!profile.coins || profile.coins < 500) {
+        profile.coins = 500;
+      }
       _writeJSON(KEYS.PROFILE, profile);
 
-      // افزودن فیلدهای جدید به تنظیمات
+      // افزودن فیلدهای جدید
       const settings = _readJSON(KEYS.SETTINGS, DEFAULTS.settings);
       if (!settings.accent) settings.accent = 'gold';
       if (!settings.cardTheme) settings.cardTheme = 'classic';
       if (!settings.bgTheme) settings.bgTheme = 'gradient';
       if (!settings.aiLevel) settings.aiLevel = 'medium';
       _writeJSON(KEYS.SETTINGS, settings);
-
-      // حذف کلیدهای قدیمی
-      rawRemove(PREFIX + 'legacy_save');
     }
   }
 
@@ -755,7 +675,6 @@
     window.addEventListener('storage', (e) => {
       if (!e.key || !e.key.startsWith(PREFIX)) return;
 
-      // نام رویداد را از کلید استخراج کن
       const shortName = e.key.replace(PREFIX, '');
       _emit('cross-tab:' + shortName, {
         key: e.key,
@@ -772,10 +691,9 @@
   }
 
   /* ─────────────────────────────────────────────
-     Bootstrap: بررسی نسخه در startup
+     Bootstrap
      ───────────────────────────────────────────── */
   function bootstrap() {
-    // اگر پروفایل وجود ندارد، پیش‌فرض بساز
     if (!Storage.has(KEYS.PROFILE)) {
       Storage.setProfile(DEFAULTS.profile);
     }
@@ -792,11 +710,8 @@
       Storage.setHistory(DEFAULTS.history);
     }
 
-    // بررسی نسخه
     Storage.checkVersion();
-
-    // پاک‌سازی بازی منقضی
-    Storage.getSave(); // خودش چک می‌کند
+    Storage.getSave();
 
     console.log(
       `%c💾 Hokm Storage v${VERSION} ready — ${(Storage.getSize() / 1024).toFixed(1)}KB used`,
@@ -809,7 +724,6 @@
      ───────────────────────────────────────────── */
   global.HokmStorage = Storage;
 
-  // Auto-bootstrap
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', bootstrap);
