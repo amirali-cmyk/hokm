@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   🏆 HOKM PRO v6.0 — tournament.js
+   🏆 HOKM PRO v6.1.1 — tournament.js
    تورنمنت هفتگی: ثبت‌نام، حذفی، جدول، جوایز
+   (نسخه اصلاح‌شده — بدون داده جعلی)
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -12,8 +13,8 @@
   const STORAGE_KEY = 'hokm_tournament';
 
   const FORMATS = {
-    '8':  { fa: '۸ نفره',  rounds: 3, icon: '🎯' },  // QF → SF → F
-    '16': { fa: '۱۶ نفره', rounds: 4, icon: '🏅' }   // R16 → QF → SF → F
+    '8':  { fa: '۸ نفره',  rounds: 3, icon: '🎯' },
+    '16': { fa: '۱۶ نفره', rounds: 4, icon: '🏅' }
   };
 
   const PRIZES = {
@@ -23,29 +24,28 @@
   };
 
   const ENTRY_FEE = 100; // سکه
-  const TOURNAMENT_DAY = 6; // شنبه (۰=یکشنبه)
-  const TOURNAMENT_HOUR = 20; // ۲۰:۰۰
+  const TOURNAMENT_DAY = 6; // شنبه
+  const TOURNAMENT_HOUR = 20;
   const TOURNAMENT_MINUTE = 0;
-  const REGISTRATION_WINDOW = 24 * 60 * 60 * 1000; // ۲۴ ساعت قبل
+  const REGISTRATION_WINDOW = 24 * 60 * 60 * 1000; // ۲۴ ساعت
 
   const STATUS = {
-    UPCOMING: 'upcoming',     // در انتظار
-    REGISTRATION: 'registration', // ثبت‌نام باز
-    ONGOING: 'ongoing',       // در حال اجرا
-    FINISHED: 'finished',     // تمام شده
-    CANCELLED: 'cancelled'    // لغو شده
+    UPCOMING: 'upcoming',
+    REGISTRATION: 'registration',
+    ONGOING: 'ongoing',
+    FINISHED: 'finished',
+    CANCELLED: 'cancelled'
   };
 
   /* ─────────────────────────────────────────────
      وضعیت
      ───────────────────────────────────────────── */
   const state = {
-    current: null,       // تورنمنت فعلی
-    history: [],         // تورنمنت‌های گذشته
-    myRegistration: null,// ثبت‌نام من
+    current: null,
+    history: [],
+    myRegistration: null,
     listeners: [],
-    countdownTimer: null,
-    usingServer: false
+    countdownTimer: null
   };
 
   /* ─────────────────────────────────────────────
@@ -83,35 +83,23 @@
     return String(n).padStart(2, '0');
   }
 
-  /**
-   * محاسبه زمان تورنمنت بعدی
-   */
   function _getNextTournamentTime() {
     const now = new Date();
     const result = new Date(now);
-
-    // روز بعد را حساب کن
     const currentDay = now.getDay();
     let daysUntil = (TOURNAMENT_DAY - currentDay + 7) % 7;
 
-    // اگر امروز شنبه است ولی ساعت گذشته، برو هفته بعد
     if (daysUntil === 0) {
       const todayTarget = new Date(now);
       todayTarget.setHours(TOURNAMENT_HOUR, TOURNAMENT_MINUTE, 0, 0);
-      if (now >= todayTarget) {
-        daysUntil = 7;
-      }
+      if (now >= todayTarget) daysUntil = 7;
     }
 
     result.setDate(now.getDate() + daysUntil);
     result.setHours(TOURNAMENT_HOUR, TOURNAMENT_MINUTE, 0, 0);
-
     return result;
   }
 
-  /**
-   * محاسبه زمان باقی‌مانده
-   */
   function _getTimeRemaining(targetTime) {
     const now = Date.now();
     const diff = targetTime - now;
@@ -128,9 +116,6 @@
     return { past: false, days, hours, minutes, seconds, total: diff };
   }
 
-  /**
-   * فرمت زمان
-   */
   function _formatCountdown(remaining) {
     if (remaining.past) return 'شروع شد!';
     if (remaining.days > 0) {
@@ -142,9 +127,6 @@
     return `${_toPersianNumber(remaining.minutes)}:${_toPersianNumber(_padZero(remaining.seconds))}`;
   }
 
-  /**
-   * تعیین وضعیت تورنمنت
-   */
   function _getTournamentStatus(tournament) {
     if (!tournament) return STATUS.UPCOMING;
 
@@ -176,16 +158,13 @@
       state.history = data.history || [];
       state.myRegistration = data.myRegistration || null;
 
-      // اگر تورنمنت فعلی گذشته، یکی جدید بساز
+      // اگه تورنمنت گذشته → به تاریخچه برو
       if (state.current && Date.now() > state.current.startTime + 6 * 60 * 60 * 1000) {
         state.history.unshift(state.current);
         _createNewTournament();
       }
 
-      // اگر null بود، بساز
-      if (!state.current) {
-        _createNewTournament();
-      }
+      if (!state.current) _createNewTournament();
     } catch (e) {
       console.warn('[Tournament] Load error:', e);
       _createNewTournament();
@@ -206,15 +185,12 @@
   }
 
   /**
-   * ساخت تورنمنت جدید
+   * ساخت تورنمنت جدید — 🎯 بدون بازیکنان جعلی
    */
   function _createNewTournament() {
     const startTime = _getNextTournamentTime().getTime();
     const format = Math.random() < 0.5 ? '8' : '16';
     const size = parseInt(format, 10);
-
-    // بازیکنان نمونه
-    const demoPlayers = _generateDemoPlayers(size);
 
     state.current = {
       id: 'tourn_' + Date.now().toString(36),
@@ -224,7 +200,7 @@
       registrationStart: startTime - REGISTRATION_WINDOW,
       entryFee: ENTRY_FEE,
       prizePool: size * ENTRY_FEE,
-      players: demoPlayers,
+      players: [],            // 🎯 خالی — بدون داده جعلی
       bracket: null,
       finished: false,
       cancelled: false,
@@ -237,43 +213,6 @@
     return state.current;
   }
 
-  /**
-   * ساخت بازیکنان دمو
-   */
-  function _generateDemoPlayers(count) {
-    const names = [
-      'پادشاه', 'شکارچی', 'آتشین', 'ماه', 'توفان',
-      'ستاره', 'عقاب', 'قلب‌سنگی', 'شاهین', 'پلنگ',
-      'سایه', 'کوهنورد', 'خوش‌شانس', 'صاعقه', 'برف',
-      'آسمان', 'دریا', 'کوه', 'جنگل', 'کویر'
-    ];
-
-    const avatars = ['👑', '🦁', '🔥', '🌙', '⚡', '⭐', '🦅', '💎', '🦊', '🐯', '🎭', '🐺', '🍀', '⚔️', '❄️', '☁️', '🌊', '🏔️', '🌲', '🏜️'];
-
-    const players = [];
-    const used = new Set();
-
-    for (let i = 0; i < count; i++) {
-      let idx;
-      do {
-        idx = Math.floor(Math.random() * names.length);
-      } while (used.has(idx) && used.size < names.length);
-      used.add(idx);
-
-      players.push({
-        id: 'demo_tp_' + i + '_' + Math.random().toString(36).slice(2, 6),
-        name: names[idx],
-        avatar: avatars[idx],
-        elo: 1000 + Math.floor(Math.random() * 1200),
-        isBot: true,
-        seed: i + 1
-      });
-    }
-
-    // shuffle
-    return players.sort(() => Math.random() - 0.5);
-  }
-
   /* ─────────────────────────────────────────────
      API عمومی
      ───────────────────────────────────────────── */
@@ -284,9 +223,6 @@
     STATUS,
     ENTRY_FEE,
 
-    /**
-     * راه‌اندازی
-     */
     init() {
       _load();
       _startCountdown();
@@ -341,9 +277,6 @@
 
     /* ─── ثبت‌نام ─── */
 
-    /**
-     * ثبت‌نام در تورنمنت
-     */
     register() {
       if (!state.current) {
         return { ok: false, error: 'تورنمنتی موجود نیست' };
@@ -402,15 +335,11 @@
       Tournament.render();
 
       if (_audio()) _audio().play('coin');
-
       _emit('tournament:registered', { tournament: state.current, me: myEntry });
 
       return { ok: true, entry: myEntry };
     },
 
-    /**
-     * لغو ثبت‌نام
-     */
     cancelRegistration() {
       if (!state.myRegistration) {
         return { ok: false, error: 'ثبت‌نامی نیست' };
@@ -421,13 +350,11 @@
         return { ok: false, error: 'دیگر قابل لغو نیست' };
       }
 
-      // حذف از لیست
       const idx = state.current.players.findIndex(p => p.isMe);
       if (idx !== -1) {
         state.current.players.splice(idx, 1);
       }
 
-      // بازگشت سکه
       const profile = _profile();
       if (profile && profile.addCoins) {
         profile.addCoins(state.current.entryFee);
@@ -436,39 +363,9 @@
       state.myRegistration = null;
       _save();
       Tournament.render();
-
       _emit('tournament:cancelled-registration');
 
       return { ok: true };
-    },
-
-    /* ─── Bracket (شبیه‌سازی) ─── */
-
-    /**
-     * ساخت جدول حذفی (دمو)
-     */
-    generateBracket() {
-      const players = state.current?.players || [];
-      if (players.length < 2) return null;
-
-      const shuffled = players.slice().sort(() => Math.random() - 0.5);
-      const rounds = [];
-
-      // Round 1
-      const round1 = [];
-      for (let i = 0; i < shuffled.length; i += 2) {
-        round1.push({
-          p1: shuffled[i],
-          p2: shuffled[i + 1] || null,
-          winner: null
-        });
-      }
-      rounds.push(round1);
-
-      state.current.bracket = rounds;
-      _save();
-
-      return rounds;
     },
 
     /* ─── رندر ─── */
@@ -537,7 +434,6 @@
             </div>
           </div>
 
-          <!-- Countdown -->
           <div style="
             text-align: center;
             padding: 16px;
@@ -561,7 +457,6 @@
             </div>
           </div>
 
-          <!-- Prizes -->
           <ul class="tournament-prizes">
             ${Object.entries(PRIZES).map(([rank, prize]) => `
               <li>
@@ -577,12 +472,10 @@
             `).join('')}
           </ul>
 
-          <!-- Actions -->
           <div id="tournamentActions" style="margin-top: 16px;">
             ${_renderActions(status, registered)}
           </div>
 
-          <!-- Players list -->
           ${currentPlayers > 0 ? `
             <details style="margin-top: 16px;">
               <summary style="
@@ -603,7 +496,19 @@
                 ${state.current.players.map(p => _renderPlayerChip(p)).join('')}
               </div>
             </details>
-          ` : ''}
+          ` : `
+            <div style="
+              text-align: center;
+              padding: 16px;
+              margin-top: 16px;
+              color: var(--text-muted);
+              font-size: 13px;
+              background: var(--bg-secondary);
+              border-radius: var(--radius-sm);
+            ">
+              🎯 هنوز هیچ‌کس ثبت‌نام نکرده — اولین نفر باش!
+            </div>
+          `}
         </div>
 
         ${state.history.length > 0 ? `
@@ -617,8 +522,6 @@
       _bindActions(status, registered);
     },
 
-    /* ─── رویدادها ─── */
-
     on(event, handler) {
       const entry = { event, handler };
       state.listeners.push(entry);
@@ -630,8 +533,6 @@
         l => !(l.event === event && l.handler === handler)
       );
     },
-
-    /* ─── Reset ─── */
 
     reset() {
       localStorage.removeItem(STORAGE_KEY);
@@ -760,9 +661,8 @@
 
   /* ─────────────────────────────────────────────
      Bind اکشن‌ها
-   ───────────────────────────────────────────── */
+     ───────────────────────────────────────────── */
   function _bindActions(status, registered) {
-    // ثبت‌نام
     const joinBtn = document.getElementById('btnJoinTournament');
     if (joinBtn) {
       joinBtn.addEventListener('click', () => {
@@ -781,7 +681,6 @@
       });
     }
 
-    // لغو
     const cancelBtn = document.getElementById('btnCancelTournament');
     if (cancelBtn) {
       cancelBtn.addEventListener('click', () => {
@@ -794,7 +693,6 @@
       });
     }
 
-    // ورود به مسابقه
     const playBtn = document.getElementById('btnPlayTournament');
     if (playBtn) {
       playBtn.addEventListener('click', () => {
@@ -806,7 +704,6 @@
       });
     }
 
-    // تورنمنت بعدی
     const newBtn = document.getElementById('btnNewTournament');
     if (newBtn) {
       newBtn.addEventListener('click', () => {
@@ -821,7 +718,7 @@
 
   /* ─────────────────────────────────────────────
      شمارش معکوس
-   ───────────────────────────────────────────── */
+     ───────────────────────────────────────────── */
   function _startCountdown() {
     if (state.countdownTimer) {
       clearInterval(state.countdownTimer);
@@ -834,11 +731,9 @@
       const remaining = _getTimeRemaining(state.current.startTime);
       el.textContent = _formatCountdown(remaining);
 
-      // اگر گذشته، رنگ قرمز
       if (remaining.past) {
         el.style.color = 'var(--color-success)';
       } else if (remaining.total < 60 * 60 * 1000) {
-        // کمتر از ۱ ساعت → نارنجی
         el.style.color = 'var(--color-warning)';
       } else {
         el.style.color = 'var(--accent)';
@@ -848,15 +743,13 @@
 
   /* ─────────────────────────────────────────────
      Bootstrap
-   ───────────────────────────────────────────── */
+     ───────────────────────────────────────────── */
   function bootstrap() {
     Tournament.init();
 
-    // فقط یک بار bind شود
     if (global._tournamentBootstrapped) return;
     global._tournamentBootstrapped = true;
 
-    // پاکسازی
     window.addEventListener('beforeunload', () => {
       if (state.countdownTimer) {
         clearInterval(state.countdownTimer);
@@ -869,7 +762,6 @@
      ───────────────────────────────────────────── */
   global.HokmTournament = Tournament;
 
-  // Auto-init
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 200));
