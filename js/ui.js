@@ -1031,4 +1031,114 @@
 
   /* ─────────────────────────────────────────────
      منو کارت‌ها
-     ─────────────────────────────────
+     ───────────────────────────────────────────── */
+  function _handleMenuAction(action) {
+    if (!action) return;
+
+    switch (action) {
+      case 'online':        UI.navigate('online'); break;
+      case 'tournament':    UI.navigate('tournament'); break;
+      case 'leaderboard':   UI.navigate('leaderboard'); break;
+      case 'achievements':  UI.navigate('achievements'); break;
+      case 'friends':       UI.navigate('friends'); break;
+      case 'replay':        UI.navigate('replay'); break;
+    }
+  }
+
+  /* ─────────────────────────────────────────────
+     شورتکات‌های کیبورد
+     ───────────────────────────────────────────── */
+  function _handleKeyboard(e) {
+    const isInGame = state.currentScreen === 'game';
+
+    if (e.altKey) {
+      switch (e.key.toLowerCase()) {
+        case 'm': e.preventDefault(); UI.navigate('menu'); break;
+        case 'p': e.preventDefault(); UI.navigate('profile'); break;
+        case 's': e.preventDefault(); UI.navigate('settings'); break;
+        case 'h': e.preventDefault(); UI.navigate('help'); break;
+        case 't':
+          e.preventDefault();
+          if (global.HokmThemes) global.HokmThemes.toggle();
+          break;
+      }
+      return;
+    }
+
+    if (isInGame) {
+      if (e.key === 'Escape' && !state.modalOpen) {
+        if (confirm('از بازی خارج می‌شوید؟')) {
+          UI.exitGame();
+        }
+        return;
+      }
+
+      if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key, 10) - 1;
+        const hand = _game()?.getMyHand() || [];
+        if (hand[idx]) {
+          UI.handleCardClick(hand[idx].id);
+        }
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'p') {
+        UI.handlePass();
+        return;
+      }
+    }
+  }
+
+  /* ─────────────────────────────────────────────
+     setText کمکی
+     ───────────────────────────────────────────── */
+  function _setText(id, text) {
+    const el = _$(id);
+    if (el) el.textContent = text;
+  }
+
+  /* ─────────────────────────────────────────────
+     Bootstrap
+     ───────────────────────────────────────────── */
+  function bootstrap() {
+    _bindGlobalEvents();
+
+    setTimeout(() => {
+      if (_game() && _game().hasSavedGame()) {
+        const resume = confirm('بازی قبلی ذخیره شده. ادامه می‌دهید؟');
+        if (resume) {
+          UI.startGame();
+          setTimeout(() => {
+            _game().loadSaved();
+            UI.renderGame();
+          }, 500);
+        } else {
+          _game().clearSaved();
+        }
+      }
+    }, 2000);
+
+    console.log(
+      '%c🎨 UI ready (v6.1.1)',
+      'color: #118ab2; font-weight: bold; font-size: 13px;'
+    );
+  }
+
+  /* ─────────────────────────────────────────────
+     Export
+     ───────────────────────────────────────────── */
+  UI.SCREENS = SCREENS;
+  UI.SEAT_MAP = SEAT_MAP;
+  UI.SEAT_POSITIONS = SEAT_POSITIONS;
+
+  global.HokmUI = UI;
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
+    }
+  }
+
+})(typeof window !== 'undefined' ? window : globalThis);
