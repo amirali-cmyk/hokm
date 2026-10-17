@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   👥 HOKM PRO v6.0 — friends.js
+   👥 HOKM PRO v6.1.1 — friends.js
    سیستم دوستان: افزودن، حذف، وضعیت آنلاین، چت، دعوت
+   ⚠️ هیچ داده هاردکدی وجود ندارد
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -12,7 +13,6 @@
   const STORAGE_KEY = 'hokm_friends';
   const MAX_FRIENDS = 50;
   const MAX_CHAT_HISTORY = 100;
-  const MAX_REQUESTS = 20;
 
   const STATUS = {
     ONLINE: 'online',
@@ -32,19 +32,16 @@
      وضعیت
      ───────────────────────────────────────────── */
   const state = {
-    friends: [],      // [{id, name, avatar, status, lastSeen, elo}]
-    requests: [],     // [{id, name, avatar, sentAt}]
-    chats: {},        // { friendId: [{from, text, timestamp}] }
+    friends: [],
+    requests: [],
+    chats: {},
     listeners: [],
-    polling: null,
-    usingServer: false
+    polling: null
   };
 
   /* ─────────────────────────────────────────────
      کمکی‌ها
      ───────────────────────────────────────────── */
-  function _storage() { return global.HokmStorage; }
-  function _profile() { return global.HokmProfile; }
   function _audio() { return global.HokmAudio; }
   function _ui() { return global.HokmUI; }
 
@@ -81,10 +78,6 @@
     return `${_toPersianNumber(Math.floor(seconds / 604800))} هفته پیش`;
   }
 
-  function _generateId() {
-    return 'friend_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  }
-
   /* ─────────────────────────────────────────────
      ذخیره/بارگذاری
      ───────────────────────────────────────────── */
@@ -116,30 +109,6 @@
   }
 
   /* ─────────────────────────────────────────────
-     تشخیص کاربر جعلی (Demo)
-     ───────────────────────────────────────────── */
-  const DEMO_FRIENDS = [
-    { id: 'demo_1', name: 'علی', avatar: '🦁', elo: 1450, status: 'online' },
-    { id: 'demo_2', name: 'سارا', avatar: '🌸', elo: 1620, status: 'inGame' },
-    { id: 'demo_3', name: 'رضا', avatar: '🎭', elo: 1280, status: 'offline' },
-    { id: 'demo_4', name: 'مریم', avatar: '🦋', elo: 1750, status: 'online' }
-  ];
-
-  function _addDemoFriends() {
-    // فقط یک بار، اگر دوستی نداری
-    if (state.friends.length > 0) return;
-
-    DEMO_FRIENDS.forEach(f => {
-      state.friends.push({
-        ...f,
-        addedAt: Date.now(),
-        lastSeen: Date.now() - Math.random() * 24 * 60 * 60 * 1000
-      });
-    });
-    _save();
-  }
-
-  /* ─────────────────────────────────────────────
      API عمومی
      ───────────────────────────────────────────── */
   const Friends = {
@@ -152,17 +121,7 @@
      */
     init() {
       _load();
-
-      // اگر خالی بود، دوستان نمونه اضافه کن
-      if (state.friends.length === 0) {
-        _addDemoFriends();
-      }
-
       Friends.render();
-      _bindEvents();
-
-      // شروع polling برای وضعیت آنلاین (هر ۱۵ ثانیه)
-      _startPolling();
 
       console.log(
         `%c👥 Friends: ${state.friends.length} دوست`,
@@ -193,9 +152,6 @@
 
     /* ─── افزودن دوست ─── */
 
-    /**
-     * افزودن دوست با کد کاربری یا نام
-     */
     addFriend(input) {
       if (!input || typeof input !== 'string') {
         return { ok: false, error: 'کد نامعتبر' };
@@ -206,10 +162,7 @@
         return { ok: false, error: 'کد باید حداقل ۳ کاراکتر باشد' };
       }
 
-      // چک تکراری
-      if (state.friends.some(f =>
-        f.id === code || f.name === code
-      )) {
+      if (state.friends.some(f => f.id === code || f.name === code)) {
         return { ok: false, error: 'این دوست قبلاً اضافه شده' };
       }
 
@@ -217,16 +170,16 @@
         return { ok: false, error: `حداکثر ${_toPersianNumber(MAX_FRIENDS)} دوست` };
       }
 
-      // در حالت دمو، یک دوست جدید می‌سازیم
+      // 🎯 ساخت دوست جدید (بدون داده جعلی)
+      // در نسخه آنلاین، از سرور دریافت می‌شه
       const newFriend = {
         id: 'user_' + code.toLowerCase().replace(/\s/g, '_') + '_' + Date.now().toString(36).slice(-4),
         name: code,
-        avatar: _randomAvatar(),
-        elo: 1000 + Math.floor(Math.random() * 800),
-        status: Math.random() < 0.7 ? STATUS.ONLINE : STATUS.OFFLINE,
+        avatar: '👤',
+        elo: 1000,
+        status: STATUS.OFFLINE,
         lastSeen: Date.now(),
-        addedAt: Date.now(),
-        isNew: true
+        addedAt: Date.now()
       };
 
       state.friends.push(newFriend);
@@ -234,15 +187,11 @@
       Friends.render();
 
       if (_audio()) _audio().play('success');
-
       _emit('friend:added', newFriend);
 
       return { ok: true, friend: newFriend };
     },
 
-    /**
-     * حذف دوست
-     */
     removeFriend(id) {
       const idx = state.friends.findIndex(f => f.id === id);
       if (idx === -1) return false;
@@ -254,24 +203,7 @@
       Friends.render();
 
       if (_audio()) _audio().play('softClick');
-
       _emit('friend:removed', removed);
-      return true;
-    },
-
-    /**
-     * بلاک کردن دوست
-     */
-    blockFriend(id) {
-      const friend = Friends.getFriend(id);
-      if (!friend) return false;
-
-      friend.blocked = true;
-      friend.status = STATUS.OFFLINE;
-      _save();
-      Friends.render();
-
-      _emit('friend:blocked', friend);
       return true;
     },
 
@@ -297,7 +229,6 @@
       state.friends.push(newFriend);
       _save();
       Friends.render();
-
       _emit('friend:accepted', newFriend);
       return true;
     },
@@ -314,9 +245,6 @@
 
     /* ─── چت ─── */
 
-    /**
-     * ارسال پیام
-     */
     sendMessage(friendId, text) {
       if (!text || !text.trim()) return false;
 
@@ -335,32 +263,19 @@
 
       state.chats[friendId].push(msg);
 
-      // محدودیت تاریخچه
       if (state.chats[friendId].length > MAX_CHAT_HISTORY) {
         state.chats[friendId] = state.chats[friendId].slice(-MAX_CHAT_HISTORY);
       }
 
       _save();
       _emit('message:sent', { friendId, msg });
-
-      // پاسخ خودکار (دمو)
-      setTimeout(() => {
-        _autoReply(friendId);
-      }, 1000 + Math.random() * 2000);
-
       return true;
     },
 
-    /**
-     * دریافت پیام‌ها
-     */
     getMessages(friendId) {
       return (state.chats[friendId] || []).slice();
     },
 
-    /**
-     * پاک کردن چت
-     */
     clearChat(friendId) {
       delete state.chats[friendId];
       _save();
@@ -368,12 +283,8 @@
       return true;
     },
 
-    /**
-     * تعداد پیام‌های خوانده‌نشده
-     */
     getUnreadCount(friendId) {
       if (!friendId) {
-        // کل
         return Object.values(state.chats).reduce((sum, msgs) =>
           sum + msgs.filter(m => !m.read && m.from !== 'me').length, 0
         );
@@ -401,28 +312,38 @@
       _emit('friend:invited', { friend });
 
       if (_audio()) _audio().play('notification');
-
       return { ok: true };
     },
 
-    /* ─── رندر ─── */
-
+    /* ─────────────────────────────────────────────
+       رندر — با حالت‌های خالی زیبا
+       ───────────────────────────────────────────── */
     render() {
       const container = document.getElementById('friendsList');
       if (!container) return;
 
+      // 🎯 حالت خالی — پیام واضح
       if (state.friends.length === 0) {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-title">هنوز دوستی اضافه نکرده‌ای</div>
-            <div class="empty-state-msg">با کد کاربری دوستانت رو اضافه کن</div>
+          <div class="empty-state" style="padding: 40px 20px;">
+            <div style="font-size: 72px; margin-bottom: 16px; opacity: 0.5;">👥</div>
+            <div class="empty-state-title" style="font-size: 18px; margin-bottom: 8px;">
+              هنوز دوستی اضافه نکرده‌ای
+            </div>
+            <div class="empty-state-msg" style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">
+              با کد کاربری دوستانت رو اضافه کن
+              <br>
+              <span style="font-size: 12px; opacity: 0.7; display: inline-block; margin-top: 8px;">
+                ⚠️ بازی دوستان به‌زودی در نسخه‌های بعدی
+              </span>
+            </div>
           </div>
         `;
         _updateCounter();
         return;
       }
 
-      // مرتب‌سازی: آنلاین اول، بعد inGame، بعد آفلاین
+      // مرتب‌سازی
       const sorted = state.friends.slice().sort((a, b) => {
         const order = { online: 0, inGame: 1, away: 2, offline: 3 };
         const oa = order[a.status] ?? 4;
@@ -451,19 +372,14 @@
       );
     },
 
-    /* ─── Reset ─── */
-
     reset() {
       state.friends = [];
       state.requests = [];
       state.chats = {};
       _save();
-      _addDemoFriends();
       Friends.render();
       _emit('friends:reset');
     },
-
-    /* ─── Export/Import ─── */
 
     export() {
       return JSON.parse(JSON.stringify({
@@ -493,12 +409,10 @@
     const unread = Friends.getUnreadCount(f.id);
     const lastSeenText = isOnline ? 'اکنون آنلاین' : _timeAgo(f.lastSeen);
 
-    // آواتار
     const avatarHtml = typeof f.avatar === 'string' && f.avatar.startsWith('data:image')
       ? `<img src="${f.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />`
-      : (f.avatar || '🤖');
+      : (f.avatar || '👤');
 
-    // بج پیام‌های نخوانده
     const unreadBadge = unread > 0
       ? `<span style="
           background: var(--color-danger);
@@ -563,7 +477,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     آپدیت شمارنده در منو
+     آپدیت شمارنده
      ───────────────────────────────────────────── */
   function _updateCounter() {
     const label = document.getElementById('friendsCountLabel');
@@ -574,107 +488,11 @@
   }
 
   /* ─────────────────────────────────────────────
-     پاسخ خودکار (دمو)
-     ───────────────────────────────────────────── */
-  function _autoReply(friendId) {
-    const replies = [
-      'سلام! چطوری؟',
-      'چه خبر؟',
-      'آماده بازی هستی؟',
-      'بزن یه دست!',
-      '😂',
-      'منم خوبم ممنون',
-      'بریم یه بازی؟',
-      'موافقم 👍'
-    ];
-
-    const friend = Friends.getFriend(friendId);
-    if (!friend) return;
-
-    if (!state.chats[friendId]) state.chats[friendId] = [];
-
-    const msg = {
-      id: 'msg_' + Date.now() + '_r',
-      from: 'them',
-      text: replies[Math.floor(Math.random() * replies.length)],
-      timestamp: Date.now(),
-      read: false
-    };
-
-    state.chats[friendId].push(msg);
-    _save();
-
-    _emit('message:received', { friendId, msg });
-
-    // صدا
-    if (_audio()) _audio().play('chat');
-
-    // Toast اگر در صفحه دوستان نیست
-    const currentScreen = _ui()?.getCurrentScreen();
-    if (currentScreen !== 'friends' && _ui()) {
-      _ui().showToast(
-        `${friend.avatar || '👤'} ${friend.name}`,
-        msg.text,
-        'info',
-        3000
-      );
-    }
-  }
-
-  /* ─────────────────────────────────────────────
-     Polling وضعیت (دمو)
-     ───────────────────────────────────────────── */
-  function _startPolling() {
-    if (state.polling) return;
-
-    state.polling = setInterval(() => {
-      _simulateStatusChanges();
-    }, 15000); // هر ۱۵ ثانیه
-  }
-
-  function _simulateStatusChanges() {
-    let changed = false;
-
-    state.friends.forEach(f => {
-      if (f.isNew || Math.random() < 0.15) {
-        // ۱۵٪ احتمال تغییر
-        const statuses = [STATUS.ONLINE, STATUS.OFFLINE, STATUS.IN_GAME, STATUS.AWAY];
-        const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
-
-        if (f.status !== newStatus) {
-          f.status = newStatus;
-          f.lastSeen = Date.now();
-          changed = true;
-        }
-
-        // حذف isNew بعد اولین تغییر
-        if (f.isNew) delete f.isNew;
-      }
-    });
-
-    if (changed) {
-      _save();
-      Friends.render();
-      _updateCounter();
-    }
-  }
-
-  /* ─────────────────────────────────────────────
-     انتخاب آواتار تصادفی
-     ───────────────────────────────────────────── */
-  function _randomAvatar() {
-    const avatars = ['🐱', '🐶', '🦊', '🐼', '🦁', '🐯', '🦉', '🐺', '🌟', '⚡', '🎭', '😎'];
-    return avatars[Math.floor(Math.random() * avatars.length)];
-  }
-
-  /* ─────────────────────────────────────────────
-     Modal چت
+     چت مودال
      ───────────────────────────────────────────── */
   function _openChat(friendId) {
     const friend = Friends.getFriend(friendId);
-    if (!friend) return;
-
-    if (!_ui()) return;
+    if (!friend || !_ui()) return;
 
     const msgs = Friends.getMessages(friendId);
     Friends.markAsRead(friendId);
@@ -714,13 +532,11 @@
       </form>
     `);
 
-    // اسکرول به آخر
     setTimeout(() => {
       const msgsEl = document.getElementById('chatMessages');
       if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
     }, 50);
 
-    // Bind فرم
     const form = document.getElementById('chatForm');
     if (form) {
       form.addEventListener('submit', (e) => {
@@ -732,7 +548,6 @@
         Friends.sendMessage(friendId, text);
         input.value = '';
 
-        // افزودن به صفحه
         const msgsEl = document.getElementById('chatMessages');
         if (msgsEl) {
           const msg = state.chats[friendId][state.chats[friendId].length - 1];
@@ -744,33 +559,10 @@
       });
     }
 
-    // Focus روی input
     setTimeout(() => {
       const input = document.getElementById('chatInput');
       if (input) input.focus();
     }, 100);
-
-    // لیسن به پیام‌های جدید
-    const handler = ({ friendId: fid, msg }) => {
-      if (fid !== friendId) return;
-      const msgsEl = document.getElementById('chatMessages');
-      if (msgsEl) {
-        msgsEl.insertAdjacentHTML('beforeend', _renderMessage(msg));
-        msgsEl.scrollTop = msgsEl.scrollHeight;
-      }
-    };
-
-    Friends.on('message:received', handler);
-
-    // حذف لیسنر بعد از بستن مودال
-    const overlay = document.getElementById('modalOverlay');
-    const observer = new MutationObserver(() => {
-      if (overlay.classList.contains('hidden')) {
-        Friends.off('message:received', handler);
-        observer.disconnect();
-      }
-    });
-    observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
   }
 
   function _renderMessage(m) {
@@ -784,11 +576,7 @@
     });
 
     return `
-      <div style="
-        display: flex;
-        justify-content: ${align};
-        width: 100%;
-      ">
+      <div style="display: flex; justify-content: ${align}; width: 100%;">
         <div style="
           max-width: 75%;
           padding: 8px 12px;
@@ -875,7 +663,6 @@
      Bind رویدادها
      ───────────────────────────────────────────── */
   function _bindEvents() {
-    // دکمه افزودن دوست
     const addBtn = document.getElementById('btnAddFriend');
     const input = document.getElementById('friendCodeInput');
 
@@ -909,9 +696,6 @@
       });
     }
 
-    // Enter روی فرم چت — هندل می‌شه در _openChat
-
-    // به‌روزرسانی خودکار در پیام‌های جدید
     Friends.on('message:received', () => {
       _updateCounter();
     });
@@ -926,7 +710,6 @@
   }
 
   function _bindRowEvents() {
-    // پاک کردن لیسنرهای قبلی
     const container = document.getElementById('friendsList');
     if (!container || container.dataset.bound === '1') return;
     container.dataset.bound = '1';
@@ -934,11 +717,8 @@
     container.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
       if (!btn) {
-        // کلیک روی خود ردیف → چت
         const row = e.target.closest('.friend-item');
-        if (row) {
-          _openChat(row.dataset.friendId);
-        }
+        if (row) _openChat(row.dataset.friendId);
         return;
       }
 
@@ -971,6 +751,7 @@
      ───────────────────────────────────────────── */
   function bootstrap() {
     Friends.init();
+    _bindEvents();
   }
 
   /* ─────────────────────────────────────────────
@@ -978,7 +759,6 @@
      ───────────────────────────────────────────── */
   global.HokmFriends = Friends;
 
-  // Auto-init
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 200));
