@@ -1,14 +1,11 @@
 /* ═══════════════════════════════════════════════════════════
-   ⚙️ HOKM PRO v6.0 — settings.js
-   مدیریت کامل تنظیمات: تم، AI، تایمر، صدا، بکاپ
+   ⚙️ HOKM PRO v6.1.1 — settings.js
+   مدیریت کامل تنظیمات: تم، AI، تایمر، صدا، راهنما، بکاپ
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  /* ─────────────────────────────────────────────
-     کمکی‌ها
-     ───────────────────────────────────────────── */
   function _storage() { return global.HokmStorage; }
   function _themes() { return global.HokmThemes; }
   function _audio() { return global.HokmAudio; }
@@ -26,14 +23,8 @@
     console.log('%c[Settings] ' + msg, 'color: #9b5de5; font-weight: 600;');
   }
 
-  /* ─────────────────────────────────────────────
-     API تنظیمات
-     ───────────────────────────────────────────── */
   const Settings = {
 
-    /**
-     * راه‌اندازی
-     */
     init() {
       _bindAccentPicker();
       _bindCardTheme();
@@ -43,33 +34,26 @@
       _bindTimerSpeed();
       _bindSoundToggles();
       _bindVolumeSliders();
+      _bindHelpButton();   // 🎯 دکمه راهنما
       _bindDangerZone();
       _loadCurrentValues();
 
-      _log('✅ Settings initialized');
+      _log('✅ Settings initialized (v6.1.1)');
       return Settings;
     },
 
-    /**
-     * بارگذاری مقادیر فعلی از Storage
-     */
-    _loadCurrentValues: null, // در پایین تعریف می‌شه
-
-    /* ─── Getters ─── */
+    _loadCurrentValues: null,
 
     get(key) {
       const storage = _storage();
       if (!storage) return null;
-      const settings = storage.getSettings();
-      return settings[key];
+      return storage.getSettings()[key];
     },
 
     getAll() {
       const storage = _storage();
       return storage ? storage.getSettings() : {};
     },
-
-    /* ─── Setters ─── */
 
     set(key, value) {
       const storage = _storage();
@@ -83,9 +67,6 @@
       return true;
     },
 
-    /**
-     * بازنشانی تنظیمات به پیش‌فرض
-     */
     reset() {
       const storage = _storage();
       if (!storage) return false;
@@ -94,18 +75,11 @@
         return false;
       }
 
-      // حذف کلید تنظیمات
       storage.remove(storage.KEYS.SETTINGS);
-
-      // بازسازی
       storage.updateSettings({});
-
-      // اعمال مجدد
       Settings._loadCurrentValues();
 
-      if (_themes()) {
-        _themes().reset();
-      }
+      if (_themes()) _themes().reset();
 
       if (_ui()) {
         _ui().showToast('✅ بازنشانی شد', 'تنظیمات به حالت پیش‌فرض برگشت', 'success');
@@ -114,9 +88,6 @@
       return true;
     },
 
-    /**
-     * پاک کردن آمار فقط
-     */
     clearStats() {
       if (!confirm('🗑️ آمار و تاریخچه بازی‌ها پاک شود؟')) {
         return false;
@@ -138,9 +109,6 @@
       return true;
     },
 
-    /**
-     * بازنشانی کامل (factory reset)
-     */
     clearAll() {
       if (!confirm('⚠️⚠️ همه چیز پاک شود؟ این کار برگشت‌پذیر نیست!')) {
         return false;
@@ -168,7 +136,7 @@
   };
 
   /* ─────────────────────────────────────────────
-     ۱. انتخاب Accent (۵ تم رنگی)
+     🎨 انتخاب Accent
      ───────────────────────────────────────────── */
   function _bindAccentPicker() {
     const picker = _$('accentPicker');
@@ -183,7 +151,6 @@
       const accent = dot.dataset.accent;
       if (!accent) return;
 
-      // اعمال از طریق Themes
       if (_themes()) {
         _themes().setAccent(accent);
       } else {
@@ -191,12 +158,10 @@
         Settings.set('accent', accent);
       }
 
-      // Update active dot
       picker.querySelectorAll('.accent-dot').forEach(d => {
         d.classList.toggle('active', d === dot);
       });
 
-      // صدا
       if (_audio()) _audio().play('softClick');
 
       if (_ui()) {
@@ -215,7 +180,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۲. تم کارت (۵ طرح)
+     🃏 طرح کارت
      ───────────────────────────────────────────── */
   function _bindCardTheme() {
     const select = _$('cardThemeSelect');
@@ -251,7 +216,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۳. تم پس‌زمینه (۵ طرح)
+     🖼️ پس‌زمینه
      ───────────────────────────────────────────── */
   function _bindBgTheme() {
     const select = _$('bgThemeSelect');
@@ -287,7 +252,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۴. سطح AI (۴ سطح)
+     🎯 سطح AI
      ───────────────────────────────────────────── */
   function _bindAILevel() {
     const container = _$('aiLevelSegmented');
@@ -301,7 +266,6 @@
 
       const level = btn.dataset.level;
 
-      // Update active
       container.querySelectorAll('button').forEach(b => {
         b.classList.toggle('active', b === btn);
       });
@@ -325,7 +289,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۵. تعداد بازیکنان (۲/۳/۴)
+     👥 تعداد بازیکنان
      ───────────────────────────────────────────── */
   function _bindPlayerCount() {
     const container = _$('playerCountSegmented');
@@ -356,7 +320,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۶. سرعت تایمر (سریع/معمولی/آهسته)
+     ⏱️ سرعت تایمر
      ───────────────────────────────────────────── */
   function _bindTimerSpeed() {
     const container = _$('timerSpeedSegmented');
@@ -392,10 +356,9 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۷. صدا — Toggle ها
+     🔊 صدا — Toggle ها
      ───────────────────────────────────────────── */
   function _bindSoundToggles() {
-    // صداهای بازی
     const sfxToggle = _$('sfxToggle');
     if (sfxToggle && !sfxToggle.dataset.bound) {
       sfxToggle.dataset.bound = '1';
@@ -421,7 +384,6 @@
       });
     }
 
-    // موسیقی
     const musicToggle = _$('musicToggle');
     if (musicToggle && !musicToggle.dataset.bound) {
       musicToggle.dataset.bound = '1';
@@ -454,10 +416,9 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۸. صدا — Slider ها
+     🎚️ صدا — Slider ها
      ───────────────────────────────────────────── */
   function _bindVolumeSliders() {
-    // صدای موسیقی
     const musicSlider = _$('musicVolume');
     if (musicSlider && !musicSlider.dataset.bound) {
       musicSlider.dataset.bound = '1';
@@ -472,7 +433,6 @@
         }
       });
 
-      // نمایش درصد
       let musicLabel = musicSlider.parentElement.querySelector('.volume-value');
       if (!musicLabel) {
         musicLabel = document.createElement('div');
@@ -489,7 +449,6 @@
       updateMusicLabel();
     }
 
-    // صدای افکت‌ها
     const sfxSlider = _$('sfxVolume');
     if (sfxSlider && !sfxSlider.dataset.bound) {
       sfxSlider.dataset.bound = '1';
@@ -504,7 +463,6 @@
         }
       });
 
-      // پخش صدا موقع تغییر (با تأخیر)
       let audioTimeout = null;
       sfxSlider.addEventListener('change', () => {
         if (audioTimeout) clearTimeout(audioTimeout);
@@ -513,7 +471,6 @@
         }, 100);
       });
 
-      // نمایش درصد
       let sfxLabel = sfxSlider.parentElement.querySelector('.volume-value');
       if (!sfxLabel) {
         sfxLabel = document.createElement('div');
@@ -534,36 +491,78 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۹. Danger Zone
+     📖 دکمه راهنما
+     ───────────────────────────────────────────── */
+  function _bindHelpButton() {
+    const helpBtn = _$('btnOpenHelp');
+    if (!helpBtn || helpBtn.dataset.bound) return;
+
+    helpBtn.dataset.bound = '1';
+
+    helpBtn.addEventListener('click', () => {
+      console.log('%c📖 باز کردن راهنما', 'color: #ffd60a; font-weight: bold;');
+
+      if (_ui() && typeof _ui().openHelpModal === 'function') {
+        _ui().openHelpModal();
+      } else if (_ui()) {
+        // fallback
+        _ui().openModal(`
+          <h2 class="modal-title" style="margin-bottom: 20px;">📖 راهنمای بازی حکم</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🎯 هدف بازی</h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+                ۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.
+              </p>
+            </div>
+            <div>
+              <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🃏 ترتیب کارت‌ها</h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+                A (14) > K (13) > Q (12) > J (11) > 10 > ... > 2
+              </p>
+            </div>
+            <div>
+              <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">👑 حکم‌خوانی</h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+                یک نفر حکم تعیین می‌کند. خال حکم بر همه چیز برتری دارد.
+              </p>
+            </div>
+            <div>
+              <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">⚖️ قوانین طلایی</h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+                پیروی از خال الزامی است. اگر کارت هم‌خال داری، باید همون رو بازی کنی.
+              </p>
+            </div>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button class="btn btn-primary btn-block" onclick="HokmUI.closeModal()">
+              فهمیدم ✅
+            </button>
+          </div>
+        `);
+      }
+    });
+
+    _log('Help button bound');
+  }
+
+  /* ─────────────────────────────────────────────
+     ⚠️ Danger Zone
      ───────────────────────────────────────────── */
   function _bindDangerZone() {
-    // پاک کردن آمار
     const resetStats = _$('btnResetStats');
     if (resetStats && !resetStats.dataset.bound) {
       resetStats.dataset.bound = '1';
-
       resetStats.addEventListener('click', () => {
         Settings.clearStats();
       });
     }
 
-    // بازنشانی کامل
     const resetAll = _$('btnResetAll');
     if (resetAll && !resetAll.dataset.bound) {
       resetAll.dataset.bound = '1';
-
       resetAll.addEventListener('click', () => {
         Settings.clearAll();
-      });
-    }
-
-    // بازنشانی تنظیمات (اگر بود)
-    const resetSettings = _$('btnResetSettings');
-    if (resetSettings && !resetSettings.dataset.bound) {
-      resetSettings.dataset.bound = '1';
-
-      resetSettings.addEventListener('click', () => {
-        Settings.reset();
       });
     }
 
@@ -571,7 +570,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     ۱۰. بارگذاری مقادیر فعلی
+     📥 بارگذاری مقادیر فعلی
      ───────────────────────────────────────────── */
   Settings._loadCurrentValues = function () {
     const settings = Settings.getAll();
@@ -582,15 +581,12 @@
       d.classList.toggle('active', d.dataset.accent === accent);
     });
 
-    // Card theme
     const cardSelect = _$('cardThemeSelect');
     if (cardSelect) cardSelect.value = settings.cardTheme || 'classic';
 
-    // BG theme
     const bgSelect = _$('bgThemeSelect');
     if (bgSelect) bgSelect.value = settings.bgTheme || 'gradient';
 
-    // AI level
     const aiLevel = settings.aiLevel || 'medium';
     const aiContainer = _$('aiLevelSegmented');
     if (aiContainer) {
@@ -599,8 +595,13 @@
       });
     }
 
-    // Player count
-    const playerCount = settings.playerCount || 4;
+    // Player count — فقط ۲ یا ۴
+    let playerCount = settings.playerCount || 4;
+    if (playerCount !== 2 && playerCount !== 4) {
+      playerCount = 4;
+      Settings.set('playerCount', 4);
+    }
+
     const pcContainer = _$('playerCountSegmented');
     if (pcContainer) {
       pcContainer.querySelectorAll('button').forEach(b => {
@@ -608,7 +609,6 @@
       });
     }
 
-    // Timer speed
     const timerSpeed = settings.timerSpeed || 'normal';
     const tsContainer = _$('timerSpeedSegmented');
     if (tsContainer) {
@@ -617,7 +617,6 @@
       });
     }
 
-    // Sound
     const sfxToggle = _$('sfxToggle');
     if (sfxToggle) sfxToggle.checked = settings.soundEnabled !== false;
 
@@ -640,12 +639,8 @@
     Settings.init();
   }
 
-  /* ─────────────────────────────────────────────
-     Export
-     ───────────────────────────────────────────── */
   global.HokmSettings = Settings;
 
-  // Auto-init
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 300));
