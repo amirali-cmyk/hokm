@@ -1,319 +1,415 @@
 /* ═══════════════════════════════════════════════════════════
-   🚀 HOKM PRO v6.0 — main.js (نسخه اضطراری)
-   این نسخه حتی اگر بقیه ماژول‌ها خطا داشته باشن، کار می‌کنه
+   🚀 HOKM PRO v6.1.1 — main.js
+   راه‌انداز نهایی: Bootstrap + Splash + آمار + راهنما
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  const VERSION = '6.0.0';
+  const VERSION = '6.1.1';
+  const BUILD = '2026.10';
+  const SPLASH_DURATION = 2500;
+  const SPLASH_MIN_DURATION = 1200;
 
-  console.log(
-    '%c🃏 HOKM PRO v' + VERSION,
-    'color: #ffd60a; font-size: 16px; font-weight: 900;'
-  );
+  const state = {
+    bootStartTime: Date.now(),
+    ready: false,
+    errors: [],
+    splashSkipped: false,
+    splashTimeout: null
+  };
 
-  // ═══════════════════════════════════════════
-  // ۱. حذف Splash (مهم‌ترین کار)
-  // ═══════════════════════════════════════════
-  function hideSplash() {
+  /* ─────────────────────────────────────────────
+     لاگ‌ها
+     ───────────────────────────────────────────── */
+  function _log(msg, color) {
+    color = color || '#06d6a0';
+    console.log('%c' + msg, 'color: ' + color + '; font-weight: 600; font-size: 12px;');
+  }
+
+  function _delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /* ─────────────────────────────────────────────
+     بررسی ماژول‌ها
+     ───────────────────────────────────────────── */
+  function _checkModules() {
+    const modules = [
+      'HokmStorage', 'HokmThemes', 'HokmAudio', 'HokmProfile',
+      'HokmAchievements', 'HokmLeaderboard', 'HokmFriends',
+      'HokmTournament', 'HokmReplay', 'HokmShare', 'HokmAI',
+      'HokmGame', 'HokmUI', 'HokmSettings'
+    ];
+
+    let ok = 0;
+    let missing = [];
+
+    console.groupCollapsed('%c📦 Modules', 'color: #ffd60a; font-weight: 700;');
+    modules.forEach(name => {
+      if (global[name] && typeof global[name] === 'object') {
+        console.log('%c✓ ' + name, 'color: #06d6a0; font-weight: 600;');
+        ok++;
+      } else {
+        console.warn('%c✗ ' + name, 'color: #ef476f; font-weight: 600;');
+        missing.push(name);
+      }
+    });
+    console.groupEnd();
+
+    return { ok, total: modules.length, missing };
+  }
+
+  /* ─────────────────────────────────────────────
+     Splash
+     ───────────────────────────────────────────── */
+  function _initSplash() {
+    const splash = document.getElementById('splashScreen');
+    const skipBtn = document.getElementById('btnSkipSplash');
+
+    if (!splash) return;
+
+    if (skipBtn && !skipBtn.dataset.bound) {
+      skipBtn.dataset.bound = '1';
+      skipBtn.addEventListener('click', () => {
+        state.splashSkipped = true;
+        _hideSplash();
+      });
+    }
+
+    state.splashTimeout = setTimeout(() => {
+      if (!state.splashSkipped) _hideSplash();
+    }, SPLASH_DURATION);
+
+    _log('🎬 Splash initialized', '#ffd60a');
+  }
+
+  function _hideSplash() {
     const splash = document.getElementById('splashScreen');
     const app = document.getElementById('app');
 
-    if (splash) {
+    if (state.splashTimeout) {
+      clearTimeout(state.splashTimeout);
+      state.splashTimeout = null;
+    }
+
+    if (!splash) return;
+
+    const elapsed = Date.now() - state.bootStartTime;
+    const remaining = Math.max(0, SPLASH_MIN_DURATION - elapsed);
+
+    setTimeout(() => {
       splash.classList.add('hidden');
-      splash.style.display = 'none';
-    }
 
-    if (app) {
-      app.classList.remove('hidden');
-    }
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 600);
 
-    console.log('%c✅ Splash hidden', 'color: #06d6a0; font-weight: bold;');
+      if (app) app.classList.remove('hidden');
+
+      setTimeout(() => {
+        try {
+          if (global.HokmUI && typeof global.HokmUI.navigate === 'function') {
+            global.HokmUI.navigate('menu', { force: true });
+          }
+        } catch (err) {
+          console.warn('Navigate error:', err);
+          var menu = document.getElementById('screen-menu');
+          if (menu) {
+            document.querySelectorAll('.screen').forEach(function(s) {
+              s.classList.remove('active');
+            });
+            menu.classList.add('active');
+          }
+        }
+      }, 100);
+
+      _log('✅ Splash hidden', '#06d6a0');
+      _emitReady();
+    }, remaining);
   }
 
-  // ═══════════════════════════════════════════
-  // ۲. رفتن به منو
-  // ═══════════════════════════════════════════
-  function goToMenu() {
+  function _emitReady() {
+    state.ready = true;
+
     try {
-      // تلاش از طریق UI
-      if (global.HokmUI && typeof global.HokmUI.navigate === 'function') {
-        global.HokmUI.navigate('menu', { force: true });
-        console.log('%c✅ Navigated via HokmUI', 'color: #06d6a0;');
-        return;
-      }
-    } catch (e) {
-      console.warn('HokmUI.navigate failed:', e);
-    }
+      document.dispatchEvent(new CustomEvent('hokm:ready', {
+        detail: { version: VERSION }
+      }));
+    } catch (e) {}
 
-    // Fallback: دستی
-    const screens = document.querySelectorAll('.screen');
-    screens.forEach(s => s.classList.remove('active'));
-
-    const menu = document.getElementById('screen-menu');
-    if (menu) {
-      menu.classList.add('active');
-      console.log('%c✅ Navigated manually', 'color: #06d6a0;');
-    }
+    _log('🎉 Hokm Pro v' + VERSION + ' ready!', '#ffd60a');
   }
 
-  // ═══════════════════════════════════════════
-  // ۳. اتصال دکمه Skip
-  // ═══════════════════════════════════════════
-  function bindSkipButton() {
-    const skipBtn = document.getElementById('btnSkipSplash');
-    if (!skipBtn) return;
-
-    skipBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log('%c⏭ Skip clicked', 'color: #ffd60a;');
-      hideSplash();
-      setTimeout(goToMenu, 100);
-    });
-
-    console.log('%c✅ Skip button bound', 'color: #06d6a0;');
-  }
-
-  // ═══════════════════════════════════════════
-  // ۴. اتصال دکمه شروع بازی
-  // ═══════════════════════════════════════════
-  function bindStartButton() {
-    const startBtn = document.getElementById('btnStartGame');
-    if (!startBtn) return;
-
-    startBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      console.log('%c🎮 Start game clicked', 'color: #ffd60a;');
-
-      try {
-        if (global.HokmUI && typeof global.HokmUI.startGame === 'function') {
-          global.HokmUI.startGame();
-        } else if (global.HokmGame && typeof global.HokmGame.start === 'function') {
-          global.HokmGame.start();
-        } else {
-          alert('موتور بازی آماده نیست. فایل‌های JS را چک کن.');
-        }
-      } catch (err) {
-        console.error('Start game error:', err);
-        alert('خطا در شروع بازی: ' + err.message);
-      }
-    });
-
-    console.log('%c✅ Start button bound', 'color: #06d6a0;');
-  }
-
-  // ═══════════════════════════════════════════
-  // ۵. اتصال تب‌ها
-  // ═══════════════════════════════════════════
-  function bindTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        const name = tab.dataset.tab;
-        console.log('%c📑 Tab: ' + name, 'color: #118ab2;');
-
-        try {
-          if (global.HokmUI && typeof global.HokmUI.navigate === 'function') {
-            if (name === 'game') {
-              global.HokmUI.navigate('menu');
-            } else {
-              global.HokmUI.navigate(name);
-            }
-          } else {
-            // Fallback
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const screen = document.getElementById('screen-' + (name === 'game' ? 'menu' : name));
-            if (screen) screen.classList.add('active');
-
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-          }
-        } catch (err) {
-          console.error('Tab error:', err);
-        }
-      });
-    });
-
-    console.log('%c✅ Tabs bound (' + tabs.length + ')', 'color: #06d6a0;');
-  }
-
-  // ═══════════════════════════════════════════
-  // ۶. اتصال منو کارت‌ها
-  // ═══════════════════════════════════════════
-  function bindMenuCards() {
-    const cards = document.querySelectorAll('.menu-card');
-    cards.forEach(function(card) {
-      card.addEventListener('click', function() {
-        const action = card.dataset.action;
-        console.log('%c🎯 Menu: ' + action, 'color: #9b5de5;');
-
-        try {
-          if (global.HokmUI && typeof global.HokmUI.navigate === 'function') {
-            global.HokmUI.navigate(action);
-          } else {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const screen = document.getElementById('screen-' + action);
-            if (screen) screen.classList.add('active');
-          }
-        } catch (err) {
-          console.error('Menu error:', err);
-          alert(action + ': ' + err.message);
-        }
-      });
-    });
-
-    console.log('%c✅ Menu cards bound (' + cards.length + ')', 'color: #06d6a0;');
-  }
-
-  // ═══════════════════════════════════════════
-  // ۷. نمایش تشخیص ماژول‌ها
-  // ═══════════════════════════════════════════
-  function reportModules() {
-    const modules = {
-      'HokmStorage': window.HokmStorage,
-      'HokmThemes': window.HokmThemes,
-      'HokmAudio': window.HokmAudio,
-      'HokmProfile': window.HokmProfile,
-      'HokmAchievements': window.HokmAchievements,
-      'HokmLeaderboard': window.HokmLeaderboard,
-      'HokmFriends': window.HokmFriends,
-      'HokmTournament': window.HokmTournament,
-      'HokmReplay': window.HokmReplay,
-      'HokmShare': window.HokmShare,
-      'HokmAI': window.HokmAI,
-      'HokmGame': window.HokmGame,
-      'HokmUI': window.HokmUI
-    };
-
-    console.group('%c📦 Modules Status', 'color: #ffd60a; font-weight: bold;');
-
-    let missing = [];
-    for (const name in modules) {
-      if (modules[name] && typeof modules[name] === 'object') {
-        console.log('%c✓ ' + name, 'color: #06d6a0;');
-      } else {
-        console.warn('%c✗ ' + name + ' (MISSING)', 'color: #ef476f;');
-        missing.push(name);
-      }
-    }
-
-    console.groupEnd();
-
-    if (missing.length > 0) {
-      console.warn(
-        '%c⚠️ ' + missing.length + ' ماژول گمشده: ' + missing.join(', '),
-        'color: #ef476f; font-weight: bold; font-size: 14px;'
-      );
-    } else {
-      console.log('%c✅ همه ماژول‌ها لود شدند!', 'color: #06d6a0; font-weight: bold; font-size: 14px;');
-    }
-
-    return missing;
-  }
-
-  // ═══════════════════════════════════════════
-  // ۸. اتصال رویدادهای خطا
-  // ═══════════════════════════════════════════
-  function setupErrorHandler() {
+  /* ─────────────────────────────────────────────
+     Error Handler
+     ───────────────────────────────────────────── */
+  function _setupGlobalErrorHandler() {
     window.addEventListener('error', function(e) {
-      console.error(
-        '%c❌ خطا: ' + (e.message || 'unknown') +
-        '\n   فایل: ' + (e.filename || '?').split('/').pop() +
-        '\n   خط: ' + e.lineno,
-        'color: #ef476f; font-weight: bold;'
-      );
+      console.error('[Global Error]', e.error || e.message);
+      state.errors.push(e.message || 'Unknown error');
     });
 
     window.addEventListener('unhandledrejection', function(e) {
-      console.error('%c❌ Promise: ' + e.reason, 'color: #ef476f;');
+      console.error('[Unhandled Promise]', e.reason);
     });
   }
 
-  // ═══════════════════════════════════════════
-  // ۹. تلاش برای راه‌اندازی ماژول‌ها (اختیاری)
-  // ═══════════════════════════════════════════
-  function tryInitModules() {
-    // Storage
-    try {
-      if (window.HokmStorage && typeof window.HokmStorage.getProfile === 'function') {
-        window.HokmStorage.getProfile();
-        console.log('%c✓ Storage initialized', 'color: #06d6a0;');
-      }
-    } catch (e) {
-      console.warn('Storage init failed:', e.message);
-    }
+  /* ─────────────────────────────────────────────
+     Device Detection
+     ───────────────────────────────────────────── */
+  function _detectDevice() {
+    const html = document.documentElement;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    html.dataset.isMobile = String(isMobile);
 
-    // Themes
-    try {
-      if (window.HokmThemes && typeof window.HokmThemes.init === 'function') {
-        window.HokmThemes.init();
-        console.log('%c✓ Themes initialized', 'color: #06d6a0;');
-      }
-    } catch (e) {
-      console.warn('Themes init failed:', e.message);
-    }
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    html.dataset.hasTouch = String(hasTouch);
   }
 
-  // ═══════════════════════════════════════════
-  // 🚀 BOOTSTRAP
-  // ═══════════════════════════════════════════
-  function bootstrap() {
-    console.log('%c🚀 Bootstrap starting...', 'color: #ffd60a; font-weight: bold;');
-
-    setupErrorHandler();
-
-    // گزارش ماژول‌ها
-    setTimeout(reportModules, 500);
-
-    // اتصال رویدادها
-    bindSkipButton();
-    bindStartButton();
-    bindTabs();
-    bindMenuCards();
-
-    // تلاش برای init
-    setTimeout(tryInitModules, 300);
-
-    // ═══ حذف Splash بعد ۲.۵ ثانیه ═══
-    setTimeout(function() {
-      console.log('%c⏰ Splash timeout reached', 'color: #ffd60a;');
-      hideSplash();
-      setTimeout(goToMenu, 200);
-    }, 2500);
-
-    // ═══ حذف فوری Splash بعد ۵ ثانیه (در هر صورت) ═══
-    setTimeout(function() {
-      const splash = document.getElementById('splashScreen');
-      if (splash && !splash.classList.contains('hidden')) {
-        console.warn('%c⚠️ Emergency splash removal', 'color: #ef476f; font-weight: bold;');
-        hideSplash();
-        setTimeout(goToMenu, 200);
+  /* ─────────────────────────────────────────────
+     Keyboard Helpers
+     ───────────────────────────────────────────── */
+  function _setupKeyboardHelpers() {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        if (global.HokmUI) global.HokmUI.navigate('help');
       }
-    }, 5000);
-
-    console.log('%c✅ Bootstrap complete', 'color: #06d6a0; font-weight: bold;');
+    });
   }
 
-  // ═══════════════════════════════════════════
-  // Public API
-  // ═══════════════════════════════════════════
-  global.HokmApp = {
+  /* ─────────────────────────────────────────────
+     🆕 اتصال تب آمار (Stats Tab)
+     ───────────────────────────────────────────── */
+  function _bindStatsTab() {
+    const statsTab = document.querySelector('.tab[data-tab="stats"]');
+
+    if (!statsTab) {
+      console.warn('[Main] تب آمار پیدا نشد');
+      return;
+    }
+
+    if (statsTab.dataset.bound) return;
+    statsTab.dataset.bound = '1';
+
+    statsTab.addEventListener('click', () => {
+      console.log('%c📊 رفتن به صفحه آمار', 'color: #118ab2; font-weight: bold;');
+
+      if (global.HokmUI && typeof global.HokmUI.navigate === 'function') {
+        global.HokmUI.navigate('stats');
+      } else {
+        var screens = document.querySelectorAll('.screen');
+        for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+        var screen = document.getElementById('screen-stats');
+        if (screen) screen.classList.add('active');
+
+        var allTabs = document.querySelectorAll('.tab');
+        for (var j = 0; j < allTabs.length; j++) allTabs[j].classList.remove('active');
+        statsTab.classList.add('active');
+      }
+
+      _renderStatsPage();
+    });
+
+    _log('✅ تب آمار فعال شد', '#06d6a0');
+  }
+
+  /* ─────────────────────────────────────────────
+     🆕 اتصال دکمه راهنما (Help Modal)
+     ───────────────────────────────────────────── */
+  function _bindHelpButton() {
+    const helpBtn = document.getElementById('btnOpenHelp');
+
+    if (!helpBtn) {
+      console.warn('[Main] دکمه راهنما پیدا نشد');
+      return;
+    }
+
+    if (helpBtn.dataset.bound) return;
+    helpBtn.dataset.bound = '1';
+
+    helpBtn.addEventListener('click', () => {
+      console.log('%c📖 باز کردن مودال راهنما', 'color: #ffd60a; font-weight: bold;');
+
+      if (global.HokmUI && typeof global.HokmUI.openHelpModal === 'function') {
+        global.HokmUI.openHelpModal();
+      } else if (global.HokmUI) {
+        global.HokmUI.openModal(`
+          <h2 class="modal-title">📖 راهنمای بازی حکم</h2>
+          <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
+            <div>
+              <h3 style="color:var(--accent); font-size:16px;">🎯 هدف بازی</h3>
+              <p style="color:var(--text-secondary); font-size:13px;">۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.</p>
+            </div>
+            <div>
+              <h3 style="color:var(--accent); font-size:16px;">🃏 ترتیب کارت‌ها</h3>
+              <p style="color:var(--text-secondary); font-size:13px;">A (14) > K (13) > Q (12) > J (11) > 10 > ... > 2</p>
+            </div>
+            <div>
+              <h3 style="color:var(--accent); font-size:16px;">👑 حکم‌خوانی</h3>
+              <p style="color:var(--text-secondary); font-size:13px;">یک نفر حکم تعیین می‌کند. خال حکم بر همه چیز برتری دارد.</p>
+            </div>
+            <div>
+              <h3 style="color:var(--accent); font-size:16px;">⚖️ قوانین طلایی</h3>
+              <p style="color:var(--text-secondary); font-size:13px;">پیروی از خال الزامی است. اگر کارت هم‌خال داری، باید همون رو بازی کنی.</p>
+            </div>
+          </div>
+          <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn btn-primary btn-block" onclick="HokmUI.closeModal()">فهمیدم ✅</button>
+          </div>
+        `);
+      }
+    });
+
+    _log('✅ دکمه راهنما فعال شد', '#06d6a0');
+  }
+
+  /* ─────────────────────────────────────────────
+     🆕 رندر صفحه آمار
+     ───────────────────────────────────────────── */
+  function _renderStatsPage() {
+    if (!global.HokmStorage) return;
+
+    const stats = global.HokmStorage.getStats();
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    const fa = (n) => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+
+    set('statsTotalGames', fa(stats.gamesPlayed || 0));
+    set('statsTotalWins', fa(stats.wins || 0));
+    set('statsTotalRounds', fa(stats.roundsWon || 0));
+    set('statsHokmClaimed', fa(stats.hokmClaimed || 0));
+    set('statsBestStreak', fa(stats.bestStreak || 0));
+    set('statsPlayTime', fa(Math.floor((stats.totalTimePlayed || 0) / 60000)));
+  }
+
+  /* ─────────────────────────────────────────────
+     🆕 راه‌اندازی قابلیت‌های جدید
+     ───────────────────────────────────────────── */
+  function _initNewFeatures() {
+    setTimeout(() => {
+      _bindStatsTab();
+      _bindHelpButton();
+      _log('✅ New features initialized (Stats + Help)', '#9b5de5');
+    }, 1000);
+  }
+
+  /* ─────────────────────────────────────────────
+     Bootstrap
+     ───────────────────────────────────────────── */
+  async function bootstrap() {
+    state.bootStartTime = Date.now();
+
+    console.log(
+      '%c🃏 HOKM PRO v' + VERSION + '\n%cBoot starting...',
+      'color: #ffd60a; font-size: 16px; font-weight: 900;',
+      'color: #06d6a0; font-size: 12px;'
+    );
+
+    _setupGlobalErrorHandler();
+    _detectDevice();
+    _setupKeyboardHelpers();
+
+    _initSplash();
+
+    await _delay(100);
+
+    const result = _checkModules();
+
+    if (result.missing.length > 0) {
+      console.warn('%c⚠️ ماژول‌های گمشده:', 'color: #f4a259; font-weight: 700;', result.missing);
+    }
+
+    _initNewFeatures();
+
+    const loadTime = Date.now() - state.bootStartTime;
+    _log('✅ Bootstrap done in ' + loadTime + 'ms', '#06d6a0');
+
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab[data-tab="stats"]');
+      if (tab) {
+        setTimeout(_renderStatsPage, 100);
+      }
+    });
+  }
+
+  /* ─────────────────────────────────────────────
+     Public API
+     ───────────────────────────────────────────── */
+  const App = {
     VERSION: VERSION,
-    hideSplash: hideSplash,
-    goToMenu: goToMenu,
-    reportModules: reportModules,
-    reload: function() { window.location.reload(); }
+    BUILD: BUILD,
+
+    getStatus() {
+      return {
+        version: VERSION,
+        build: BUILD,
+        ready: state.ready,
+        modules: _checkModules(),
+        errors: state.errors.slice(),
+        loadTime: Date.now() - state.bootStartTime
+      };
+    },
+
+    factoryReset() {
+      if (!confirm('⚠️ همه داده‌ها پاک می‌شود؟')) return false;
+      if (global.HokmStorage) global.HokmStorage.clearAll();
+      try { sessionStorage.clear(); } catch (e) {}
+      setTimeout(function() { window.location.reload(); }, 300);
+      return true;
+    },
+
+    reload() {
+      window.location.reload();
+    },
+
+    test() {
+      const modules = ['HokmStorage', 'HokmThemes', 'HokmAudio', 'HokmProfile', 'HokmGame', 'HokmUI', 'HokmSettings'];
+      const results = [];
+      
+      modules.forEach(function(m) {
+        const ok = !!(global[m] && typeof global[m] === 'object');
+        console.log((ok ? '%c✓ ' : '%c✗ ') + m, 'color: ' + (ok ? '#06d6a0' : '#ef476f') + '; font-weight: 600;');
+        results.push({ name: m, ok: ok });
+      });
+      
+      return results;
+    }
   };
 
-  // ═══════════════════════════════════════════
-  // Auto-Start
-  // ═══════════════════════════════════════════
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootstrap);
-  } else {
-    bootstrap();
+  global.HokmApp = App;
+
+  /* ─────────────────────────────────────────────
+     Auto-Bootstrap
+     ───────────────────────────────────────────── */
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      setTimeout(bootstrap, 0);
+    }
   }
+
+  /* ─────────────────────────────────────────────
+     Easter Egg
+     ───────────────────────────────────────────── */
+  setTimeout(function() {
+    if (state.ready) {
+      console.log(
+        '%c🃏 دستورات مفید:\n' +
+        '%c  HokmApp.test()      — تست سیستم\n' +
+        '%c  HokmApp.getStatus() — وضعیت کامل\n' +
+        '%c  HokmGame.debug()    — وضعیت بازی جاری',
+        'color: #ffd60a; font-size: 14px; font-weight: 900;',
+        'color: #06d6a0; font-family: monospace;',
+        'color: #06d6a0; font-family: monospace;',
+        'color: #06d6a0; font-family: monospace;'
+      );
+    }
+  }, 3000);
 
 })(typeof window !== 'undefined' ? window : globalThis);
