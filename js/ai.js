@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   🤖 HOKM PRO v6.0 — ai.js (نسخه نهایی با ارتقای Master)
+   🤖 HOKM PRO v6.0 — ai.js
    هوش مصنوعی ۴ سطحی: Easy / Medium / Hard / Master
    ═══════════════════════════════════════════════════════════ */
 
@@ -252,7 +252,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     🥇 سطح ۳: HARD (هم‌تیمی + حفظ حکم)
+     🥇 سطح ۳: HARD
      ───────────────────────────────────────────── */
   function _hardSelectHokm(hand) {
     const analysis = _analyzeHand(hand);
@@ -280,13 +280,16 @@
     const hokm = gameState.hokm;
     const myIdx = player.seat;
 
-    // ─── شروع دور ───
     if (trick.length === 0) {
       const aces = valid.filter(c => c.rank === 14);
       const kings = valid.filter(c => c.rank === 13);
 
-      if (aces.length > 0 && Math.random() < 0.7) return aces[0];
-      if (aces.length === 0 && kings.length > 0) return kings[0];
+      if (aces.length > 0 && Math.random() < 0.7) {
+        return aces[0];
+      }
+      if (aces.length === 0 && kings.length > 0) {
+        return kings[0];
+      }
 
       const groups = _groupBySuit(valid);
       const sortedByCount = ALL_SUITS.map(s => ({
@@ -303,26 +306,27 @@
       return valid[0];
     }
 
-    // ─── پیرو ───
-    // ۱. تشخیص هم‌تیمی برنده
     if (_isTeammateWinning(trick, myIdx, gameState)) {
       const nonHokm = valid.filter(c => c.suit !== hokm);
       const pool = nonHokm.length > 0 ? nonHokm : valid;
       return pool.sort(_byRankAsc)[0];
     }
 
-    // ۲. تلاش برای بردن با کمترین
     const winning = valid.filter(c => _canWin(c, trick, hokm));
     if (winning.length > 0) {
       const sorted = winning.sort(_byRankAsc);
       const lowest = sorted[0];
 
-      if (lowest.suit === hokm) {
+      const isHokm = lowest.suit === hokm;
+      const leadSuit = trick[0].card.suit;
+
+      if (isHokm) {
         const nonHokmWinners = winning.filter(c => c.suit !== hokm);
         if (nonHokmWinners.length > 0) {
           return nonHokmWinners.sort(_byRankAsc)[0];
         }
       }
+
       return lowest;
     }
 
@@ -330,7 +334,7 @@
   }
 
   /* ─────────────────────────────────────────────
-     👑 سطح ۴: MASTER (حافظه + بلوف + استراتژی)
+     👑 سطح ۴: MASTER (ارتقا یافته)
      ───────────────────────────────────────────── */
   function _masterSelectHokm(hand) {
     const analysis = _analyzeHand(hand);
@@ -338,10 +342,12 @@
     const candidates = ALL_SUITS.map(suit => {
       const info = analysis.bySuit[suit];
       let score = info.strength;
+
       score += info.cards.filter(c => c.rank === 14).length * 15;
       score += info.cards.filter(c => c.rank === 13).length * 8;
       score += info.count * 5;
       if (info.count === 0) score = -100;
+
       return { suit, score, info };
     }).sort((a, b) => b.score - a.score);
 
@@ -361,19 +367,18 @@
     const hokm = gameState.hokm;
     const myIdx = player.seat;
 
-    // ─── شروع دور ───
     if (trick.length === 0) {
       return _masterLeadCard(player, gameState, valid);
     }
 
-    // ─── پیرو ───
     // ۱. اگر هم‌تیمی برنده است
     if (_isTeammateWinning(trick, myIdx, gameState)) {
-      // 🎭 Bluffing: ۱۵٪ احتمال کارت متوسط برای گول زدن حریف
-      if (Math.random() < 0.15) {
+      // 🎭 بلوف: گاهی (۱۵٪) کارت متوسط بازی کن تا حریف فکر کنه خال نداری
+      if (Math.random() < 0.15 && valid.length > 2) {
         const sorted = valid.slice().sort(_byRankAsc);
         return sorted[Math.floor(sorted.length / 2)];
       }
+      // کمترین کارت غیرحکم
       const nonHokm = valid.filter(c => c.suit !== hokm);
       const pool = nonHokm.length > 0 ? nonHokm : valid;
       return pool.sort(_byRankAsc)[0];
@@ -386,7 +391,7 @@
       const sorted = winning.sort(_byRankAsc);
       const cheapest = sorted[0];
 
-      // حفظ حکم
+      // اگر حکم است ولی با غیرحکم هم می‌بریم، حکم رو ذخیره کن
       if (cheapest.suit === hokm) {
         const nonHokmWinners = winning.filter(c => c.suit !== hokm);
         if (nonHokmWinners.length > 0) {
@@ -394,7 +399,7 @@
         }
       }
 
-      // 🎭 Bluffing: ۱۰٪ احتمال کارت متوسط برای گول زدن حریف
+      // 🎭 بلوف: ۱۰٪ کارت متوسط بازی کن
       if (Math.random() < 0.10 && sorted.length > 1) {
         return sorted[1];
       }
@@ -406,8 +411,13 @@
     return _masterDiscard(player, gameState, valid);
   }
 
+  /**
+   * Master: انتخاب کارت شروع (با حافظه)
+   */
   function _masterLeadCard(player, gameState, valid) {
+    const hand = player.hand;
     const hokm = gameState.hokm;
+    const opponentAces = _countRemainingAces(valid);
 
     // ۱. آس‌های غیرحکم
     const acesNonHokm = valid.filter(c => c.rank === 14 && c.suit !== hokm);
@@ -421,8 +431,9 @@
       return acesHokm[0];
     }
 
-    // ۳. خالی کردن خال‌های کوتاه
+    // ۳. استراتژی: خالی کردن یک خال برای ساختن حکم
     const groups = _groupBySuit(valid);
+
     const shortSuits = ALL_SUITS
       .filter(s => s !== hokm)
       .map(s => ({ suit: s, cards: groups[s] }))
@@ -432,7 +443,7 @@
       return shortSuits[0].cards[0];
     }
 
-    // ۴. شروع از ضعیف‌ترین خال
+    // ۴. از ضعیف‌ترین خال شروع کن
     const sortedByCount = ALL_SUITS
       .filter(s => s !== hokm)
       .map(s => ({
@@ -451,6 +462,9 @@
     return valid[0];
   }
 
+  /**
+   * Master: دور انداختن (نتونستیم ببریم)
+   */
   function _masterDiscard(player, gameState, valid) {
     const hokm = gameState.hokm;
     const trick = gameState.trick;
@@ -459,11 +473,25 @@
     if (leadSuit) {
       const sorted = valid.sort(_byRankAsc);
       const nonHokm = sorted.filter(c => c.suit !== hokm);
-      if (nonHokm.length > 0) return nonHokm[0];
+      if (nonHokm.length > 0) {
+        return nonHokm[0];
+      }
       return sorted[0];
     }
 
     return valid.sort(_byRankAsc)[0];
+  }
+
+  /**
+   * شمارش آس‌های باقی‌مانده
+   */
+  function _countRemainingAces(myCards) {
+    const myAces = myCards.filter(c => c.rank === 14).map(c => c.suit);
+    const remaining = {};
+    ALL_SUITS.forEach(suit => {
+      remaining[suit] = !myAces.includes(suit) && !memory.playedCards.has(`${suit}_14`);
+    });
+    return remaining;
   }
 
   /* ─────────────────────────────────────────────
