@@ -393,7 +393,6 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
-          <!-- 📖 دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -408,11 +407,9 @@
         </div>
       </section>
 
-      <!-- 📊 صفحه آمار -->
       <section class="screen" id="screen-stats" data-screen="stats">
         <div class="menu-container">
           <h2 class="screen-title">📊 آمار کامل</h2>
-          
           <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
             <div class="stat-card">
               <div class="stat-value" id="statsTotalGames">۰</div>
@@ -611,14 +608,18 @@
         </div>
       </section>
 
+      <!-- 🎯 صفحه آنلاین (اصلاح شده) -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
           <h2 class="screen-title">🌐 بازی آنلاین</h2>
           <div class="online-options">
-            <button class="btn-primary btn-large" id="btnCreateRoom" type="button">➕ ساخت اتاق</button>
+            <button class="btn btn-primary btn-large btn-block" id="btnCreateRoom" type="button" style="margin-bottom: 16px;">
+              ➕ ساخت اتاق جدید
+            </button>
+            <div style="text-align: center; color: var(--text-muted); font-size: 13px; margin: 8px 0;">یا</div>
             <div class="join-room-bar">
-              <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" />
-              <button class="btn-primary" id="btnJoinRoom" type="button">ورود</button>
+              <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" style="text-align: center; font-family: var(--font-num); font-size: 20px; font-weight: 900; letter-spacing: 0.3em;" />
+              <button class="btn-primary" id="btnJoinRoom" type="button" style="padding: 0 24px;">ورود</button>
             </div>
           </div>
         </div>
@@ -655,30 +656,26 @@
   <div class="toast-container" id="toastContainer"></div>
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
-<!-- ═══════════════════════════════════════════
-     📜 اسکریپت‌ها — به ترتیب
-     ═══════════════════════════════════════════ -->
-<script src="js/storage.js"></script>
-<script src="js/themes.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/achievements.js"></script>
-<script src="js/leaderboard.js"></script>
-<script src="js/friends.js"></script>
-<script src="js/tournament.js"></script>
-<script src="js/replay.js"></script>
-<script src="js/share.js"></script>
-<script src="js/ai.js"></script>
-<script src="js/game.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/themes.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/friends.js"></script>
+  <script src="js/tournament.js"></script>
+  <script src="js/replay.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/game.js"></script>
 
-<!-- 🎯 این دو خط باید اینجا باشن (قبل از ui.js) -->
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="js/online.js"></script>
+  <!-- 🎯 اسکریپت‌های آنلاین (قبل از ui و main) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="js/online.js"></script>
 
-<!-- این‌ها باید بعد از online.js باشن -->
-<script src="js/ui.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/main.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/main.js"></script>
 
   <script>
     (function () {
@@ -706,81 +703,6 @@
         var splash = document.getElementById('splashScreen');
         if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 3.5s');
       }, 3500);
-      setTimeout(function () {
-        var splash = document.getElementById('splashScreen');
-        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 6s');
-      }, 6000);
-      setTimeout(function () {
-        var skipBtn = document.getElementById('btnSkipSplash');
-        if (skipBtn && !skipBtn.dataset.killerBound) {
-          skipBtn.dataset.killerBound = '1';
-          skipBtn.addEventListener('click', function (e) {
-            e.preventDefault(); e.stopPropagation(); killSplash('Skip clicked');
-          });
-        }
-      }, 100);
-      setTimeout(function () {
-        var startBtn = document.getElementById('btnStartGame');
-        if (startBtn && !startBtn.dataset.killerBound) {
-          startBtn.dataset.killerBound = '1';
-          startBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            try {
-              if (window.HokmUI && typeof window.HokmUI.startGame === 'function') window.HokmUI.startGame();
-              else if (window.HokmGame && typeof window.HokmGame.start === 'function') window.HokmGame.start();
-              else alert('موتور بازی آماده نیست');
-            } catch (err) { console.error(err); alert('خطا: ' + err.message); }
-          });
-        }
-      }, 100);
-      setTimeout(function () {
-        var tabs = document.querySelectorAll('.tab');
-        for (var i = 0; i < tabs.length; i++) {
-          (function (tab) {
-            if (tab.dataset.killerBound) return;
-            tab.dataset.killerBound = '1';
-            tab.addEventListener('click', function () {
-              var name = tab.dataset.tab;
-              try {
-                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
-                  window.HokmUI.navigate(name === 'game' ? 'menu' : name);
-                  return;
-                }
-              } catch (e) { }
-              var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
-              var sid = 'screen-' + (name === 'game' ? 'menu' : name);
-              var screen = document.getElementById(sid);
-              if (screen) screen.classList.add('active');
-              var allTabs = document.querySelectorAll('.tab');
-              for (var k = 0; k < allTabs.length; k++) allTabs[k].classList.remove('active');
-              tab.classList.add('active');
-            });
-          })(tabs[i]);
-        }
-      }, 100);
-      setTimeout(function () {
-        var cards = document.querySelectorAll('.menu-card');
-        for (var i = 0; i < cards.length; i++) {
-          (function (card) {
-            if (card.dataset.killerBound) return;
-            card.dataset.killerBound = '1';
-            card.addEventListener('click', function () {
-              var action = card.dataset.action;
-              try {
-                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
-                  window.HokmUI.navigate(action);
-                  return;
-                }
-              } catch (e) { }
-              var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
-              var screen = document.getElementById('screen-' + action);
-              if (screen) screen.classList.add('active');
-            });
-          })(cards[i]);
-        }
-      }, 100);
     })();
   </script>
 </body>
