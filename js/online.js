@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   🌐 HOKM PRO v6.1.1 — online.js
-   نسخه کامل: اتاق، بازی، حکم، نوبت‌ها، همگام‌سازی
+   🌐 HOKM PRO v6.1.1 — online.js (نسخه نهایی)
+   مدیریت کامل اتصال، اتاق، بازی و همگام‌سازی
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -8,6 +8,11 @@
 
   // 🎯 آدرس سرور
   const SERVER_URL = 'https://hokm-1-1ikl.onrender.com';
+
+  // 🎯 یه ID ثابت برای کاربر در این نشست (مهم!)
+  const USER_ID = 'guest_' + Math.random().toString(36).substr(2, 9);
+
+  const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
   const state = {
     socket: null,
@@ -32,8 +37,6 @@
       }
     });
   }
-
-  const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
   const Online = {
 
@@ -112,8 +115,10 @@
 
       state.isHost = true;
 
+      console.log('📤 ارسال درخواست ساخت اتاق...');
+      
       state.socket.emit('room:create', {
-        userId: 'guest_' + Date.now(),
+        userId: USER_ID,
         name: profile.name || 'تو',
         avatar: profile.avatar || '😎'
       });
@@ -130,9 +135,11 @@
 
       const profile = _profile()?.get() || { name: 'تو', avatar: '😎' };
 
+      console.log('📤 ارسال درخواست ورود به اتاق:', code);
+
       state.socket.emit('room:join', {
         code: code.toUpperCase(),
-        userId: 'guest_' + Date.now(),
+        userId: USER_ID,
         name: profile.name || 'تو',
         avatar: profile.avatar || '😎'
       });
@@ -184,14 +191,14 @@
 
       // ─── اتاق ───
       state.socket.on('room:created', (data) => {
-        console.log('%c🏠 Room created:', 'color: #06d6a0; font-weight: bold;', data);
+        console.log('%c🏠 Room created!', 'color: #06d6a0; font-weight: bold; font-size: 14px;', data);
         state.room = data.room;
         state.isHost = true;
         Online.renderRoom();
       });
 
       state.socket.on('room:joined', (data) => {
-        console.log('%c🚪 Room joined:', 'color: #06d6a0; font-weight: bold;', data);
+        console.log('%c🚪 Room joined!', 'color: #06d6a0; font-weight: bold;', data);
         state.room = data.room;
         state.isHost = false;
         Online.renderRoom();
@@ -246,7 +253,6 @@
         if (_ui()) {
           _ui().navigate('game', { force: true });
 
-          // ذخیره state آنلاین
           if (!_ui().state) _ui().state = {};
           _ui().state.isOnlineGame = true;
           _ui().state.onlineData = {
@@ -294,11 +300,6 @@
 
         if (_audio()) _audio().play('playCard');
 
-        // حذف کارت بازی‌شده از دست ما (اگه ما بودیم)
-        if (data.userId === state.room?.players?.find(p => p.sid === state.socket.id)?.userId) {
-          // TODO
-        }
-
         // رندر کارت‌های روی میز
         if (_ui() && _ui().state && _ui().state.isOnlineGame) {
           _renderOnlineTrick(data.trick);
@@ -316,7 +317,6 @@
           _ui().showToast('🏆 برنده دور', 'تیم ' + data.winnerTeam, 'success', 2000);
         }
 
-        // پاک کردن میز بعد از ۱.۵ ثانیه
         setTimeout(() => {
           if (_ui()) {
             const center = document.getElementById('trickCenter');
@@ -392,10 +392,16 @@
       state.socket.on('chat:message', (data) => {
         console.log('Chat:', data);
       });
+
+      // 🎯 گرفتن تمام خطاها
+      state.socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        if (_ui()) _ui().showToast('خطای سرور', String(error), 'error', 5000);
+      });
     },
 
     /* ─────────────────────────────────────────────
-       رندر اتاق
+       رندر اتاق (بهبود یافته)
        ───────────────────────────────────────────── */
 
     renderRoom() {
@@ -526,13 +532,16 @@
       const el = document.createElement('div');
       el.className = 'card-face';
       el.dataset.pos = pos;
+      
+      const rankStr = card.rank === 11 ? 'J' : card.rank === 12 ? 'Q' : card.rank === 13 ? 'K' : card.rank === 14 ? 'A' : card.rank;
+      
       el.innerHTML = `
         <div class="card-corner top">
-          <span class="card-rank">${card.rank === 11 ? 'J' : card.rank === 12 ? 'Q' : card.rank === 13 ? 'K' : card.rank === 14 ? 'A' : card.rank}</span>
+          <span class="card-rank">${rankStr}</span>
         </div>
         <div class="card-suit">${SUIT_SYMBOLS[card.suit]}</div>
         <div class="card-corner bottom">
-          <span class="card-rank">${card.rank === 11 ? 'J' : card.rank === 12 ? 'Q' : card.rank === 13 ? 'K' : card.rank === 14 ? 'A' : card.rank}</span>
+          <span class="card-rank">${rankStr}</span>
         </div>
       `;
 
