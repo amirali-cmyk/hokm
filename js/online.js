@@ -6,8 +6,8 @@
 (function (global) {
   'use strict';
 
-  // 🎯 آدرس سرور (هر وقت سرور عوض شد، فقط اینجا رو تغییر بده)
-  const SERVER_URL = 'https://hokm-14k9.onrender.com';
+  // 🎯 آدرس سرور (آپدیت شده)
+  const SERVER_URL = 'https://hokm-1-1ikl.onrender.com';
 
   const state = {
     socket: null,
@@ -48,18 +48,20 @@
       }
 
       try {
+        if (_ui()) _ui().showToast('در حال اتصال...', 'کمی صبر کن', 'info', 3000);
+
         state.socket = io(SERVER_URL, {
           transports: ['websocket'],
           reconnection: true,
           reconnectionAttempts: 5,
-          reconnectionDelay: 1000
+          reconnectionDelay: 2000,
+          timeout: 60000 // ۶۰ ثانیه فرصت برای بیدار شدن سرور رندر
         });
 
         state.socket.on('connect', () => {
           state.connected = true;
           console.log('%c🌐 Connected to server', 'color: #06d6a0; font-weight: bold;');
-
-          // احراز هویت (اگه کاربر پروفایل داره)
+          
           const profile = _profile()?.get();
           if (profile && profile.userId) {
             state.socket.emit('auth', { token: profile.userId });
@@ -78,7 +80,7 @@
 
         state.socket.on('connect_error', (error) => {
           console.error('Connection error:', error);
-          if (_ui()) _ui().showToast('خطا', 'اتصال به سرور برقرار نشد', 'error');
+          if (_ui()) _ui().showToast('خطا', 'اتصال به سرور برقرار نشد. ممکنه سرور در حال بیدار شدن باشه.', 'error', 5000);
         });
 
         _bindSocketEvents();
@@ -106,13 +108,10 @@
        اتاق‌ها
        ───────────────────────────────────────────── */
 
-    /**
-     * ساخت اتاق جدید
-     */
     createRoom() {
       if (!state.connected) {
         if (!Online.connect()) return;
-        setTimeout(() => Online.createRoom(), 1000);
+        setTimeout(() => Online.createRoom(), 1500);
         return;
       }
 
@@ -129,13 +128,10 @@
       if (_ui()) _ui().showToast('در حال ساخت اتاق...', 'لطفاً صبر کن', 'info', 2000);
     },
 
-    /**
-     * ورود به اتاق
-     */
     joinRoom(code) {
       if (!state.connected) {
         if (!Online.connect()) return;
-        setTimeout(() => Online.joinRoom(code), 1000);
+        setTimeout(() => Online.joinRoom(code), 1500);
         return;
       }
 
@@ -149,9 +145,6 @@
       });
     },
 
-    /**
-     * خروج از اتاق
-     */
     leaveRoom() {
       if (state.socket) {
         state.socket.emit('room:leave');
@@ -164,18 +157,12 @@
       }
     },
 
-    /**
-     * اعلام آمادگی
-     */
     setReady(ready) {
       if (state.socket && state.connected) {
         state.socket.emit('room:ready', { ready });
       }
     },
 
-    /**
-     * شروع بازی (فقط host)
-     */
     startGame() {
       if (state.socket && state.connected && state.isHost) {
         state.socket.emit('game:start');
@@ -188,27 +175,18 @@
        بازی
        ───────────────────────────────────────────── */
 
-    /**
-     * تعیین حکم (فقط حکم‌خوان)
-     */
     setHokm(suit) {
       if (state.socket && state.connected) {
         state.socket.emit('hokm:set', { suit });
       }
     },
 
-    /**
-     * بازی کارت
-     */
     playCard(card) {
       if (state.socket && state.connected) {
         state.socket.emit('card:play', { card: { suit: card.suit, rank: card.rank } });
       }
     },
 
-    /**
-     * ارسال پیام چت
-     */
     sendMessage(text) {
       if (state.socket && state.connected && text) {
         state.socket.emit('chat:send', { text });
@@ -277,9 +255,26 @@
 
       state.socket.on('game:dealt', (data) => {
         console.log('Cards dealt:', data);
-        // TODO: نمایش کارت‌ها (در ui.js باید یه تابع برای آنلاین بسازیم)
-        if (_ui() && _ui().renderOnlineHand) {
-          _ui().renderOnlineHand(data.cards);
+        
+        if (global.HokmUI) {
+          global.HokmUI.navigate('game', { force: true });
+          
+          // ذخیره state آنلاین
+          if (!global.HokmUI.state) global.HokmUI.state = {};
+          global.HokmUI.state.isOnlineGame = true;
+          global.HokmUI.state.onlineData = {
+            mySeat: data.mySeat,
+            currentTurnSeat: data.turnSeat,
+            hokm: null,
+            myCards: data.cards
+          };
+          
+          // نمایش کارت‌های من
+          global.HokmUI.renderOnlineHand(data.cards);
+          
+          if (data.turnSeat === data.mySeat) {
+            global.HokmUI.showToast('نوبت توئه!', 'یک کارت انتخاب کن', 'info', 3000);
+          }
         }
       });
 
@@ -289,21 +284,38 @@
 
       state.socket.on('hokm:chosen', (data) => {
         console.log('Hokm chosen:', data.suit);
-        if (_ui()) _ui().updateHokmDisplay(data.suit);
+        if (global.HokmUI) {
+          global.HokmUI.updateHokmDisplay(data.suit);
+          if (global.HokmUI.state && global.HokmUI.state.onlineData) {
+            global.HokmUI.state.onlineData.hokm = data.suit;
+          }
+        }
       });
 
       state.socket.on('card:played', (data) => {
         console.log('Card played:', data);
         if (_audio()) _audio().play('playCard');
+        
+        if (global.HokmUI && global.HokmUI.state.onlineData) {
+          // به‌روزرسانی تعداد کارت‌ها و دور
+          // TODO: کامل کردن رندر
+        }
       });
 
       state.socket.on('trick:won', (data) => {
         console.log('Trick won:', data);
         if (_audio()) _audio().play('winTrick');
+        if (global.HokmUI) {
+          global.HokmUI.updateScores(data.scores, 0); // TODO
+        }
       });
 
       state.socket.on('turn:changed', (data) => {
         console.log('Turn changed to seat:', data.turnSeat);
+        if (global.HokmUI && global.HokmUI.state.onlineData) {
+          global.HokmUI.state.onlineData.currentTurnSeat = data.turnSeat;
+          global.HokmUI.renderOnlineHand(global.HokmUI.state.onlineData.myCards);
+        }
       });
 
       state.socket.on('game:ended', (data) => {
@@ -314,7 +326,6 @@
       // ─── چت ───
       state.socket.on('chat:message', (data) => {
         console.log('Chat:', data);
-        // TODO: نمایش چت در UI
       });
     },
 
@@ -377,7 +388,7 @@
         </div>
       `;
 
-      // Bind دکمه‌ها
+      // Bind
       const startBtn = document.getElementById('btnStartOnlineGame');
       if (startBtn && isHost) {
         startBtn.addEventListener('click', () => Online.startGame());
