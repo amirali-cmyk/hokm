@@ -7,6 +7,10 @@
 ═══════════════════════════════════════════════════════════════
 """
 
+# 🎯 مهم: eventlet باید قبل از هر چیز دیگه‌ای monkey_patch بشه
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import sys
 import json
@@ -35,25 +39,22 @@ except ImportError as e:
 # ═══════════════════════════════════════════════════════════
 
 BASE_DIR = Path(__file__).resolve().parent
-# در Render بهتره دیتابیس توی پوشه tmp یا همون پوشه اصلی ساخته بشه
 DB_PATH = BASE_DIR / "hokm.db"
 STATIC_DIR = BASE_DIR
 
 app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="")
 app.config["SECRET_KEY"] = os.environ.get("HOKM_SECRET", secrets.token_hex(32))
-app.config["SESSION_COOKIE_SAMESITE"] = "None" # برای CORS
-app.config["SESSION_COOKIE_SECURE"] = True    # برای HTTPS
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 
-# 🎯 تنظیم CORS برای GitHub Pages و هر دامنه دیگه
 CORS(app, supports_credentials=True, origins="*")
 
-# 🎯 تنظیم SocketIO
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="eventlet", # برای Render بهتره از eventlet استفاده بشه (توی requirements هست)
+    async_mode="eventlet",
     ping_timeout=60,
     ping_interval=25,
     logger=False,
@@ -78,64 +79,67 @@ def close_db(exception=None):
         db.close()
 
 def init_db():
-    db = sqlite3.connect(str(DB_PATH))
-    db.row_factory = sqlite3.Row
-    cursor = db.cursor()
+    try:
+        db = sqlite3.connect(str(DB_PATH))
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id     TEXT UNIQUE NOT NULL,
-            name        TEXT NOT NULL,
-            email       TEXT UNIQUE NOT NULL,
-            password    TEXT NOT NULL,
-            avatar      TEXT DEFAULT '🌱',
-            elo         INTEGER DEFAULT 1000,
-            coins       INTEGER DEFAULT 500,
-            wins        INTEGER DEFAULT 0,
-            losses      INTEGER DEFAULT 0,
-            games       INTEGER DEFAULT 0,
-            best_streak INTEGER DEFAULT 0,
-            current_streak INTEGER DEFAULT 0,
-            hokm_claimed INTEGER DEFAULT 0,
-            hokm_won    INTEGER DEFAULT 0,
-            created_at  INTEGER NOT NULL,
-            last_played_at INTEGER,
-            last_seen   INTEGER,
-            is_online   INTEGER DEFAULT 0
-        )
-    """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id     TEXT UNIQUE NOT NULL,
+                name        TEXT NOT NULL,
+                email       TEXT UNIQUE NOT NULL,
+                password    TEXT NOT NULL,
+                avatar      TEXT DEFAULT '🌱',
+                elo         INTEGER DEFAULT 1000,
+                coins       INTEGER DEFAULT 500,
+                wins        INTEGER DEFAULT 0,
+                losses      INTEGER DEFAULT 0,
+                games       INTEGER DEFAULT 0,
+                best_streak INTEGER DEFAULT 0,
+                current_streak INTEGER DEFAULT 0,
+                hokm_claimed INTEGER DEFAULT 0,
+                hokm_won    INTEGER DEFAULT 0,
+                created_at  INTEGER NOT NULL,
+                last_played_at INTEGER,
+                last_seen   INTEGER,
+                is_online   INTEGER DEFAULT 0
+            )
+        """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS sessions (
-            token       TEXT PRIMARY KEY,
-            user_id     TEXT NOT NULL,
-            created_at  INTEGER NOT NULL,
-            expires_at  INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-        )
-    """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                token       TEXT PRIMARY KEY,
+                user_id     TEXT NOT NULL,
+                created_at  INTEGER NOT NULL,
+                expires_at  INTEGER NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+            )
+        """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS games (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            game_id     TEXT UNIQUE NOT NULL,
-            winner_team TEXT NOT NULL,
-            score_a     INTEGER NOT NULL,
-            score_b     INTEGER NOT NULL,
-            player_ids  TEXT NOT NULL,
-            mode        TEXT DEFAULT 'online',
-            duration_ms INTEGER,
-            created_at  INTEGER NOT NULL
-        )
-    """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS games (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                game_id     TEXT UNIQUE NOT NULL,
+                winner_team TEXT NOT NULL,
+                score_a     INTEGER NOT NULL,
+                score_b     INTEGER NOT NULL,
+                player_ids  TEXT NOT NULL,
+                mode        TEXT DEFAULT 'online',
+                duration_ms INTEGER,
+                created_at  INTEGER NOT NULL
+            )
+        """)
 
-    db.commit()
-    db.close()
-    print("✅ دیتابیس آماده است")
+        db.commit()
+        db.close()
+        print("✅ دیتابیس آماده است")
+    except Exception as e:
+        print(f"❌ خطا در ساخت دیتابیس: {e}")
 
 # ═══════════════════════════════════════════════════════════
-# API: احراز هویت (خلاصه شده)
+# API: احراز هویت
 # ═══════════════════════════════════════════════════════════
 
 @app.route("/api/register", methods=["POST"])
@@ -193,6 +197,19 @@ def login():
     db.commit()
 
     return jsonify({"ok": True, "token": token, "user": dict(user)})
+
+@app.route("/api/leaderboard", methods=["GET"])
+def leaderboard():
+    filter_type = request.args.get("filter", "all")
+    limit = min(int(request.args.get("limit", 100)), 100)
+    db = get_db()
+    rows = db.execute("SELECT * FROM users WHERE games > 0 ORDER BY elo DESC LIMIT ?", (limit,)).fetchall()
+    entries = []
+    for i, row in enumerate(rows):
+        e = dict(row)
+        e["rank"] = i + 1
+        entries.append(e)
+    return jsonify({"entries": entries, "filter": filter_type})
 
 # ═══════════════════════════════════════════════════════════
 # اتاق‌های بازی (In-Memory)
@@ -486,39 +503,39 @@ def on_chat_send(data):
 
 @app.route("/")
 def index():
-    try:
+    index_path = STATIC_DIR / "index.html"
+    if index_path.exists():
         return send_from_directory(str(STATIC_DIR), "index.html")
-    except Exception:
-        return jsonify({"status": "ok", "message": "Hokm Pro Server is running!"})
+    return jsonify({"status": "ok", "message": "Hokm Pro Server is running!"})
 
 @app.route("/<path:path>")
 def static_files(path):
     full_path = STATIC_DIR / path
     if full_path.exists() and full_path.is_file():
         return send_from_directory(str(STATIC_DIR), path)
-    try:
+    not_found_path = STATIC_DIR / "404.html"
+    if not_found_path.exists():
         return send_from_directory(str(STATIC_DIR), "404.html"), 404
-    except Exception:
-        return "404 Not Found", 404
+    return "404 Not Found", 404
 
 @app.errorhandler(404)
 def not_found(e):
     if request.path.startswith("/api/") or request.path.startswith("/socket.io/"):
         return jsonify({"error": "not_found"}), 404
-    try:
+    not_found_path = STATIC_DIR / "404.html"
+    if not_found_path.exists():
         return send_from_directory(str(STATIC_DIR), "404.html"), 404
-    except Exception:
-        return "404 Not Found", 404
+    return "404 Not Found", 404
 
 # ═══════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════
 
+init_db()
+port = int(os.environ.get("PORT", 8080))
+
 if __name__ == "__main__":
-    init_db()
-    port = int(os.environ.get("PORT", 8080))
     print(f"🚀 سرور روی پورت {port} استارت شد")
     socketio.run(app, host="0.0.0.0", port=port, allow_unsafe_werkzeug=True)
 else:
-    # برای زمانی که gunicorn یا eventlet اجراش می‌کنه (مثل Render)
-    init_db()
+    print(f"🚀 سرور توسط gunicorn روی پورت {port} استارت شد")
