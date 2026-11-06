@@ -393,7 +393,6 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
-          <!-- 📖 دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -408,11 +407,9 @@
         </div>
       </section>
 
-      <!-- 📊 صفحه آمار -->
       <section class="screen" id="screen-stats" data-screen="stats">
         <div class="menu-container">
           <h2 class="screen-title">📊 آمار کامل</h2>
-          
           <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
             <div class="stat-card">
               <div class="stat-value" id="statsTotalGames">۰</div>
@@ -667,6 +664,11 @@
   <script src="js/share.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/game.js"></script>
+
+  <!-- 🎯 کتابخانه Socket.io و فایل آنلاین -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="js/online.js"></script>
+
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
