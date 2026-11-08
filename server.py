@@ -7,6 +7,7 @@
 ═══════════════════════════════════════════════════════════════
 """
 
+# 🎯 مهم: eventlet باید قبل از هر چیز دیگه‌ای monkey_patch بشه
 import eventlet
 eventlet.monkey_patch()
 
@@ -22,6 +23,7 @@ from datetime import timedelta
 from functools import wraps
 from pathlib import Path
 
+# ─── وابستگی‌ها ───
 try:
     from flask import Flask, request, jsonify, send_from_directory, g
     from flask_cors import CORS
@@ -362,29 +364,16 @@ def on_room_ready(data):
         room.last_activity = int(time.time() * 1000)
     emit("room:update", {"room": room.to_dict()}, room=room_code)
 
-# 🎯 تابع اصلاح‌شده شروع بازی (مقایسه با user_id به جای sid)
 @socketio.on("game:start")
 def on_game_start():
     sid = request.sid
     user_id, room_code = get_user_from_sid(sid)
-    
-    if not room_code or room_code not in rooms: 
-        emit("game:error", {"error": "اتاق پیدا نشد"})
-        return
-        
+    if not room_code or room_code not in rooms: return
     room = rooms[room_code]
 
-    # پیدا کردن Host واقعی بر اساس user_id
-    host_user_id = None
-    for p_sid, p in room.players.items():
-        if p_sid == room.host_id:
-            host_user_id = p["userId"]
-            break
-
-    if host_user_id != user_id:
-        emit("game:error", {"error": "فقط سازنده اتاق می‌تواند شروع کند"})
+    if room.host_id != sid:
+        emit("game:error", {"error": "فقط host می‌تواند شروع کند"})
         return
-        
     if len(room.players) < 2:
         emit("game:error", {"error": "حداقل ۲ بازیکن لازم است"})
         return
@@ -407,18 +396,10 @@ def on_game_start():
     room.turn = random.randint(0, count - 1)
     room.last_activity = int(time.time() * 1000)
 
-    # ارسال رویداد شروع به همه
-    emit("game:started", {"room": room.to_dict()}, room=room_code)
-    
-    # ارسال کارت‌ها به هر بازیکن
     for i, p_sid in enumerate(player_sids):
-        emit("game:dealt", {
-            "cards": room.players[p_sid]["cards"], 
-            "mySeat": i, 
-            "turnSeat": room.turn, 
-            "totalPlayers": count
-        }, room=p_sid)
+        emit("game:dealt", {"cards": room.players[p_sid]["cards"], "mySeat": i, "turnSeat": room.turn, "totalPlayers": count}, room=p_sid)
 
+    emit("game:started", {"room": room.to_dict()}, room=room_code)
     print(f"🎮 بازی در {room_code} شروع شد ({count} بازیکن)")
 
 @socketio.on("hokm:set")
