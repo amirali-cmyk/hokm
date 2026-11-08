@@ -1,12 +1,17 @@
 /* ═══════════════════════════════════════════════════════════
-   🌐 HOKM PRO v6.1.1 — online.js (دیباگ کامل شروع بازی)
+   🌐 HOKM PRO v6.1.1 — online.js (نسخه نهایی)
+   مدیریت کامل اتصال، اتاق، بازی و همگام‌سازی
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
+  // 🎯 آدرس سرور
   const SERVER_URL = 'https://hokm-1-1ikl.onrender.com';
+  
+  // یه آیدی ثابت برای این نشست
   const USER_ID = 'guest_' + Math.random().toString(36).substr(2, 9);
+
   const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
   const state = {
@@ -20,7 +25,7 @@
     hokm: null
   };
 
-  // 🎯 ابزار دیباگ روی صفحه
+  // 🎯 ابزار دیباگ روی صفحه (برای اینکه ببینیم چه خبره)
   function showDebug(msg, color = '#0f0') {
     let box = document.getElementById('onlineDebugBox');
     if (!box) {
@@ -124,7 +129,6 @@
       if (global.HokmUI) global.HokmUI.navigate('online', { force: true });
     },
 
-    // 🎯 این بخش حیاتی است
     startGame() {
       showDebug('🖱️ کلیک روی شروع بازی شد!', '#ffd60a');
       
@@ -149,7 +153,9 @@
     },
 
     setHokm(suit) {
-      if (state.socket && state.connected) state.socket.emit('hokm:set', { suit });
+      if (state.socket && state.connected) {
+        state.socket.emit('hokm:set', { suit });
+      }
     },
 
     playCard(card) {
@@ -171,28 +177,27 @@
       const players = state.room.players || [];
       const roomCode = state.room.code;
 
-      // 🎯 لاگ برای اینکه ببینیم اتاق با چند نفر رندر میشه
       showDebug(`🎨 رندر اتاق ${roomCode} با ${players.length} بازیکن`, '#0f0');
 
       container.innerHTML = `
         <h2 class="screen-title">🌐 اتاق بازی</h2>
         
-        <div class="room-code-container" style="text-align: center; padding: 24px; background: var(--bg-surface); border: 2px solid var(--accent); border-radius: var(--radius-lg); margin-bottom: 16px;">
-          <div class="room-code-label">کد اتاق</div>
-          <div class="room-code-value" style="font-family: var(--font-num); font-size: 40px; font-weight: 900; color: var(--accent); letter-spacing: 0.2em; margin: 8px 0;">${roomCode}</div>
-          <div class="room-code-hint">این کد رو به دوستات بده</div>
+        <div style="text-align: center; padding: 24px; background: var(--bg-surface); border: 2px solid var(--accent); border-radius: var(--radius-lg); margin-bottom: 16px;">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">کد اتاق</div>
+          <div style="font-family: var(--font-num); font-size: 40px; font-weight: 900; color: var(--accent); letter-spacing: 0.2em; margin: 8px 0;">${roomCode}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">این کد رو به دوستات بده</div>
         </div>
 
         <div class="panel" style="margin-bottom: 16px;">
           <div class="panel-header">
             <div class="panel-title">👥 بازیکنان (${players.length}/${state.room.maxPlayers})</div>
           </div>
-          <div class="room-players-list">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
             ${players.map(p => `
-              <div class="room-player-item">
+              <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-elevated); border-radius: var(--radius-sm);">
                 <span style="font-size: 22px;">${p.avatar || '👤'}</span>
                 <span style="flex: 1; font-weight: 600;">${p.name}</span>
-                ${p.ready ? '<span style="color: #06d6a0;">آماده</span>' : '<span style="color: #ffd60a;">در انتظار</span>'}
+                ${p.ready ? '<span style="color: #06d6a0; font-size: 11px;">✓ آماده</span>' : '<span style="color: #ffd60a; font-size: 11px;">⏳ در انتظار</span>'}
               </div>
             `).join('')}
           </div>
@@ -210,11 +215,8 @@
         </div>
       `;
 
-      // 🎯 اتصال دکمه شروع
       const startBtn = document.getElementById('btnStartOnlineGame');
-      if (startBtn) {
-        startBtn.onclick = () => Online.startGame();
-      }
+      if (startBtn) startBtn.onclick = () => Online.startGame();
 
       const readyBtn = document.getElementById('btnToggleReady');
       if (readyBtn) readyBtn.onclick = () => Online.setReady(true);
@@ -253,7 +255,7 @@
       showDebug('👥 بازیکن جدید وارد شد!', '#0f0');
       if (state.room) {
         state.room.players = data.players;
-        Online.renderRoom(); // 🎯 دکمه شروع برای Host آپدیت میشه
+        Online.renderRoom();
       }
     });
 
@@ -264,41 +266,51 @@
       }
     });
 
-    // 🎯 دریافت پاسخ شروع بازی
+    // 🎯 دریافت پاسخ شروع بازی با تأخیر کوچک
     state.socket.on('game:started', (data) => {
       showDebug('🎮 پاسخ سرور: بازی شروع شد!', '#0f0');
       if (state.room && data.room) state.room = data.room;
       
-      if (global.HokmUI) {
-        global.HokmUI.navigate('game', { force: true });
-        global.HokmUI.resetGameView();
-      }
+      setTimeout(() => {
+        if (global.HokmUI) {
+          showDebug('🚀 هدایت به صفحه بازی...', '#0f0');
+          global.HokmUI.navigate('game', { force: true });
+          global.HokmUI.resetGameView();
+        } else {
+          showDebug('❌ HokmUI پیدا نشد!', '#f00');
+        }
+      }, 300);
     });
 
-    // 🎯 دریافت خطا از سرور
     state.socket.on('game:error', (data) => {
       showDebug('❌ خطای بازی: ' + data.error, '#f00');
       if (global.HokmUI) global.HokmUI.showToast('خطا', data.error, 'error');
     });
 
+    // 🎯 دریافت کارت‌ها
     state.socket.on('game:dealt', (data) => {
       showDebug('🎴 کارت‌ها توزیع شد!', '#118ab2');
       state.mySeat = data.mySeat;
       state.myCards = data.cards;
       state.currentTurnSeat = data.turnSeat;
 
-      if (global.HokmUI) {
-        global.HokmUI.navigate('game', { force: true });
-        if (!global.HokmUI.state) global.HokmUI.state = {};
-        global.HokmUI.state.isOnlineGame = true;
-        global.HokmUI.state.onlineData = {
-          mySeat: data.mySeat,
-          currentTurnSeat: data.turnSeat,
-          hokm: null,
-          myCards: data.cards
-        };
-        global.HokmUI.renderOnlineHand(data.cards);
-      }
+      setTimeout(() => {
+        if (global.HokmUI) {
+          showDebug('🚀 هدایت به صفحه بازی (با کارت‌ها)...', '#0f0');
+          global.HokmUI.navigate('game', { force: true });
+          
+          if (!global.HokmUI.state) global.HokmUI.state = {};
+          global.HokmUI.state.isOnlineGame = true;
+          global.HokmUI.state.onlineData = {
+            mySeat: data.mySeat,
+            currentTurnSeat: data.turnSeat,
+            hokm: null,
+            myCards: data.cards
+          };
+          
+          global.HokmUI.renderOnlineHand(data.cards);
+        }
+      }, 300);
     });
   }
 
