@@ -93,6 +93,7 @@ hokm-pro/
     ├── ui.js               # رابط کاربری
     ├── settings.js         # تنظیمات
     └── main.js             # راه‌انداز
+```
 ⚙️ نحوه اجرا (Installation & Usage)
 
 ۱. اجرای آفلاین (بدون سرور)
