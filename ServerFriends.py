@@ -29,7 +29,8 @@ except ImportError as e:
     sys.exit(1)
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_FRIENDS_PATH = BASE_DIR / "hokm_friends.db" # دیتابیس جداگانه برای دوستان
+# خط ۳۲ در فایل ServerFriends.py
+DB_FRIENDS_PATH = Path("/data/hokm_friends.db") # یا مسیر Mount شده جداگانه برای دوستان
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = secrets.token_hex(32)
