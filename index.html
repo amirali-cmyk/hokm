@@ -139,6 +139,7 @@
 </head>
 <body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
+  <!-- Splash Screen -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-logo-wrap">
@@ -146,24 +147,22 @@
         <img src="assets/logo.svg" alt="حکم" class="splash-logo" />
       </div>
       <h1 class="splash-title">حُکم</h1>
-      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۱.۱</p>
+      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۲</p>
       <div class="splash-loading-bar">
         <div class="splash-loading-fill" id="splashFill"></div>
       </div>
       <button class="btn-skip" id="btnSkipSplash" type="button">ورود سریع ⏭</button>
-      <p class="splash-version">v6.1.1</p>
+      <p class="splash-version">v6.2.0</p>
     </div>
   </div>
 
   <div id="app" class="app hidden">
-
     <header class="top-bar" id="topBar">
       <div class="top-bar-row-top">
         <div class="top-bar-right">
           <img src="assets/logo.svg" alt="" class="top-logo" />
           <span class="top-title">حُکم</span>
         </div>
-
         <nav class="tabs" role="tablist" aria-label="ناوبری اصلی">
           <button class="tab active" data-tab="game" role="tab" aria-selected="true" type="button">
             <span class="tab-icon">🎮</span><span class="tab-label">بازی</span>
@@ -179,7 +178,6 @@
           </button>
         </nav>
       </div>
-
       <div class="top-bar-row-bottom">
         <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">🌙</button>
         <div class="top-bar-left">
@@ -191,6 +189,7 @@
 
     <main class="main-content" id="mainContent">
 
+      <!-- صفحه منو -->
       <section class="screen active" id="screen-menu" data-screen="menu">
         <div class="menu-container">
           <button class="btn-start-big" id="btnStartGame" type="button">
@@ -203,7 +202,7 @@
             <button class="menu-card" data-action="online" type="button">
               <span class="menu-card-icon">🌐</span>
               <span class="menu-card-title">بازی آنلاین</span>
-              <span class="menu-card-sub">با فیلترشکن بیا</span>
+              <span class="menu-card-sub">با دوستان</span>
             </button>
             <button class="menu-card" data-action="tournament" type="button">
               <span class="menu-card-icon">🏆</span>
@@ -249,6 +248,7 @@
         </div>
       </section>
 
+      <!-- صفحه پروفایل -->
       <section class="screen" id="screen-profile" data-screen="profile">
         <div class="profile-container">
           <div class="profile-header-card">
@@ -303,6 +303,7 @@
         </div>
       </section>
 
+      <!-- صفحه تنظیمات -->
       <section class="screen" id="screen-settings" data-screen="settings">
         <div class="settings-container">
           <h2 class="screen-title">⚙️ تنظیمات</h2>
@@ -393,6 +394,7 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
+          <!-- دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -407,6 +409,7 @@
         </div>
       </section>
 
+      <!-- صفحه آمار -->
       <section class="screen" id="screen-stats" data-screen="stats">
         <div class="menu-container">
           <h2 class="screen-title">📊 آمار کامل</h2>
@@ -439,34 +442,24 @@
         </div>
       </section>
 
-      <section class="screen" id="screen-help" data-screen="help">
-        <div class="help-container">
-          <h2 class="screen-title">📖 راهنمای بازی حکم</h2>
-          <div class="tutorial-grid" id="tutorialGrid">
-            <div class="tutorial-card" data-step="1">
-              <img src="assets/tutorial/step1.svg" alt="هدف بازی" />
-              <h3>هدف بازی</h3>
-              <p>۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.</p>
-            </div>
-            <div class="tutorial-card" data-step="2">
-              <img src="assets/tutorial/step2.svg" alt="ترتیب کارت‌ها" />
-              <h3>ترتیب کارت‌ها</h3>
-              <p>A(14) &gt; K(13) &gt; Q(12) &gt; J(11) &gt; 10 … &gt; 2</p>
-            </div>
-            <div class="tutorial-card" data-step="3">
-              <img src="assets/tutorial/step3.svg" alt="حکم‌خوانی" />
-              <h3>حکم‌خوانی</h3>
-              <p>یک نفر حکم تعیین می‌کند، خال حکم بر همه چیز برتری دارد.</p>
-            </div>
-            <div class="tutorial-card" data-step="4">
-              <img src="assets/tutorial/step4.svg" alt="قوانین" />
-              <h3>قوانین طلایی</h3>
-              <p>پیروی از خال الزامی است. باید کارت هم‌خال بازی کنی اگر داری.</p>
-            </div>
+      <!-- صفحه دوستان -->
+      <section class="screen" id="screen-friends" data-screen="friends">
+        <div class="friends-container">
+          <h2 class="screen-title">👥 دوستان</h2>
+          <div class="add-friend-bar">
+            <input type="text" id="friendCodeInput" placeholder="کد کاربری دوست (HK-12345)..." />
+            <button id="btnAddFriend" type="button">افزودن</button>
+          </div>
+          
+          <div id="myFriendCodeDisplay"></div>
+
+          <div class="friends-list" id="friendsList">
+            <p class="empty-msg">هنوز دوستی اضافه نکرده‌ای</p>
           </div>
         </div>
       </section>
 
+      <!-- صفحه بازی -->
       <section class="screen" id="screen-game" data-screen="game">
         <div class="game-container" id="gameContainer">
           <div class="game-info-bar">
@@ -546,6 +539,7 @@
         </div>
       </section>
 
+      <!-- صفحه لیدربورد -->
       <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
         <div class="leaderboard-container">
           <h2 class="screen-title">🏆 جدول امتیازات</h2>
@@ -558,6 +552,7 @@
         </div>
       </section>
 
+      <!-- صفحه دستاوردها -->
       <section class="screen" id="screen-achievements" data-screen="achievements">
         <div class="achievements-container">
           <h2 class="screen-title">🎖️ دستاوردها</h2>
@@ -567,19 +562,7 @@
         </div>
       </section>
 
-      <section class="screen" id="screen-friends" data-screen="friends">
-        <div class="friends-container">
-          <h2 class="screen-title">👥 دوستان</h2>
-          <div class="add-friend-bar">
-            <input type="text" id="friendCodeInput" placeholder="کد کاربری دوست..." />
-            <button id="btnAddFriend" type="button">افزودن</button>
-          </div>
-          <div class="friends-list" id="friendsList">
-            <p class="empty-msg">هنوز دوستی اضافه نکرده‌ای</p>
-          </div>
-        </div>
-      </section>
-
+      <!-- صفحه تورنمنت -->
       <section class="screen" id="screen-tournament" data-screen="tournament">
         <div class="tournament-container">
           <h2 class="screen-title">🏆 تورنمنت هفتگی</h2>
@@ -599,6 +582,7 @@
         </div>
       </section>
 
+      <!-- صفحه ری‌پلی -->
       <section class="screen" id="screen-replay" data-screen="replay">
         <div class="replay-container">
           <h2 class="screen-title">📼 پخش مجدد</h2>
@@ -608,23 +592,21 @@
         </div>
       </section>
 
-      <!-- 🎯 صفحه آنلاین (اصلاح شده) -->
+      <!-- صفحه آنلاین -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
           <h2 class="screen-title">🌐 بازی آنلاین</h2>
           <div class="online-options">
-            <button class="btn btn-primary btn-large btn-block" id="btnCreateRoom" type="button" style="margin-bottom: 16px;">
-              ➕ ساخت اتاق جدید
-            </button>
-            <div style="text-align: center; color: var(--text-muted); font-size: 13px; margin: 8px 0;">یا</div>
+            <button class="btn-primary btn-large" id="btnCreateRoom" type="button">➕ ساخت اتاق</button>
             <div class="join-room-bar">
-              <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" style="text-align: center; font-family: var(--font-num); font-size: 20px; font-weight: 900; letter-spacing: 0.3em;" />
-              <button class="btn-primary" id="btnJoinRoom" type="button" style="padding: 0 24px;">ورود</button>
+              <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" />
+              <button class="btn-primary" id="btnJoinRoom" type="button">ورود</button>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- صفحه ثبت‌نام / ورود -->
       <section class="screen" id="screen-auth" data-screen="auth">
         <div class="auth-container">
           <h2 class="screen-title">🔐 حساب کاربری</h2>
@@ -641,11 +623,13 @@
           <button class="btn-ghost" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
         </div>
       </section>
+
     </main>
 
     <nav class="bottom-nav" id="bottomNav"></nav>
   </div>
 
+  <!-- مودال -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="modalBox">
       <button class="modal-close" id="modalClose" type="button">×</button>
@@ -653,9 +637,14 @@
     </div>
   </div>
 
+  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Canvas برای ذرات -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
+  <!-- اسکریپت‌های اصلی -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/audio.js"></script>
@@ -668,15 +657,11 @@
   <script src="js/share.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/game.js"></script>
-
-  <!-- 🎯 اسکریپت‌های آنلاین (قبل از ui و main) -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="js/online.js"></script>
-
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 
+  <!-- Emergency Splash Killer -->
   <script>
     (function () {
       'use strict';
@@ -703,6 +688,81 @@
         var splash = document.getElementById('splashScreen');
         if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 3.5s');
       }, 3500);
+      setTimeout(function () {
+        var splash = document.getElementById('splashScreen');
+        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 6s');
+      }, 6000);
+      setTimeout(function () {
+        var skipBtn = document.getElementById('btnSkipSplash');
+        if (skipBtn && !skipBtn.dataset.killerBound) {
+          skipBtn.dataset.killerBound = '1';
+          skipBtn.addEventListener('click', function (e) {
+            e.preventDefault(); e.stopPropagation(); killSplash('Skip clicked');
+          });
+        }
+      }, 100);
+      setTimeout(function () {
+        var startBtn = document.getElementById('btnStartGame');
+        if (startBtn && !startBtn.dataset.killerBound) {
+          startBtn.dataset.killerBound = '1';
+          startBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            try {
+              if (window.HokmUI && typeof window.HokmUI.startGame === 'function') window.HokmUI.startGame();
+              else if (window.HokmGame && typeof window.HokmGame.start === 'function') window.HokmGame.start();
+              else alert('موتور بازی آماده نیست');
+            } catch (err) { console.error(err); alert('خطا: ' + err.message); }
+          });
+        }
+      }, 100);
+      setTimeout(function () {
+        var tabs = document.querySelectorAll('.tab');
+        for (var i = 0; i < tabs.length; i++) {
+          (function (tab) {
+            if (tab.dataset.killerBound) return;
+            tab.dataset.killerBound = '1';
+            tab.addEventListener('click', function () {
+              var name = tab.dataset.tab;
+              try {
+                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
+                  window.HokmUI.navigate(name === 'game' ? 'menu' : name);
+                  return;
+                }
+              } catch (e) { }
+              var screens = document.querySelectorAll('.screen');
+              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
+              var sid = 'screen-' + (name === 'game' ? 'menu' : name);
+              var screen = document.getElementById(sid);
+              if (screen) screen.classList.add('active');
+              var allTabs = document.querySelectorAll('.tab');
+              for (var k = 0; k < allTabs.length; k++) allTabs[k].classList.remove('active');
+              tab.classList.add('active');
+            });
+          })(tabs[i]);
+        }
+      }, 100);
+      setTimeout(function () {
+        var cards = document.querySelectorAll('.menu-card');
+        for (var i = 0; i < cards.length; i++) {
+          (function (card) {
+            if (card.dataset.killerBound) return;
+            card.dataset.killerBound = '1';
+            card.addEventListener('click', function () {
+              var action = card.dataset.action;
+              try {
+                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
+                  window.HokmUI.navigate(action);
+                  return;
+                }
+              } catch (e) { }
+              var screens = document.querySelectorAll('.screen');
+              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
+              var screen = document.getElementById('screen-' + action);
+              if (screen) screen.classList.add('active');
+            });
+          })(cards[i]);
+        }
+      }, 100);
     })();
   </script>
 </body>
