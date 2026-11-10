@@ -1,52 +1,36 @@
-<div align="center">
-
-# 🃏 Hokm Pro | حکم حرفه‌ای
-
-**The Ultimate Persian Hokm Card Game — بازی حکم ایرانی**
-
-[![Version](https://img.shields.io/badge/version-6.1.1-blue.svg?style=for-the-badge)](https://github.com/Amirali-cmyk)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://github.com/Amirali-cmyk)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://github.com/Amirali-cmyk)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://github.com/Amirali-cmyk)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://github.com/Amirali-cmyk)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-
-</div>
-
----
+# 📚 مستندات پروژه Hokm Pro | Documentation
 
 <div align="center">
-  <img src="assets/logo.svg" width="150" alt="Hokm Pro Logo">
+  <img src="../assets/logo.svg" width="100" alt="Hokm Pro Logo">
   <br>
-  <i>ساخته شده با ❤️ توسط امیرعلی کامرانی</i>
+  <i>راهنمای کامل فنی و توسعه‌دهندگان</i>
 </div>
 
 ---
 
-## ✨ درباره پروژه (About)
+به مستندات رسمی بازی «حکم حرفه‌ای» (نسخه ۶.۱.۱) خوش آمدید. 
+
+این پوشه شامل اطلاعات فنی، راهنمای توسعه‌دهندگان، تاریخچه تغییرات و قوانین مربوط به پروژه است تا هر توسعه‌دهنده‌ای بتواند به راحتی با این پروژه کار کند.
+
+## 📑 فهرست مستندات
+
+برای مشاهده هر بخش، روی لینک آن کلیک کنید:
+
+- 🏗️ **[معماری پروژه (ARCHITECTURE.md)](./ARCHITECTURE.md):** توضیح دقیق ساختار فایل‌ها، نحوه کارکرد بخش‌های مختلف و ارتباط بین فرانت‌اند و بک‌اند.
+- ⚙️ **[مستندات فنی و API (API.md)](./API.md):** توضیح توابع اصلی، رویدادها (Events)، ماژول‌ها و کلاس‌های جاوااسکریپت.
+- 📝 **[تاریخچه تغییرات (CHANGELOG.md)](./CHANGELOG.md):** لیست نسخه‌های منتشر شده، ویژگی‌های اضافه شده و باگ‌های رفع شده در هر نسخه.
+- 🔒 **[سیاست حفظ حریم خصوصی (PRIVACY.md)](./PRIVACY.md):** اطلاعات مربوط به نحوه ذخیره‌سازی داده‌های کاربران (مورد نیاز برای مایکت و کافه‌بازار).
+- 🤝 **[راهنمای مشارکت (CONTRIBUTING.md)](./CONTRIBUTING.md):** قوانین و استانداردها برای توسعه‌دهندگانی که می‌خواهند به پروژه کمک کنند.
+
+---
+
+## 🚀 نگاه کلی به پروژه (Overview)
 
 **Hokm Pro** یک بازی حکم ایرانی کامل، مدرن و حرفه‌ای است که با استفاده از تکنولوژی‌های وب (Vanilla JS) و پایتون (Flask + Socket.io) از صفر ساخته شده است. این بازی هم به صورت آفلاین (با هوش مصنوعی) و هم به صورت آنلاین (با دوستان) قابل اجرا است.
 
 ---
 
-## 🚀 ویژگی‌های کلیدی (Features)
-
-- 🎮 **بازی آفلاین با AI:** ۴ سطح هوش مصنوعی (آسان، متوسط، سخت، استاد).
-- 👥 **بازی آنلاین (Multiplayer):** ساخت اتاق با کد ۶ رقمی و بازی بلادرنگ با دوستان.
-- 🪙 **سیستم سکه و اقتصاد بازی:** شروع با ۵۰۰ سکه، جایزه روزانه (۵۰ سکه)، و جایزه در هر دست.
-- 📊 **سیستم رتبه‌بندی ELO:** ۷ سطح رتبه‌بندی از مبتدی تا افسانه (مبتنی بر فرمول FIDE).
-- 🏆 **جدول امتیازات (Leaderboard):** رقابت در فیلترهای هفتگی، ماهانه و کل.
-- 🎖️ **۱۲ دستاورد (Achievements):** باز کردن جوایز و قابلیت‌های جدید.
-- 🎨 **شخصی‌سازی کامل:** ۵ تم رنگی، ۵ طرح کارت، ۵ پس‌زمینه، و حالت شب/روز.
-- 📼 **پخش مجدد (Replay):** ذخیره و تماشای مجدد بازی‌ها.
-- 📤 **اشتراک‌گذاری:** ساخت تصویر نتیجه بازی با Canvas.
-- 📱 **طراحی واکنش‌گرا (Responsive):** کاملاً بهینه برای موبایل و دسکتاپ.
-- 🌐 **PWA-Ready:** قابلیت نصب روی گوشی به عنوان یک اپلیکیشن.
-
----
-
-## 🛠️ تکنولوژی‌ها (Tech Stack)
+## 🛠️ تکنولوژی‌های اصلی
 
 | بخش | تکنولوژی‌ها |
 |------|-------------|
@@ -58,94 +42,6 @@
 
 ---
 
-## 📁 ساختار پروژه (Project Structure)
-
-```text
-hokm-pro/
-├── index.html              # نقطه ورود بازی
-├── 404.html                # صفحه خطا
-├── server.py               # سرور Flask (بخش آنلاین)
-├── requirements.txt        # وابستگی‌های پایتون
-├── README.md               # مستندات
-│
-├── assets/                 # آیکون‌ها، لوگو و تصاویر آموزشی
-├── css/                    # فایل‌های استایل
-│   ├── base.css
-│   ├── components.css
-│   ├── screens.css
-│   ├── themes.css
-│   ├── animations.css
-│   └── responsive.css
-│
-└── js/                     # منطق بازی و رابط کاربری
-    ├── storage.js          # مدیریت حافظه محلی
-    ├── themes.js           # مدیریت تم‌ها
-    ├── audio.js            # موتور صدا (Web Audio)
-    ├── profile.js          # پروفایل و سیستم ELO
-    ├── achievements.js     # دستاوردها
-    ├── leaderboard.js      # لیدربورد
-    ├── friends.js          # دوستان
-    ├── tournament.js       # تورنمنت‌ها
-    ├── replay.js           # پخش مجدد
-    ├── share.js            # اشتراک‌گذاری
-    ├── ai.js               # هوش مصنوعی (AI)
-    ├── game.js             # قلب منطق بازی
-    ├── ui.js               # رابط کاربری
-    ├── settings.js         # تنظیمات
-    └── main.js             # راه‌انداز
-```
-⚙️ نحوه اجرا (Installation & Usage)
-
-۱. اجرای آفلاین (بدون سرور)
-
-برای اجرای حالت آفلاین، کافیست یک وب‌سرور ساده محلی راه‌اندازی کنید:
-
-```bash
-# با پایتون
-python3 -m http.server 8080
-
-# یا با Node.js
-npx serve
-```
-
-سپس در مرورگر به http://localhost:8080 بروید.
-
-۲. اجرای آنلاین (با سرور)
-
-برای بخش بازی آنلاین (اتاق‌ها و Socket.io):
-
-```bash
-# ۱. نصب وابستگی‌ها
-pip install -r requirements.txt
-
-# ۲. اجرای سرور
-python3 server.py
-
-# (اختیاری) اجرا در پورت دلخواه
-python3 server.py --port 5000
-```
-
----
-
-🎮 چطور بازی کنیم؟ (How to Play)
-
-1. حکم‌خوانی: یک بازیکن به صورت تصادفی انتخاب می‌شود و یکی از ۴ خال (♠ ♥ ♦ ♣) را به عنوان «حکم» تعیین می‌کند.
-2. قانون پیروی از خال: بازیکنان باید از خالِ کارتِ اولِ هر دست پیروی کنند.
-3. برنده دست: بالاترین کارتِ خالِ جاری (یا بالاترین کارت حکم) برنده دست است.
-4. پیروزی: تیمی که زودتر ۷ دست (از ۱۳ دست) را ببرد، برنده بازی است.
-
----
-
-👨‍💻 سازنده (Author)
-
-امیرعلی کامرانی (Amirali Kamrani)
-
-· برنامه‌نویس و توسعه‌دهنده بازی
-· GitHub: @Amirali-cmyk
-
----
-
-📄 لایسنس (License)
-
-این پروژه تحت لایسنس MIT منتشر شده است. استفاده، تغییر و توزیع آن با ذکر نام سازنده آزاد است.
-(This project is licensed under the MIT License).
+<div align="center">
+  <i>ساخته شده با ❤️ توسط امیرعلی کامرانی</i>
+</div>
