@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
    🌐 HOKM PRO v6.2.0 — online.js
-   مدیریت اتاق‌های آنلاین (ساخت، ورود و آماده‌سازی بازی)
+   مدیریت اتاق‌های آنلاین (ساخت، ورود، آپدیت لیست و شروع بازی)
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  // 🎯 آدرس سرور اصلی بازی آنلاین (همونی که توی رندره)
-  const GAME_SERVER_URL = 'https://hokm-friends.onrender.com'; // اگه آدرس سرور اصلیت فرق داره، اینو عوض کن
+  // 🎯 آدرس سرور آنلاین (اگر روی رندره، آدرسش رو اینجا بذار)
+  const GAME_SERVER_URL = 'https://hokm-friends.onrender.com'; // ⚠️ آدرس سرور بازی آنلاین خودت رو بذار
 
   const state = {
     socket: null,
@@ -66,15 +66,12 @@
     createRoom() {
       if (typeof io === 'undefined') {
         _toast('خطا', 'ارتباط با سرور (Socket.io) برقرار نشد', 'error');
-        console.error('[Online] Socket.io script not loaded');
         return;
       }
-
       _toast('⏳', 'در حال اتصال به سرور...', 'info', 2000);
 
       this._connectSocket(() => {
         const p = _profile()?.get() || { name: 'مهمان', avatar: '😎' };
-        
         state.socket.emit('room:create', {
           userId: p.userId || 'guest_' + Date.now(),
           name: p.name,
@@ -88,12 +85,10 @@
         _toast('خطا', 'ارتباط با سرور (Socket.io) برقرار نشد', 'error');
         return;
       }
-
       _toast('⏳', 'در حال اتصال به سرور...', 'info', 2000);
 
       this._connectSocket(() => {
         const p = _profile()?.get() || { name: 'مهمان', avatar: '😎' };
-        
         state.socket.emit('room:join', {
           code: code,
           userId: p.userId || 'guest_' + Date.now(),
@@ -104,13 +99,11 @@
     },
 
     _connectSocket(onReady) {
-      // اگه سوکت از قبل وصل بود، مستقیم برو جلو
       if (state.socket && state.socket.connected) {
         onReady();
         return;
       }
 
-      // اتصال جدید
       state.socket = io(GAME_SERVER_URL, {
         transports: ['websocket', 'polling'],
         reconnectionAttempts: 3,
@@ -131,56 +124,65 @@
       state.socket.on('room:created', (data) => {
         state.currentRoom = data.room;
         state.isHost = true;
-        _showRoomCreatedModal(data.room);
+        _showRoomModal(data.room, true);
       });
 
       state.socket.on('room:joined', (data) => {
         state.currentRoom = data.room;
         state.isHost = false;
-        _showWaitingModal(data.room);
+        _showRoomModal(data.room, false);
       });
 
       state.socket.on('room:update', (data) => {
         state.currentRoom = data.room;
-        _updateWaitingModal(data.room);
+        // فقط لیست بازیکنان رو رفرش کن، مودال رو نبند
+        _updatePlayersList(data.room);
       });
 
       state.socket.on('room:playerJoined', (data) => {
         if (_audio()) _audio().play('notification');
-        _toast('👋 بازیکن جدید', `${data.name} وارد اتاق شد`, 'success');
+        _toast('👋 بازیکن جدید', `${data.name} وارد اتاق شد`, 'success', 2000);
       });
 
       state.socket.on('room:error', (data) => {
         _toast('خطا', data.error, 'error');
       });
 
-      state.socket.on('game:error', (data) => {
-        _toast('خطا', data.error, 'error');
-      });
-
-      // شروع بازی توسط میزبان
+      // شروع بازی
       state.socket.on('game:started', (data) => {
-        _toast('🎮 بازی شروع شد!', '', 'success');
+        _toast('🎮 بازی شروع شد!', 'در حال رفتن به میز بازی...', 'success', 3000);
         if (_ui()) {
           _ui().closeModal();
-          _ui().navigate('game');
-          // کدهای شروع بازی در ui.js/game.js اضافه میشه
+          setTimeout(() => {
+            _ui().navigate('game');
+            _toast('⚠️ در حال آماده‌سازی', 'بخش بازی آنلاین در حال توسعه است', 'info', 3000);
+          }, 1000);
         }
       });
+    },
+
+    startGame() {
+      if (state.socket && state.currentRoom) {
+        state.socket.emit('room:start');
+      }
     }
   };
 
   // ═══════════════════════════════════════════
-  // مودال‌ها (ساخت اتاق و انتظار)
+  // مودال اتاق (نمایش لیست بازیکنان و کد)
   // ═══════════════════════════════════════════
 
-  function _showRoomCreatedModal(room) {
+  function _showRoomModal(room, isHost) {
     if (!_ui()) return;
     
     _ui().openModal(`
       <div style="text-align: center;">
-        <h2 class="modal-title" style="color: var(--accent); margin-bottom: 8px;">✅ اتاق ساخته شد!</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 16px;">این کد رو به دوستات بفرست:</p>
+        <h2 class="modal-title" style="color: var(--accent); margin-bottom: 8px;">
+          ${isHost ? '✅ اتاق ساخته شد!' : '⏳ در انتظار شروع بازی'}
+        </h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">
+          ${isHost ? 'این کد رو به دوستات بفرست:' : 'شما وارد اتاق زیر شدید:'}
+        </p>
         
         <div style="
           font-family: var(--font-num);
@@ -199,57 +201,49 @@
           📋 کپی کد اتاق
         </button>
         
-        <div style="margin-top: 16px; padding: 12px; background: var(--bg-elevated); border-radius: var(--radius-sm);">
-          <p style="font-size: 13px; margin-bottom: 8px;">👥 بازیکنان (۱/${room.maxPlayers}):</p>
-          <div id="waitingPlayersList">
-            <div style="padding: 6px; background: var(--accent-soft); border-radius: 6px; margin-bottom: 4px; font-size: 13px;">
-              ${room.players[0]?.name || 'شما'} <span style="color: var(--accent); font-size: 10px;">👑 میزبان</span>
-            </div>
-          </div>
-        </div>
-        
-        <p style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
-          وقتی بازیکنا اومدن، بازی شروع میشه.
-        </p>
-      </div>
-    `, { dismissible: false });
-  }
-
-  function _showWaitingModal(room) {
-    if (!_ui()) return;
-    
-    _ui().openModal(`
-      <div style="text-align: center;">
-        <h2 class="modal-title" style="color: var(--accent); margin-bottom: 8px;">⏳ در انتظار شروع بازی</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 16px;">
-          شما وارد اتاق <strong style="color: var(--accent);">${room.code}</strong> شدید.
-        </p>
-        
-        <div style="padding: 12px; background: var(--bg-elevated); border-radius: var(--radius-sm);">
-          <p style="font-size: 13px; margin-bottom: 8px;">👥 بازیکنان (${room.players.length}/${room.maxPlayers}):</p>
+        <div style="margin-top: 16px; padding: 12px; background: var(--bg-elevated); border-radius: var(--radius-sm); text-align: right;">
+          <p style="font-size: 13px; margin-bottom: 8px; color: var(--text-secondary);">
+            👥 بازیکنان (<span id="playerCount">${_toPersianNumber(room.players.length)}</span>/${_toPersianNumber(room.maxPlayers)}):
+          </p>
           <div id="waitingPlayersList">
             ${room.players.map(p => `
-              <div style="padding: 6px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 4px; font-size: 13px;">
-                ${p.name} ${p.sid === room.hostId ? '<span style="color: var(--accent); font-size: 10px;">👑</span>' : ''}
+              <div style="padding: 8px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 4px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                <span>${p.avatar} ${p.name}</span>
+                ${p.sid === room.hostId ? '<span style="color: var(--accent); font-size: 10px; background: var(--accent-soft); padding: 2px 6px; border-radius: 10px;">👑 میزبان</span>' : ''}
               </div>
             `).join('')}
           </div>
         </div>
         
-        <p style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
-          منتظر میزبان بمونید...
-        </p>
+        ${isHost ? `
+          <button class="btn btn-primary btn-large btn-block" style="margin-top: 16px;" onclick="HokmOnline.startGame()">
+            🎮 شروع بازی (حداقل ۲ نفر)
+          </button>
+        ` : `
+          <p style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
+            منتظر میزبان بمونید...
+          </p>
+        `}
+        
+        <button class="btn btn-ghost btn-block" style="margin-top: 8px;" onclick="HokmOnline.leaveRoom()">
+          🚪 خروج از اتاق
+        </button>
       </div>
-    `, { dismissible: true });
+    `, { dismissible: false });
   }
 
-  function _updateWaitingModal(room) {
+  function _updatePlayersList(room) {
     const list = document.getElementById('waitingPlayersList');
+    const count = document.getElementById('playerCount');
+    
+    if (count) count.textContent = _toPersianNumber(room.players.length);
+    
     if (!list) return;
     
     list.innerHTML = room.players.map(p => `
-      <div style="padding: 6px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 4px; font-size: 13px;">
-        ${p.name} ${p.sid === room.hostId ? '<span style="color: var(--accent); font-size: 10px;">👑 میزبان</span>' : ''}
+      <div style="padding: 8px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 4px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+        <span>${p.avatar} ${p.name}</span>
+        ${p.sid === room.hostId ? '<span style="color: var(--accent); font-size: 10px; background: var(--accent-soft); padding: 2px 6px; border-radius: 10px;">👑 میزبان</span>' : ''}
       </div>
     `).join('');
   }
@@ -257,9 +251,22 @@
   // ═══════════════════════════════════════════
   // Export
   // ═══════════════════════════════════════════
+  
+  // تابع خروج از اتاق
+  Online.leaveRoom = function() {
+    if (state.socket && state.currentRoom) {
+      state.socket.emit('room:leave');
+      state.socket.disconnect();
+      state.socket = null;
+      state.currentRoom = null;
+    }
+    if (_ui()) _ui().closeModal();
+    _toast('خارج شدی', 'از اتاق خارج شدید', 'info');
+  };
+
   global.HokmOnline = Online;
 
-  // راه‌اندازی خودکار بعد از لود DOM
+  // راه‌اندازی خودکار
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => Online.init(), 800);
   });
