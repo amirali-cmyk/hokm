@@ -7,7 +7,7 @@
   'use strict';
 
   // 🎯 آدرس سرور آنلاین (اگر روی رندره، آدرسش رو اینجا بذار)
-  const GAME_SERVER_URL = 'https://hokm-friends.onrender.com'; // ⚠️ آدرس سرور بازی آنلاین خودت رو بذار
+  const GAME_SERVER_URL = 'https://hokm-friends.onrender.com/'; // ⚠️ آدرس سرور بازی آنلاین خودت رو بذار
 
   const state = {
     socket: null,
