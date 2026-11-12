@@ -35,41 +35,82 @@
     return localStorage.getItem('hokm_auth_token') || _profile()?.get().userId;
   }
 
+  // دریافت پیام‌ها
+  function _handleIncomingMessage(data) {
+    const friendId = data.senderId;
+    
+    if (!state.chats[friendId]) state.chats[friendId] = [];
+    state.chats[friendId].push(data);
+
+    // اگر مودال چت این دوست باز است، آن را آپدیت کن
+    const chatMessagesEl = document.getElementById('chatMessages');
+    const modalTitle = document.querySelector('.modal-title');
+    
+    if (chatMessagesEl && modalTitle && modalTitle.textContent.includes(data.senderName || 'چت')) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `<div style="display:flex; justify-content:flex-end; margin-bottom:8px;"><div style="background:var(--bg-elevated); padding:8px 12px; border-radius:12px; font-size:13px; max-width: 80%;">${data.text}</div></div>`;
+      chatMessagesEl.appendChild(wrapper.firstChild);
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    } else {
+      // اگر مودال بسته است، نوتیفیکیشن بفرست و badge را زیاد کن
+      if (!state.unreadCounts[friendId]) state.unreadCounts[friendId] = 0;
+      state.unreadCounts[friendId]++;
+      Friends.render(); // آپدیت لیست دوستان
+      Friends.updateBadges();
+      
+      _toast('💬 پیام جدید', data.text, 'info');
+      if (_audio()) _audio().play('chat');
+    }
+  }
+
   const Friends = {
 
     init() {
-      // اگر کاربر لاگین نکرده باشد، فقط UI را رندر می‌کنیم (با پیام خطا)
       const userId = _getAuthToken();
       
+      // 🎯 بررسی امنیتی: آیا کتابخانه Socket.io لود شده است؟
+      if (typeof io === 'undefined') {
+        console.warn('[Friends] Socket.io لود نشده است. بخش چت غیرفعال می‌شود.');
+        this.loadData();
+        this.render();
+        this.bindEvents();
+        return;
+      }
+
       if (userId) {
-        // ساخت اتصال Socket.io برای چت آنی
-        state.socket = io(FRIENDS_API);
-        
-        // احراز هویت سوکت
-        state.socket.emit('auth', { userId });
-        
-        // گوش دادن به پیام‌های جدید
-        state.socket.on('chat:receive', (data) => {
-          _handleIncomingMessage(data);
-        });
+        try {
+          // ساخت اتصال Socket.io
+          state.socket = io(FRIENDS_API, {
+             transports: ['websocket', 'polling'] // برای جلوگیری از خطای CORS یا فایروال
+          });
+          
+          // احراز هویت سوکت
+          state.socket.emit('auth', { userId });
+          
+          // گوش دادن به پیام‌های جدید
+          state.socket.on('chat:receive', (data) => {
+            _handleIncomingMessage(data);
+          });
 
-        state.socket.on('friend:new_request', (data) => {
-          Friends.loadData();
-          _toast('👋 درخواست دوستی', 'شما یک درخواست دوستی جدید دارید', 'info');
-          if (_audio()) _audio().play('notification');
-        });
+          state.socket.on('friend:new_request', (data) => {
+            Friends.loadData();
+            _toast('👋 درخواست دوستی', 'شما یک درخواست دوستی جدید دارید', 'info');
+            if (_audio()) _audio().play('notification');
+          });
 
-        state.socket.on('game:invited', (data) => {
-          // نمایش دعوت به بازی
-          if (confirm(`🎮 ${data.fromName} شما را به بازی دعوت کرد!\nکد اتاق: ${data.roomCode}\nآیا می‌خواهید وارد شوید؟`)) {
-            if (_ui()) _ui().navigate('online');
-            const input = document.getElementById('roomCodeInput');
-            if (input) {
-              input.value = data.roomCode;
-              document.getElementById('btnJoinRoom')?.click();
+          state.socket.on('game:invited', (data) => {
+            if (confirm(`🎮 ${data.fromName} شما را به بازی دعوت کرد!\nکد اتاق: ${data.roomCode}\nآیا می‌خواهید وارد شوید؟`)) {
+              if (_ui()) _ui().navigate('online');
+              const input = document.getElementById('roomCodeInput');
+              if (input) {
+                input.value = data.roomCode;
+                document.getElementById('btnJoinRoom')?.click();
+              }
             }
-          }
-        });
+          });
+        } catch (err) {
+          console.error('[Friends] خطا در اتصال به سوکت:', err);
+        }
       }
 
       this.loadData();
@@ -271,31 +312,6 @@
           senderName: _profile()?.get().name || 'دوست شما'
         });
         _toast('🎮 دعوت ارسال شد', 'دعوت‌نامه به دوست شما ارسال شد', 'success');
-      }
-    },
-
-    _handleIncomingMessage(data) {
-      const friendId = data.senderId;
-      
-      if (!state.chats[friendId]) state.chats[friendId] = [];
-      state.chats[friendId].push(data);
-
-      // اگر مودال چت این دوست باز است، آن را آپدیت کن
-      const chatMessagesEl = document.getElementById('chatMessages');
-      if (chatMessagesEl && document.querySelector('.modal-title')?.textContent.includes('چت')) {
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = `<div style="display:flex; justify-content:flex-end; margin-bottom:8px;"><div style="background:var(--bg-elevated); padding:8px 12px; border-radius:12px; font-size:13px; max-width: 80%;">${data.text}</div></div>`;
-        chatMessagesEl.appendChild(wrapper.firstChild);
-        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-      } else {
-        // اگر مودال بسته است، نوتیفیکیشن بفرست و badge را زیاد کن
-        if (!state.unreadCounts[friendId]) state.unreadCounts[friendId] = 0;
-        state.unreadCounts[friendId]++;
-        this.render(); // آپدیت لیست دوستان
-        this.updateBadges();
-        
-        _toast('💬 پیام جدید', data.text, 'info');
-        if (_audio()) _audio().play('chat');
       }
     },
 
