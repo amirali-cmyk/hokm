@@ -139,7 +139,6 @@
 </head>
 <body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
-  <!-- Splash Screen -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-logo-wrap">
@@ -188,8 +187,6 @@
     </header>
 
     <main class="main-content" id="mainContent">
-
-      <!-- صفحه منو -->
       <section class="screen active" id="screen-menu" data-screen="menu">
         <div class="menu-container">
           <button class="btn-start-big" id="btnStartGame" type="button">
@@ -248,7 +245,6 @@
         </div>
       </section>
 
-      <!-- صفحه پروفایل -->
       <section class="screen" id="screen-profile" data-screen="profile">
         <div class="profile-container">
           <div class="profile-header-card">
@@ -257,10 +253,7 @@
             <button class="btn-change-avatar" id="btnChangeAvatar" type="button">تغییر آواتار</button>
             <h2 class="profile-name" id="profileName">مهمان</h2>
             <p class="profile-rank" id="profileRank">تازه‌کار — ۱۰۰۰</p>
-            
-            <!-- 🎯 کد دوست‌یابی اینجا نمایش داده می‌شه -->
-            <div id="profileFriendCode"></div>
-            
+            <div id="profileFriendCode"></div> <!-- 🎯 کد دوست‌یابی -->
             <div class="profile-elo-bar">
               <div class="profile-elo-fill" id="profileEloFill"></div>
             </div>
@@ -307,7 +300,6 @@
         </div>
       </section>
 
-      <!-- صفحه تنظیمات -->
       <section class="screen" id="screen-settings" data-screen="settings">
         <div class="settings-container">
           <h2 class="screen-title">⚙️ تنظیمات</h2>
@@ -398,7 +390,6 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
-          <!-- دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -413,7 +404,6 @@
         </div>
       </section>
 
-      <!-- صفحه آمار -->
       <section class="screen" id="screen-stats" data-screen="stats">
         <div class="menu-container">
           <h2 class="screen-title">📊 آمار کامل</h2>
@@ -446,7 +436,6 @@
         </div>
       </section>
 
-      <!-- صفحه دوستان -->
       <section class="screen" id="screen-friends" data-screen="friends">
         <div class="friends-container">
           <h2 class="screen-title">👥 دوستان</h2>
@@ -463,7 +452,6 @@
         </div>
       </section>
 
-      <!-- صفحه بازی -->
       <section class="screen" id="screen-game" data-screen="game">
         <div class="game-container" id="gameContainer">
           <div class="game-info-bar">
@@ -543,7 +531,6 @@
         </div>
       </section>
 
-      <!-- صفحه لیدربورد -->
       <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
         <div class="leaderboard-container">
           <h2 class="screen-title">🏆 جدول امتیازات</h2>
@@ -556,7 +543,6 @@
         </div>
       </section>
 
-      <!-- صفحه دستاوردها -->
       <section class="screen" id="screen-achievements" data-screen="achievements">
         <div class="achievements-container">
           <h2 class="screen-title">🎖️ دستاوردها</h2>
@@ -566,7 +552,6 @@
         </div>
       </section>
 
-      <!-- صفحه تورنمنت -->
       <section class="screen" id="screen-tournament" data-screen="tournament">
         <div class="tournament-container">
           <h2 class="screen-title">🏆 تورنمنت هفتگی</h2>
@@ -586,7 +571,6 @@
         </div>
       </section>
 
-      <!-- صفحه ری‌پلی -->
       <section class="screen" id="screen-replay" data-screen="replay">
         <div class="replay-container">
           <h2 class="screen-title">📼 پخش مجدد</h2>
@@ -596,7 +580,6 @@
         </div>
       </section>
 
-      <!-- صفحه آنلاین -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
           <h2 class="screen-title">🌐 بازی آنلاین</h2>
@@ -610,7 +593,6 @@
         </div>
       </section>
 
-      <!-- صفحه ثبت‌نام / ورود -->
       <section class="screen" id="screen-auth" data-screen="auth">
         <div class="auth-container">
           <h2 class="screen-title">🔐 حساب کاربری</h2>
@@ -627,13 +609,11 @@
           <button class="btn-ghost" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
         </div>
       </section>
-
     </main>
 
     <nav class="bottom-nav" id="bottomNav"></nav>
   </div>
 
-  <!-- مودال -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="modalBox">
       <button class="modal-close" id="modalClose" type="button">×</button>
@@ -641,29 +621,38 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- Canvas برای ذرات -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
-  <!-- اسکریپت‌های اصلی -->
+  <!-- ═══════════════════════════════════════════
+       🚀 اسکریپت‌ها (ترتیب مهمه!)
+       ═══════════════════════════════════════════ -->
+  
+  <!-- 🎯 ۱. اول از همه Socket.io (برای بخش آنلاین و دوستان) -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <!-- ۲. ماژول‌های پایه -->
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/profile.js"></script>
+  
+  <!-- ۳. ماژول‌های قابلیت‌ها -->
   <script src="js/achievements.js"></script>
   <script src="js/leaderboard.js"></script>
   <script src="js/friends.js"></script>
   <script src="js/tournament.js"></script>
   <script src="js/replay.js"></script>
   <script src="js/share.js"></script>
+  
+  <!-- ۴. منطق بازی -->
   <script src="js/ai.js"></script>
   <script src="js/game.js"></script>
+  
+  <!-- ۵. رابط کاربری و راه‌انداز -->
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
-  <script src="js/auth.js"></script> <!-- 🎯 اسکریپت جدید برای ورود و ثبت‌نام -->
   <script src="js/main.js"></script>
 
   <!-- Emergency Splash Killer -->
