@@ -1,7 +1,7 @@
 # 📚 مستندات پروژه Hokm Pro | Documentation
 
 <div align="center">
-  <img src="../assets/logo.svg" width="100" alt="Hokm Pro Logo">
+  <img src="/assets/logo.svg" width="100" alt="Hokm Pro Logo">
   <br>
   <i>راهنمای کامل فنی و توسعه‌دهندگان</i>
 </div>
