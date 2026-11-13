@@ -6,8 +6,8 @@
 (function (global) {
   'use strict';
 
-  // 🎯 آدرس سرور آنلاین (اگر روی رندره، آدرسش رو اینجا بذار)
-  const GAME_SERVER_URL = 'https://hokm-1-1ikl.onrender.com/'; // ⚠️ آدرس سرور بازی آنلاین خودت رو بذار
+  // 🎯 آدرس سرور آنلاین (روی Render)
+  const GAME_SERVER_URL = 'https://hokm-1-1ikl.onrender.com';
 
   const state = {
     socket: null,
@@ -68,7 +68,7 @@
         _toast('خطا', 'ارتباط با سرور (Socket.io) برقرار نشد', 'error');
         return;
       }
-      _toast('⏳', 'در حال اتصال به سرور...', 'info', 2000);
+      _toast('⏳', 'در حال اتصال به سرور...', 'info', 3000);
 
       this._connectSocket(() => {
         const p = _profile()?.get() || { name: 'مهمان', avatar: '😎' };
@@ -85,7 +85,7 @@
         _toast('خطا', 'ارتباط با سرور (Socket.io) برقرار نشد', 'error');
         return;
       }
-      _toast('⏳', 'در حال اتصال به سرور...', 'info', 2000);
+      _toast('⏳', 'در حال اتصال به سرور...', 'info', 3000);
 
       this._connectSocket(() => {
         const p = _profile()?.get() || { name: 'مهمان', avatar: '😎' };
@@ -107,17 +107,18 @@
       state.socket = io(GAME_SERVER_URL, {
         transports: ['websocket', 'polling'],
         reconnectionAttempts: 3,
-        timeout: 10000
+        timeout: 15000
       });
 
       state.socket.on('connect', () => {
         console.log('[Online] Connected to game server');
+        _toast('✅', 'اتصال برقرار شد', 'success', 1500);
         onReady();
       });
 
       state.socket.on('connect_error', (err) => {
         console.error('[Online] Connection error:', err.message);
-        _toast('خطا در اتصال', 'سرور بیدار نشده یا مشکل اینترنت دارید', 'error');
+        _toast('خطا در اتصال', 'سرور بیدار نشده، چند لحظه صبر کن و دوباره امتحان کن', 'error', 5000);
       });
 
       // ═══ رویدادهای اتاق ═══
@@ -135,13 +136,17 @@
 
       state.socket.on('room:update', (data) => {
         state.currentRoom = data.room;
-        // فقط لیست بازیکنان رو رفرش کن، مودال رو نبند
         _updatePlayersList(data.room);
       });
 
       state.socket.on('room:playerJoined', (data) => {
         if (_audio()) _audio().play('notification');
         _toast('👋 بازیکن جدید', `${data.name} وارد اتاق شد`, 'success', 2000);
+      });
+
+      state.socket.on('room:playerLeft', (data) => {
+        if (_audio()) _audio().play('softClick');
+        _toast('👋', 'یک بازیکن خارج شد', 'info', 2000);
       });
 
       state.socket.on('room:error', (data) => {
@@ -162,14 +167,32 @@
     },
 
     startGame() {
-      if (state.socket && state.currentRoom) {
+      if (!state.currentRoom) return;
+      
+      if (state.currentRoom.players.length < 2) {
+        _toast('⚠️ خطا', 'حداقل به ۲ بازیکن نیاز است', 'warning');
+        return;
+      }
+      
+      if (state.socket) {
         state.socket.emit('room:start');
       }
+    },
+
+    leaveRoom() {
+      if (state.socket && state.currentRoom) {
+        state.socket.disconnect();
+        state.socket = null;
+        state.currentRoom = null;
+        state.isHost = false;
+      }
+      if (_ui()) _ui().closeModal();
+      _toast('خارج شدی', 'از اتاق خارج شدید', 'info');
     }
   };
 
   // ═══════════════════════════════════════════
-  // مودال اتاق (نمایش لیست بازیکنان و کد)
+  // مودال اتاق
   // ═══════════════════════════════════════════
 
   function _showRoomModal(room, isHost) {
@@ -215,15 +238,15 @@
           </div>
         </div>
         
-        ${isHost ? `
+        <div id="hostControls" style="${isHost ? '' : 'display:none;'}">
           <button class="btn btn-primary btn-large btn-block" style="margin-top: 16px;" onclick="HokmOnline.startGame()">
             🎮 شروع بازی (حداقل ۲ نفر)
           </button>
-        ` : `
-          <p style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
-            منتظر میزبان بمونید...
-          </p>
-        `}
+        </div>
+        
+        <p id="waitingMsg" style="margin-top: 16px; font-size: 12px; color: var(--text-muted); ${isHost ? 'display:none;' : ''};">
+          منتظر میزبان بمونید...
+        </p>
         
         <button class="btn btn-ghost btn-block" style="margin-top: 8px;" onclick="HokmOnline.leaveRoom()">
           🚪 خروج از اتاق
@@ -248,25 +271,8 @@
     `).join('');
   }
 
-  // ═══════════════════════════════════════════
-  // Export
-  // ═══════════════════════════════════════════
-  
-  // تابع خروج از اتاق
-  Online.leaveRoom = function() {
-    if (state.socket && state.currentRoom) {
-      state.socket.emit('room:leave');
-      state.socket.disconnect();
-      state.socket = null;
-      state.currentRoom = null;
-    }
-    if (_ui()) _ui().closeModal();
-    _toast('خارج شدی', 'از اتاق خارج شدید', 'info');
-  };
-
   global.HokmOnline = Online;
 
-  // راه‌اندازی خودکار
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => Online.init(), 800);
   });
