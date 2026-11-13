@@ -1,17 +1,25 @@
 /* ═══════════════════════════════════════════════════════════
    🔐 HOKM PRO v6.2.0 — auth.js
-   مدیریت ورود، ثبت‌نام و اتصال به سرور دوستان (Render)
+   مدیریت ثبت‌نام، ورود و اتصال به سرور دوستان (Render)
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  // آدرس سرور دوستان روی Render
+  // 🎯 آدرس سرور روی Render
   const AUTH_API = 'https://hokm-friends.onrender.com';
 
   function _ui() { return global.HokmUI; }
   function _profile() { return global.HokmProfile; }
-  function _toast(title, msg, type) { if (_ui()) _ui().showToast(title, msg, type || 'info'); }
+  function _audio() { return global.HokmAudio; }
+
+  function _toast(title, msg, type) {
+    if (_ui() && typeof _ui().showToast === 'function') {
+      _ui().showToast(title, msg, type || 'info');
+    } else {
+      console.log(`[Auth] ${type}: ${title} - ${msg}`);
+    }
+  }
 
   const Auth = {
 
@@ -32,10 +40,9 @@
         loginBtn.dataset.bound = '1';
         loginBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          if (_profile()?.isGuest()) {
+          if (_profile() && _profile().isGuest()) {
             if (_ui()) _ui().navigate('auth');
           } else {
-            // اگر لاگین است، خروج
             if (confirm('از حساب خود خارج می‌شوید؟')) {
               localStorage.removeItem('hokm_auth_token');
               localStorage.removeItem('hokm_friend_code');
@@ -45,18 +52,24 @@
         });
       }
 
-      // فرم ثبت‌نام/ورود
+      // فرم ثبت‌نام / ورود
       const form = document.getElementById('authForm');
       if (form && !form.dataset.bound) {
         form.dataset.bound = '1';
         
         form.addEventListener('submit', (e) => {
           e.preventDefault();
-          const isRegister = document.querySelector('.auth-tab[data-auth="register"]')?.classList.contains('active') ?? true;
           
-          const name = document.getElementById('authName')?.value.trim();
-          const email = document.getElementById('authEmail')?.value.trim();
-          const password = document.getElementById('authPassword')?.value;
+          const activeTab = document.querySelector('.auth-tab.active');
+          const isRegister = activeTab?.dataset.auth === 'register';
+          
+          const nameEl = document.getElementById('authName');
+          const emailEl = document.getElementById('authEmail');
+          const passEl = document.getElementById('authPassword');
+
+          const name = nameEl ? nameEl.value.trim() : '';
+          const email = emailEl ? emailEl.value.trim() : '';
+          const password = passEl ? passEl.value : '';
 
           if (isRegister) {
             this.register(name, email, password);
@@ -126,6 +139,7 @@
           }
 
           _toast('✅ خوش آمدی!', 'حساب شما ساخته شد', 'success');
+          if (_audio()) _audio().play('success');
           if (_ui()) _ui().navigate('menu');
           
           // راه‌اندازی مجدد دوستان با توکن جدید
@@ -175,6 +189,7 @@
           }
 
           _toast('✅ خوش آمدی!', 'با موفقیت وارد شدید', 'success');
+          if (_audio()) _audio().play('success');
           if (_ui()) _ui().navigate('menu');
           
           if (global.HokmFriends) global.HokmFriends.init();
@@ -201,11 +216,13 @@
           // آپدیت دکمه ورود به خروج
           const loginBtn = document.getElementById('btnLogin');
           if (loginBtn) loginBtn.textContent = 'خروج';
+        } else {
+          // توکن منقضی شده
+          localStorage.removeItem('hokm_auth_token');
+          localStorage.removeItem('hokm_friend_code');
         }
       } catch (err) {
         console.warn('Auth check failed:', err.message);
-        // اگر توکن منقضی شده، پاکش کن
-        localStorage.removeItem('hokm_auth_token');
       }
     }
   };
