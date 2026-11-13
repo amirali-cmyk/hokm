@@ -6,17 +6,17 @@
 (function (global) {
   'use strict';
 
-  const AUTH_API = 'https://hokm-friends.onrender.com'; // آدرس سرور روی Render
-  let isRegisterMode = false; // وضعیت فرم: ورود یا ثبت‌نام
+  // آدرس سرور دوستان روی Render
+  const AUTH_API = 'https://hokm-friends.onrender.com';
 
   function _ui() { return global.HokmUI; }
   function _profile() { return global.HokmProfile; }
+  function _toast(title, msg, type) { if (_ui()) _ui().showToast(title, msg, type || 'info'); }
 
   const Auth = {
 
     init() {
-      this.bindTabs();   // اتصال تب‌های ورود/ثبت‌نام
-      this.bindForm();   // اتصال فرم
+      this.bindEvents();
       
       // بررسی وضعیت لاگین بودن کاربر در شروع برنامه
       const savedToken = localStorage.getItem('hokm_auth_token');
@@ -25,59 +25,81 @@
       }
     },
 
-    // اتصال دکمه‌های بالای فرم (ورود / ثبت‌نام)
-    bindTabs() {
-      const tabs = document.querySelectorAll('.auth-tab');
-      tabs.forEach(tab => {
+    bindEvents() {
+      // دکمه «ورود / ثبت‌نام» توی صفحه منو
+      const loginBtn = document.getElementById('btnLogin');
+      if (loginBtn && !loginBtn.dataset.bound) {
+        loginBtn.dataset.bound = '1';
+        loginBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (_profile()?.isGuest()) {
+            if (_ui()) _ui().navigate('auth');
+          } else {
+            // اگر لاگین است، خروج
+            if (confirm('از حساب خود خارج می‌شوید؟')) {
+              localStorage.removeItem('hokm_auth_token');
+              localStorage.removeItem('hokm_friend_code');
+              location.reload();
+            }
+          }
+        });
+      }
+
+      // فرم ثبت‌نام/ورود
+      const form = document.getElementById('authForm');
+      if (form && !form.dataset.bound) {
+        form.dataset.bound = '1';
+        
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const isRegister = document.querySelector('.auth-tab[data-auth="register"]')?.classList.contains('active') ?? true;
+          
+          const name = document.getElementById('authName')?.value.trim();
+          const email = document.getElementById('authEmail')?.value.trim();
+          const password = document.getElementById('authPassword')?.value;
+
+          if (isRegister) {
+            this.register(name, email, password);
+          } else {
+            this.login(email, password);
+          }
+        });
+      }
+
+      // تب‌های ورود/ثبت‌نام
+      const authTabs = document.querySelectorAll('.auth-tab');
+      authTabs.forEach(tab => {
         if (tab.dataset.bound) return;
         tab.dataset.bound = '1';
-        
         tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
+          authTabs.forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
-          
-          isRegisterMode = tab.dataset.auth === 'register';
-          
           const submitBtn = document.getElementById('btnAuthSubmit');
           if (submitBtn) {
-            submitBtn.textContent = isRegisterMode ? 'ثبت‌نام' : 'ورود';
+            submitBtn.textContent = tab.dataset.auth === 'register' ? 'ثبت‌نام' : 'ورود';
           }
         });
       });
-    },
 
-    // اتصال فرم
-    bindForm() {
-      const form = document.getElementById('authForm');
-      if (!form || form.dataset.bound) return;
-      form.dataset.bound = '1';
-      
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('authName').value.trim();
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value;
-
-        if (isRegisterMode) {
-          if (!name) {
-            _ui().showToast('خطا', 'لطفاً نام کاربری را وارد کنید', 'error');
-            return;
-          }
-          this.register(name, email, password);
-        } else {
-          this.login(email, password);
-        }
-      });
+      // دکمه «ادامه به عنوان مهمان»
+      const quickPlay = document.getElementById('btnQuickPlay');
+      if (quickPlay && !quickPlay.dataset.bound) {
+        quickPlay.dataset.bound = '1';
+        quickPlay.addEventListener('click', () => {
+          if (_ui()) _ui().navigate('menu');
+        });
+      }
     },
 
     async register(name, email, password) {
-      const btn = document.getElementById('btnAuthSubmit');
-      const originalText = btn.textContent;
-      
+      if (!name || !email || password.length < 6) {
+        _toast('خطا', 'همه فیلدها را پر کنید (رمز حداقل ۶ کاراکتر)', 'error');
+        return;
+      }
+
       try {
-        btn.textContent = 'در حال ثبت‌نام...';
-        btn.disabled = true;
+        const btn = document.getElementById('btnAuthSubmit');
+        if (btn) { btn.textContent = 'در حال ثبت‌نام...'; btn.disabled = true; }
 
         const res = await fetch(`${AUTH_API}/api/register`, {
           method: 'POST',
@@ -88,46 +110,82 @@
         const data = await res.json();
         
         if (res.ok) {
-          // ذخیره توکن و اطلاعات
+          // ذخیره توکن
           localStorage.setItem('hokm_auth_token', data.token);
           localStorage.setItem('hokm_friend_code', data.friendCode);
           
           // آپدیت پروفایل محلی
-          _profile().setFromServer({
-            name: name,
-            email: email,
-            userId: data.token,
-            friendCode: data.friendCode,
-            isGuest: false
-          });
-
-          if (_ui()) {
-            _ui().showToast('✅ خوش آمدی!', 'حساب شما با موفقیت ساخته شد', 'success');
-            _ui().navigate('menu');
+          if (_profile()) {
+            _profile().setFromServer({
+              name: name,
+              email: email,
+              userId: data.token,
+              friendCode: data.friendCode,
+              isGuest: false
+            });
           }
+
+          _toast('✅ خوش آمدی!', 'حساب شما ساخته شد', 'success');
+          if (_ui()) _ui().navigate('menu');
           
           // راه‌اندازی مجدد دوستان با توکن جدید
           if (global.HokmFriends) global.HokmFriends.init();
         } else {
-          _ui().showToast('خطا در ثبت‌نام', data.error || 'مشکلی پیش آمد', 'error');
+          _toast('خطا در ثبت‌نام', data.error || 'مشکلی پیش آمد', 'error');
         }
       } catch (err) {
-        _ui().showToast('خطا', 'ارتباط با سرور برقرار نشد', 'error');
+        console.error('[Auth] Register error:', err);
+        _toast('خطا', 'ارتباط با سرور برقرار نشد (اینترنت را چک کنید)', 'error');
       } finally {
-        btn.textContent = originalText;
-        btn.disabled = false;
+        const btn = document.getElementById('btnAuthSubmit');
+        if (btn) { btn.textContent = 'ثبت‌نام'; btn.disabled = false; }
       }
     },
 
     async login(email, password) {
-      // چون API لاگین هنوز توی سرور پیاده‌سازی نشده، فعلاً پیام می‌دیم
-      if (_ui()) {
-        _ui().showToast(
-          'توجه', 
-          'در حال حاضر امکان ورود با ایمیل وجود ندارد. لطفاً یک حساب جدید ثبت‌نام کنید.', 
-          'info', 
-          4000
-        );
+      if (!email || !password) {
+        _toast('خطا', 'ایمیل و رمز را وارد کنید', 'error');
+        return;
+      }
+
+      try {
+        const btn = document.getElementById('btnAuthSubmit');
+        if (btn) { btn.textContent = 'در حال ورود...'; btn.disabled = true; }
+
+        const res = await fetch(`${AUTH_API}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        
+        if (res.ok) {
+          localStorage.setItem('hokm_auth_token', data.token);
+          localStorage.setItem('hokm_friend_code', data.user.friendCode);
+          
+          if (_profile()) {
+            _profile().setFromServer({
+              name: data.user.name,
+              email: email,
+              userId: data.token,
+              friendCode: data.user.friendCode,
+              isGuest: false
+            });
+          }
+
+          _toast('✅ خوش آمدی!', 'با موفقیت وارد شدید', 'success');
+          if (_ui()) _ui().navigate('menu');
+          
+          if (global.HokmFriends) global.HokmFriends.init();
+        } else {
+          _toast('خطا', data.error || 'ایمیل یا رمز اشتباه است', 'error');
+        }
+      } catch (err) {
+        _toast('خطا', 'ارتباط با سرور برقرار نشد', 'error');
+      } finally {
+        const btn = document.getElementById('btnAuthSubmit');
+        if (btn) { btn.textContent = 'ورود'; btn.disabled = false; }
       }
     },
 
@@ -138,33 +196,27 @@
         });
         if (res.ok) {
           const data = await res.json();
-          _profile().setFromServer(data.user);
+          if (_profile()) _profile().setFromServer(data.user);
           
-          // آپدیت وضعیت دکمه ورود به خروج
+          // آپدیت دکمه ورود به خروج
           const loginBtn = document.getElementById('btnLogin');
-          if (loginBtn) {
-            loginBtn.textContent = 'خروج';
-            loginBtn.onclick = () => {
-              localStorage.removeItem('hokm_auth_token');
-              localStorage.removeItem('hokm_friend_code');
-              location.reload();
-            };
-          }
+          if (loginBtn) loginBtn.textContent = 'خروج';
         }
       } catch (err) {
         console.warn('Auth check failed:', err.message);
+        // اگر توکن منقضی شده، پاکش کن
+        localStorage.removeItem('hokm_auth_token');
       }
     }
   };
 
   global.HokmAuth = Auth;
 
-  // راه‌اندازی پس از لود DOM
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => setTimeout(() => Auth.init(), 500));
+      document.addEventListener('DOMContentLoaded', () => setTimeout(() => Auth.init(), 800));
     } else {
-      setTimeout(() => Auth.init(), 500);
+      setTimeout(() => Auth.init(), 800);
     }
   }
 
