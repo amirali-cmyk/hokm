@@ -257,7 +257,10 @@
             <button class="btn-change-avatar" id="btnChangeAvatar" type="button">تغییر آواتار</button>
             <h2 class="profile-name" id="profileName">مهمان</h2>
             <p class="profile-rank" id="profileRank">تازه‌کار — ۱۰۰۰</p>
+            
+            <!-- 🎯 کد دوست‌یابی اینجا نمایش داده می‌شه -->
             <div id="profileFriendCode"></div>
+            
             <div class="profile-elo-bar">
               <div class="profile-elo-fill" id="profileEloFill"></div>
             </div>
@@ -395,6 +398,7 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
+          <!-- دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -643,7 +647,7 @@
   <!-- Canvas برای ذرات -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
-  <!-- 🎯 اسکریپت‌های اصلی (ترتیب مهم است) -->
+  <!-- اسکریپت‌های اصلی (ترتیب مهم است) -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
@@ -657,9 +661,9 @@
   <script src="js/share.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/game.js"></script>
-  <script src="js/online.js"></script> <!-- 🎯 ماژول آنلاین اینجاست -->
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/auth.js"></script> <!-- مدیریت ورود و ثبت‌نام -->
   <script src="js/main.js"></script>
 
   <!-- Emergency Splash Killer -->
