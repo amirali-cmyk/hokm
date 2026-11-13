@@ -257,7 +257,10 @@
             <button class="btn-change-avatar" id="btnChangeAvatar" type="button">تغییر آواتار</button>
             <h2 class="profile-name" id="profileName">مهمان</h2>
             <p class="profile-rank" id="profileRank">تازه‌کار — ۱۰۰۰</p>
+            
+            <!-- 🎯 کد دوست‌یابی اینجا نمایش داده می‌شه -->
             <div id="profileFriendCode"></div>
+            
             <div class="profile-elo-bar">
               <div class="profile-elo-fill" id="profileEloFill"></div>
             </div>
@@ -268,12 +271,30 @@
               <div class="stat-value" id="statCoins" style="color: #1a1a1a; font-size: 32px;">۵۰۰</div>
               <div class="stat-label" style="color: #1a1a1a; font-weight: 700;">🪙 سکه‌های من</div>
             </div>
-            <div class="stat-card"><div class="stat-value" id="statWins">۰</div><div class="stat-label">برد</div></div>
-            <div class="stat-card"><div class="stat-value" id="statLosses">۰</div><div class="stat-label">باخت</div></div>
-            <div class="stat-card"><div class="stat-value" id="statWinRate">۰٪</div><div class="stat-label">نرخ برد</div></div>
-            <div class="stat-card"><div class="stat-value" id="statStreak">۰</div><div class="stat-label">برد پیاپی</div></div>
-            <div class="stat-card"><div class="stat-value" id="statBestStreak">۰</div><div class="stat-label">رکورد پیاپی</div></div>
-            <div class="stat-card"><div class="stat-value" id="statGames">۰</div><div class="stat-label">کل بازی</div></div>
+            <div class="stat-card">
+              <div class="stat-value" id="statWins">۰</div>
+              <div class="stat-label">برد</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statLosses">۰</div>
+              <div class="stat-label">باخت</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statWinRate">۰٪</div>
+              <div class="stat-label">نرخ برد</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statStreak">۰</div>
+              <div class="stat-label">برد پیاپی</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statBestStreak">۰</div>
+              <div class="stat-label">رکورد پیاپی</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statGames">۰</div>
+              <div class="stat-label">کل بازی</div>
+            </div>
           </div>
 
           <h3 class="section-title">📜 تاریخچه بازی‌های اخیر</h3>
@@ -377,6 +398,7 @@
             <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
           </div>
 
+          <!-- دکمه راهنما -->
           <div class="setting-group">
             <label class="setting-label">📖 راهنما</label>
             <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
@@ -396,12 +418,30 @@
         <div class="menu-container">
           <h2 class="screen-title">📊 آمار کامل</h2>
           <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
-            <div class="stat-card"><div class="stat-value" id="statsTotalGames">۰</div><div class="stat-label">کل بازی‌ها</div></div>
-            <div class="stat-card"><div class="stat-value" id="statsTotalWins">۰</div><div class="stat-label">بردها</div></div>
-            <div class="stat-card"><div class="stat-value" id="statsTotalRounds">۰</div><div class="stat-label">دست‌های برده</div></div>
-            <div class="stat-card"><div class="stat-value" id="statsHokmClaimed">۰</div><div class="stat-label">حکم‌های خوانده</div></div>
-            <div class="stat-card"><div class="stat-value" id="statsBestStreak">۰</div><div class="stat-label">رکورد پیاپی</div></div>
-            <div class="stat-card"><div class="stat-value" id="statsPlayTime">۰</div><div class="stat-label">دقیقه بازی</div></div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalGames">۰</div>
+              <div class="stat-label">کل بازی‌ها</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalWins">۰</div>
+              <div class="stat-label">بردها</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsTotalRounds">۰</div>
+              <div class="stat-label">دست‌های برده</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsHokmClaimed">۰</div>
+              <div class="stat-label">حکم‌های خوانده</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsBestStreak">۰</div>
+              <div class="stat-label">رکورد پیاپی</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statsPlayTime">۰</div>
+              <div class="stat-label">دقیقه بازی</div>
+            </div>
           </div>
         </div>
       </section>
@@ -414,7 +454,9 @@
             <input type="text" id="friendCodeInput" placeholder="کد کاربری دوست (HK-12345)..." />
             <button id="btnAddFriend" type="button">افزودن</button>
           </div>
+          
           <div id="myFriendCodeDisplay"></div>
+
           <div class="friends-list" id="friendsList">
             <p class="empty-msg">هنوز دوستی اضافه نکرده‌ای</p>
           </div>
@@ -585,11 +627,13 @@
           <button class="btn-ghost" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
         </div>
       </section>
+
     </main>
 
     <nav class="bottom-nav" id="bottomNav"></nav>
   </div>
 
+  <!-- مودال -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="modalBox">
       <button class="modal-close" id="modalClose" type="button">×</button>
@@ -597,9 +641,13 @@
     </div>
   </div>
 
+  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Canvas برای ذرات -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
+  <!-- اسکریپت‌های اصلی -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
@@ -615,9 +663,9 @@
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/settings.js"></script>
-  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 
+  <!-- Emergency Splash Killer -->
   <script>
     (function () {
       'use strict';
