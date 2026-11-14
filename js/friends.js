@@ -1,33 +1,52 @@
 /* ═══════════════════════════════════════════════════════════
-   👥 HOKM PRO v6.2.0 — friends.js
-   سیستم دوستان، کد کاربری، و چت آنلاین (متصل به Render)
+   👤 HOKM PRO v6.1.1 — profile.js
+   پروفایل، ELO، سکه، جایزه روزانه (نسخه ساده)
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  // 🎯 آدرس سرور دوستان روی Render
-  const FRIENDS_API = 'https://hokm-friends.onrender.com';
+  /* ─── ثابت‌ها: ۷ سطح رتبه ─── */
+  const RANKS = [
+    { id: 'legend',      name: 'افسانه',       icon: '🔥', min: 2000, color: '#ef476f' },
+    { id: 'grandmaster', name: 'استاد بزرگ',   icon: '👑', min: 1800, color: '#ffd60a' },
+    { id: 'master',      name: 'استاد',         icon: '💎', min: 1600, color: '#9b5de5' },
+    { id: 'pro',         name: 'حرفه‌ای',        icon: '🥇', min: 1400, color: '#ffd60a' },
+    { id: 'intermediate',name: 'متوسط',         icon: '🥈', min: 1200, color: '#e0e0e0' },
+    { id: 'rookie',      name: 'تازه‌کار',       icon: '🥉', min: 1000, color: '#d4a373' },
+    { id: 'beginner',    name: 'مبتدی',         icon: '🌱', min: 0,    color: '#06d6a0' }
+  ];
 
+  const AVATAR_PRESETS = [
+    '🌱', '🥉', '🥈', '🥇', '💎', '👑', '🔥',
+    '😎', '🧑‍🎓', '🤴', '🦁', '🐯', '🦊',
+    '🐼', '🐺', '🦉', '🎭', '🎯', '⚡', '🌟'
+  ];
+
+  const ELO_K_FACTOR = 32;
+  const ELO_MIN_CHANGE = 5;
+  const ELO_MAX_LOSS = -5;
+
+  const DAILY_BONUS_AMOUNT = 50;
+  const DAILY_BONUS_INTERVAL = 24 * 60 * 60 * 1000;
+
+  /* ─── وضعیت ─── */
   const state = {
-    socket: null,
-    friends: [],
-    pendingRequests: [],
-    chats: {},
-    unreadCounts: {},
-    myFriendCode: '',
+    data: null,
     listeners: []
   };
 
-  function _profile() { return global.HokmProfile; }
+  /* ─── کمکی‌ها ─── */
+  function _storage() { return global.HokmStorage; }
   function _ui() { return global.HokmUI; }
   function _audio() { return global.HokmAudio; }
-  function _toast(title, msg, type) {
-    if (_ui() && typeof _ui().showToast === 'function') {
-      _ui().showToast(title, msg, type || 'info');
-    } else {
-      console.log(`[${type}] ${title}: ${msg}`);
-    }
+
+  function _emit(event, data) {
+    state.listeners.forEach(({ event: e, handler }) => {
+      if (e === event || e === '*') {
+        try { handler(data); } catch (err) { console.error(err); }
+      }
+    });
   }
 
   function _toPersianNumber(n) {
@@ -35,406 +54,531 @@
     return String(n).replace(/\d/g, d => fa[+d]);
   }
 
-  function _escapeHtml(str) {
-    if (str == null) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+  /* ─── مدیریت داده ─── */
+  function _load() {
+    const storage = _storage();
+    if (!storage) {
+      state.data = _defaultProfile();
+      return state.data;
+    }
+    state.data = storage.getProfile();
+    return state.data;
   }
 
-  function _getAuthToken() {
-    return localStorage.getItem('hokm_auth_token') ||
-           (_profile() && _profile().get().userId) || null;
+  function _save() {
+    const storage = _storage();
+    if (!storage) return false;
+    storage.setProfile(state.data);
+    return true;
   }
 
-  const Friends = {
+  function _defaultProfile() {
+    return {
+      name: 'مهمان',
+      avatar: '🌱',
+      elo: 1000,
+      level: 1,
+      coins: 500,
+      rank: 'تازه‌کار',
+      rankId: 'rookie',
+      createdAt: Date.now(),
+      lastPlayedAt: null
+    };
+  }
+
+  /* ─── ELO ─── */
+  function _calculateExpected(playerElo, opponentElo) {
+    return 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
+  }
+
+  function _calculateEloChange(playerElo, opponentElo, actual) {
+    const expected = _calculateExpected(playerElo, opponentElo);
+    let change = ELO_K_FACTOR * (actual - expected);
+    if (actual === 1 && change < ELO_MIN_CHANGE) change = ELO_MIN_CHANGE;
+    if (actual === 0 && change > ELO_MAX_LOSS) change = ELO_MAX_LOSS;
+    return Math.round(change);
+  }
+
+  /* ─── رتبه ─── */
+  function _getRankFromElo(elo) {
+    for (const rank of RANKS) {
+      if (elo >= rank.min) return rank;
+    }
+    return RANKS[RANKS.length - 1];
+  }
+
+  function _getNextRank(currentRank) {
+    const idx = RANKS.findIndex(r => r.id === currentRank.id);
+    if (idx <= 0) return null;
+    return RANKS[idx - 1];
+  }
+
+  function _getRankProgress(elo) {
+    const current = _getRankFromElo(elo);
+    const next = _getNextRank(current);
+    if (!next) return { percent: 100, current, next: null };
+    const range = next.min - current.min;
+    const progress = elo - current.min;
+    const percent = Math.min(100, Math.round((progress / range) * 100));
+    return { percent, current, next, eloToNext: next.min - elo };
+  }
+
+  /* ─── 🎁 جایزه روزانه ─── */
+  function _checkDailyBonus() {
+    const storage = _storage();
+    if (!storage) return;
+
+    const lastBonusRaw = storage.getRaw('hokm_daily_bonus');
+    const now = Date.now();
+
+    if (!lastBonusRaw || (now - parseInt(lastBonusRaw, 10)) >= DAILY_BONUS_INTERVAL) {
+      Profile.addCoins(DAILY_BONUS_AMOUNT);
+      storage.setRaw('hokm_daily_bonus', String(now));
+
+      setTimeout(() => {
+        if (_ui() && typeof _ui().showToast === 'function') {
+          _ui().showToast(
+            '🎁 جایزه روزانه!',
+            `+${_toPersianNumber(DAILY_BONUS_AMOUNT)} سکه رایگان دریافت کردی`,
+            'success',
+            5000
+          );
+        }
+        if (_audio()) _audio().play('coin');
+      }, 2000);
+
+      _emit('daily:bonus', { amount: DAILY_BONUS_AMOUNT });
+    }
+  }
+
+  /* ─── API عمومی ─── */
+  const Profile = {
 
     init() {
-      const userId = _getAuthToken();
+      _load();
+      _checkDailyBonus();
+      Profile.updateUI();
+      _bindEvents();
 
-      // نمایش کد دوست‌یابی در صفحه دوستان (اگر لاگین است)
-      if (userId) {
-        state.myFriendCode = localStorage.getItem('hokm_friend_code') ||
-                             (_profile() && _profile().get().friendCode) || '';
-
-        // اتصال Socket.io
-        try {
-          if (typeof io !== 'undefined' && !state.socket) {
-            state.socket = io(FRIENDS_API, {
-              transports: ['websocket', 'polling']
-            });
-
-            state.socket.on('connect', () => {
-              console.log('%c✅ Friends socket connected', 'color: #06d6a0; font-weight: bold;');
-              state.socket.emit('auth', { userId });
-            });
-
-            state.socket.on('connect_error', (err) => {
-              console.warn('[Friends] Socket connection error:', err.message);
-            });
-
-            state.socket.on('chat:receive', (data) => {
-              Friends._handleIncomingMessage(data);
-            });
-
-            state.socket.on('chat:sent', (data) => {
-              console.log('%c✅ پیام ارسال شد', 'color: #06d6a0;');
-            });
-
-            state.socket.on('friend:new_request', (data) => {
-              Friends.loadData();
-              _toast('👋 درخواست دوستی', (data.from_name || 'یک کاربر') + ' به شما درخواست دوستی داد', 'info');
-              if (_audio()) _audio().play('notification');
-            });
-
-            state.socket.on('friend:accepted', (data) => {
-              Friends.loadData();
-              _toast('✅ دوست جدید!', (data.by_name || 'کاربر') + ' درخواست شما را پذیرفت', 'success');
-              if (_audio()) _audio().play('success');
-            });
-
-            state.socket.on('game:invited', (data) => {
-              if (confirm(`🎮 ${data.fromName} شما را به بازی دعوت کرد!\nکد اتاق: ${data.roomCode}\nآیا می‌خواهید وارد شوید؟`)) {
-                if (_ui()) _ui().navigate('online');
-                setTimeout(() => {
-                  const input = document.getElementById('roomCodeInput');
-                  if (input) {
-                    input.value = data.roomCode;
-                    const btn = document.getElementById('btnJoinRoom');
-                    if (btn) btn.click();
-                  }
-                }, 300);
-              }
-            });
-          }
-        } catch (e) {
-          console.warn('[Friends] Socket init failed:', e.message);
-        }
-      }
-
-      Friends.loadData();
-      Friends.render();
-      Friends.bindEvents();
+      console.log(
+        `%c👤 Profile: ${state.data.name} (${state.data.elo} ELO, ${state.data.coins} سکه)`,
+        'color: #118ab2; font-weight: bold;'
+      );
+      return state.data;
     },
 
-    async loadData() {
-      const token = _getAuthToken();
-      if (!token) {
-        Friends.render();
-        return;
-      }
+    /* ─── Get ─── */
+    get() { return Object.assign({}, state.data); },
+    getName() { return state.data.name; },
+    getAvatar() { return state.data.avatar; },
+    getElo() { return state.data.elo; },
+    getCoins() { return state.data.coins; },
+    getRank() { return _getRankFromElo(state.data.elo); },
+    getRankProgress() { return _getRankProgress(state.data.elo); },
 
-      try {
-        const res = await fetch(`${FRIENDS_API}/api/friends`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          state.friends = data.friends || [];
-          Friends.render();
-        }
-      } catch (err) {
-        console.warn('[Friends] Could not load friends list:', err.message);
-        Friends.render();
-      }
+    /* ─── Set ─── */
+    setName(name) {
+      if (!name || typeof name !== 'string') return false;
+      const trimmed = name.trim().slice(0, 20);
+      if (!trimmed) return false;
+      state.data.name = trimmed;
+      _save();
+      Profile.updateUI();
+      _emit('profile:name-changed', { name: trimmed });
+      return true;
     },
 
-    async addFriend(code) {
-      const token = _getAuthToken();
-      if (!token) {
-        _toast('خطا', 'برای افزودن دوست ابتدا وارد حساب خود شوید', 'error');
-        if (_ui()) _ui().navigate('auth');
-        return;
-      }
-
-      try {
-        const res = await fetch(`${FRIENDS_API}/api/friends/add`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ friendCode: code })
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          _toast('✅', 'درخواست دوستی ارسال شد', 'success');
-          if (_audio()) _audio().play('success');
-        } else {
-          _toast('خطا', data.error || 'خطا در ارسال درخواست', 'error');
-        }
-      } catch (err) {
-        _toast('خطا', 'ارتباط با سرور برقرار نشد', 'error');
-      }
+    setAvatar(avatar) {
+      if (!avatar) return false;
+      state.data.avatar = String(avatar).slice(0, 2048);
+      _save();
+      Profile.updateUI();
+      _emit('profile:avatar-changed', { avatar: state.data.avatar });
+      return true;
     },
 
-    sendMessage(friendId, text) {
-      if (!state.socket || !text || !text.trim()) return;
-      const senderId = _getAuthToken();
-      if (!senderId) return;
+    setAvatarFromFile(file) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) {
+          reject(new Error('فایل نامعتبر'));
+          return;
+        }
+        if (file.size > 200 * 1024) {
+          reject(new Error('حجم فایل بیش از ۲۰۰ کیلوبایت'));
+          return;
+        }
 
-      state.socket.emit('chat:send', {
-        senderId: senderId,
-        receiverId: friendId,
-        text: text.trim()
-      });
-
-      // اضافه کردن به chat محلی
-      if (!state.chats[friendId]) state.chats[friendId] = [];
-      state.chats[friendId].push({
-        senderId: senderId,
-        receiverId: friendId,
-        text: text.trim(),
-        timestamp: Date.now()
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const size = 96;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const min = Math.min(img.width, img.height);
+            const sx = (img.width - min) / 2;
+            const sy = (img.height - min) / 2;
+            ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            state.data.avatar = dataUrl;
+            _save();
+            Profile.updateUI();
+            _emit('profile:avatar-changed', { avatar: dataUrl });
+            resolve(dataUrl);
+          };
+          img.onerror = () => reject(new Error('خطا در بارگذاری تصویر'));
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('خطا در خواندن فایل'));
+        reader.readAsDataURL(file);
       });
     },
 
-    render() {
-      const container = document.getElementById('friendsList');
-      if (!container) return;
+    /* ─── ELO ─── */
+    calculateElo(opponentElo, expectedWin) {
+      const actual = expectedWin ? 1 : 0;
+      return _calculateEloChange(state.data.elo, opponentElo, actual);
+    },
 
-      // نمایش کد دوست‌یابی بالای لیست
-      let friendCodeBox = document.getElementById('myFriendCodeDisplay');
-      if (!friendCodeBox) {
-        friendCodeBox = document.createElement('div');
-        friendCodeBox.id = 'myFriendCodeDisplay';
-        friendCodeBox.style.cssText = 'margin-bottom: 16px;';
-        container.parentNode.insertBefore(friendCodeBox, container);
+    applyEloChange(change) {
+      const oldElo = state.data.elo;
+      const oldRank = _getRankFromElo(oldElo);
+      state.data.elo = Math.max(0, oldElo + change);
+      const newRank = _getRankFromElo(state.data.elo);
+      state.data.rankId = newRank.id;
+      state.data.rank = newRank.name;
+      _save();
+      const rankChanged = oldRank.id !== newRank.id;
+      _emit('elo:changed', { oldElo, newElo: state.data.elo, change, rankChanged, oldRank, newRank });
+      return { oldElo, newElo: state.data.elo, change, rankChanged, newRank };
+    },
+
+    /* ─── سکه ─── */
+    addCoins(amount) {
+      state.data.coins = Math.max(0, state.data.coins + amount);
+      _save();
+      Profile.updateUI();
+      _emit('coins:changed', { coins: state.data.coins, change: amount });
+      return state.data.coins;
+    },
+
+    spendCoins(amount) {
+      if (state.data.coins < amount) return false;
+      state.data.coins -= amount;
+      _save();
+      Profile.updateUI();
+      _emit('coins:changed', { coins: state.data.coins, change: -amount });
+      return true;
+    },
+
+    /* ─── آواتار تصادفی ─── */
+    randomAvatar() {
+      const current = state.data.avatar;
+      let next = current;
+      while (next === current && AVATAR_PRESETS.length > 1) {
+        next = AVATAR_PRESETS[Math.floor(Math.random() * AVATAR_PRESETS.length)];
+      }
+      Profile.setAvatar(next);
+      return next;
+    },
+
+    getAvatarPresets() {
+      return AVATAR_PRESETS.slice();
+    },
+
+    /* ─── آمار ─── */
+    getStats() {
+      const storage = _storage();
+      if (!storage) return null;
+      return storage.getStats();
+    },
+
+    getWinRate() {
+      const stats = Profile.getStats();
+      if (!stats || stats.gamesPlayed === 0) return 0;
+      return Math.round((stats.wins / stats.gamesPlayed) * 100);
+    },
+
+    getStreak() {
+      const stats = Profile.getStats();
+      return stats ? stats.currentStreak : 0;
+    },
+
+    /* ─── رویدادها ─── */
+    on(event, handler) {
+      const entry = { event, handler };
+      state.listeners.push(entry);
+      return () => Profile.off(event, handler);
+    },
+
+    off(event, handler) {
+      state.listeners = state.listeners.filter(
+        l => !(l.event === event && l.handler === handler)
+      );
+    },
+
+    /* ═══════════════════════════════════════════
+       UI Update
+       ═══════════════════════════════════════════ */
+    updateUI() {
+      if (!state.data) return;
+
+      const elo = state.data.elo;
+      const rank = _getRankFromElo(elo);
+      const progress = _getRankProgress(elo);
+
+      // پروفایل سریع در منو
+      _setText('quickName', state.data.name);
+      _setText('quickElo', _toPersianNumber(elo));
+      _setText('quickRank', rank.name);
+      _setText('quickCoins', _toPersianNumber(state.data.coins));
+      _setAvatarHTML('quickAvatar', state.data.avatar);
+
+      // پروفایل کامل
+      _setText('profileName', state.data.name);
+      _setText('profileRank', `${rank.name} — ${_toPersianNumber(elo)}`);
+      _setText('statCoins', _toPersianNumber(state.data.coins));
+      _setAvatarHTML('profileAvatarBig', state.data.avatar);
+
+      // نوار پیشرفت ELO
+      const eloBar = document.getElementById('profileEloFill');
+      if (eloBar) eloBar.style.width = `${progress.percent}%`;
+
+      // آمار
+      const stats = Profile.getStats();
+      if (stats) {
+        _setText('statWins', _toPersianNumber(stats.wins));
+        _setText('statLosses', _toPersianNumber(stats.losses));
+        _setText('statWinRate', `${_toPersianNumber(stats.winRate)}٪`);
+        _setText('statStreak', _toPersianNumber(stats.currentStreak));
+        _setText('statBestStreak', _toPersianNumber(stats.bestStreak));
+        _setText('statGames', _toPersianNumber(stats.gamesPlayed));
       }
 
-      const token = _getAuthToken();
-      const code = state.myFriendCode || localStorage.getItem('hokm_friend_code');
+      Profile.renderHistory();
+      _renderAchievementsMini();
+    },
 
-      if (token && code) {
-        friendCodeBox.innerHTML = `
-          <div style="padding: 12px; background: var(--bg-secondary); border: 1px solid var(--accent); border-radius: var(--radius-md); text-align: center;">
-            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">کد دوست‌یابی شما:</div>
-            <div style="font-size: 22px; font-weight: 900; color: var(--accent); font-family: var(--font-num); letter-spacing: 0.1em;">${_escapeHtml(code)}</div>
-            <button class="btn btn-outline" style="margin-top: 8px; font-size: 12px; padding: 4px 12px;" onclick="HokmFriends.copyCode('${_escapeHtml(code)}')">📋 کپی کد</button>
-          </div>
-        `;
-      } else {
-        friendCodeBox.innerHTML = `
-          <div style="padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); text-align: center;">
-            <div style="font-size: 13px; color: var(--text-muted);">
-              برای دریافت کد دوست‌یابی، ابتدا وارد حساب خود شوید.
-            </div>
-            <button class="btn btn-primary" style="margin-top: 8px; font-size: 13px;" onclick="HokmUI.navigate('auth')">ورود / ثبت‌نام</button>
-          </div>
-        `;
-      }
-
-      if (!state.friends || state.friends.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-title">هنوز دوستی اضافه نکرده‌ای</div>
-            <div class="empty-state-msg">با کد کاربری دوستانت رو اضافه کن</div>
-          </div>
-        `;
+    renderHistory() {
+      const el = document.getElementById('historyList');
+      if (!el) return;
+      const storage = _storage();
+      if (!storage) return;
+      const history = storage.getHistory();
+      const games = (history.games || []).slice(0, 10);
+      if (games.length === 0) {
+        el.innerHTML = '<p class="empty-msg">هنوز بازی‌ای انجام نداده‌ای</p>';
         return;
       }
-
-      container.innerHTML = state.friends.map(f => {
-        const unread = state.unreadCounts[f.user_id] || 0;
-        const unreadBadge = unread > 0 ? `<span style="background: var(--color-danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-right: 4px;">${_toPersianNumber(unread)}</span>` : '';
-        const avatarContent = (f.avatar && f.avatar.startsWith('data:image'))
-          ? `<img src="${f.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`
-          : (f.avatar || '👤');
-
+      el.innerHTML = games.map(g => {
+        const win = g.win;
+        const icon = win ? '🏆' : '💔';
+        const cls = win ? 'win' : 'loss';
+        const eloChange = g.eloChange || 0;
+        const eloSign = eloChange >= 0 ? '+' : '';
+        const eloColor = eloChange > 0 ? 'var(--color-success)' : eloChange < 0 ? 'var(--color-danger)' : 'var(--text-muted)';
+        const timeAgo = _timeAgo(g.timestamp);
         return `
-          <div class="friend-item">
-            <div class="friend-status" style="background: #6b7280;"></div>
-            <div class="lb-avatar" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: var(--bg-elevated); border-radius: 50%; overflow: hidden;">
-              ${avatarContent}
+          <div class="history-item ${cls}">
+            <div class="history-result">${icon}</div>
+            <div class="history-info">
+              <div class="history-title">${win ? 'برد' : 'باخت'} — ${_toPersianNumber(g.scoreA || 0)} به ${_toPersianNumber(g.scoreB || 0)}</div>
+              <div class="history-meta">${timeAgo} · ${_modeLabel(g.mode, g.aiLevel)}</div>
             </div>
-            <div class="friend-info">
-              <div class="friend-name">${_escapeHtml(f.name)} ${unreadBadge}</div>
-              <div class="friend-sub">${_escapeHtml(f.friendCode || '')}</div>
-            </div>
-            <div class="friend-actions">
-              <button class="icon-btn" onclick="HokmFriends.openChat('${f.user_id}', '${_escapeHtml(f.name)}')" style="width:36px;height:36px;font-size:16px;">💬</button>
-              <button class="icon-btn" onclick="HokmFriends.inviteToGame('${f.user_id}')" style="width:36px;height:36px;font-size:16px;">🎮</button>
-            </div>
+            <div class="history-elo" style="color: ${eloColor}">${_toPersianNumber(eloSign + eloChange)}</div>
           </div>
         `;
       }).join('');
-    },
-
-    copyCode(code) {
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(code).then(() => {
-            _toast('✅', 'کد شما کپی شد', 'success');
-          }).catch(() => {
-            _toast('کد شما: ' + code, '', 'info');
-          });
-        } else {
-          _toast('کد شما: ' + code, '', 'info');
-        }
-      } catch (e) {
-        _toast('کد شما: ' + code, '', 'info');
-      }
-    },
-
-    openChat(friendId, friendName) {
-      if (!_ui()) return;
-
-      const msgs = state.chats[friendId] || [];
-      const myId = _getAuthToken();
-      const messagesHtml = msgs.length
-        ? msgs.map(m => {
-            const isMe = m.senderId === myId;
-            return `
-              <div style="display:flex; justify-content:${isMe ? 'flex-start' : 'flex-end'}; margin-bottom:8px;">
-                <div style="background:${isMe ? 'var(--accent-soft)' : 'var(--bg-elevated)'}; padding:8px 12px; border-radius:12px; font-size:13px; max-width:80%;">
-                  ${_escapeHtml(m.text)}
-                </div>
-              </div>
-            `;
-          }).join('')
-        : '<p style="text-align:center;color:var(--text-muted);padding-top:100px;">هنوز پیامی رد و بدل نشده</p>';
-
-      _ui().openModal(`
-        <h3 class="modal-title" style="margin-bottom: 12px;">💬 چت با ${_escapeHtml(friendName)}</h3>
-        <div id="chatMessages" style="height:250px; overflow-y:auto; margin-bottom:12px; padding:8px; background:var(--bg-secondary); border-radius:8px;">
-          ${messagesHtml}
-        </div>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="chatInput" class="input" placeholder="پیام..." autocomplete="off" maxlength="500" />
-          <button class="btn btn-primary" id="btnSendChat" style="padding:0 16px;">📤</button>
-        </div>
-        <div style="margin-top:16px; display:flex; gap:8px; flex-wrap: wrap;">
-          <button class="btn btn-outline" style="flex:1; font-size:12px; min-width:80px;" onclick="HokmFriends.sendQuickChat('${friendId}', 'آفرین! 👏')">آفرین! 👏</button>
-          <button class="btn btn-outline" style="flex:1; font-size:12px; min-width:80px;" onclick="HokmFriends.sendQuickChat('${friendId}', 'حکم دل! ♥️')">حکم دل! ♥️</button>
-          <button class="btn btn-outline" style="flex:1; font-size:12px; min-width:80px;" onclick="HokmFriends.sendQuickChat('${friendId}', 'دستت درد نکنه 🙏')">دستت درد نکنه 🙏</button>
-        </div>
-      `);
-
-      state.unreadCounts[friendId] = 0;
-      Friends.render();
-
-      setTimeout(() => {
-        const input = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('btnSendChat');
-        const msgsEl = document.getElementById('chatMessages');
-        if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
-
-        const send = () => {
-          if (!input || !input.value.trim()) return;
-          const text = input.value.trim();
-          Friends.sendMessage(friendId, text);
-
-          // آپدیت UI محلی
-          if (msgsEl) {
-            // اگر پیام "خالی" بود، حذفش کن
-            const emptyMsg = msgsEl.querySelector('p');
-            if (emptyMsg) emptyMsg.remove();
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = `<div style="display:flex; justify-content:flex-start; margin-bottom:8px;"><div style="background:var(--accent-soft); padding:8px 12px; border-radius:12px; font-size:13px; max-width:80%;">${_escapeHtml(text)}</div></div>`;
-            msgsEl.appendChild(wrapper.firstChild);
-            msgsEl.scrollTop = msgsEl.scrollHeight;
-          }
-          input.value = '';
-        };
-
-        if (sendBtn) sendBtn.addEventListener('click', send);
-        if (input) {
-          input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
-          input.focus();
-        }
-      }, 100);
-    },
-
-    sendQuickChat(friendId, text) {
-      Friends.sendMessage(friendId, text);
-
-      const msgsEl = document.getElementById('chatMessages');
-      if (msgsEl) {
-        const emptyMsg = msgsEl.querySelector('p');
-        if (emptyMsg) emptyMsg.remove();
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = `<div style="display:flex; justify-content:flex-start; margin-bottom:8px;"><div style="background:var(--accent-soft); padding:8px 12px; border-radius:12px; font-size:13px; max-width:80%;">${_escapeHtml(text)}</div></div>`;
-        msgsEl.appendChild(wrapper.firstChild);
-        msgsEl.scrollTop = msgsEl.scrollHeight;
-      }
-    },
-
-    inviteToGame(friendId) {
-      const roomCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-      if (state.socket) {
-        state.socket.emit('game:invite', {
-          friendId: friendId,
-          roomCode: roomCode,
-          senderName: (_profile() && _profile().get().name) || 'دوست شما'
-        });
-        _toast('🎮 دعوت ارسال شد', 'دعوت‌نامه برای دوست شما ارسال شد', 'success');
-        if (_audio()) _audio().play('success');
-      } else {
-        _toast('خطا', 'اتصال به سرور برقرار نیست', 'error');
-      }
-    },
-
-    _handleIncomingMessage(data) {
-      const friendId = data.senderId;
-
-      if (!state.chats[friendId]) state.chats[friendId] = [];
-      state.chats[friendId].push(data);
-
-      // آپدیت مودال چت اگر باز است
-      const chatMessagesEl = document.getElementById('chatMessages');
-      const modalTitle = document.querySelector('.modal-title');
-      if (chatMessagesEl && modalTitle && modalTitle.textContent.includes('چت')) {
-        const emptyMsg = chatMessagesEl.querySelector('p');
-        if (emptyMsg) emptyMsg.remove();
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = `<div style="display:flex; justify-content:flex-end; margin-bottom:8px;"><div style="background:var(--bg-elevated); padding:8px 12px; border-radius:12px; font-size:13px; max-width:80%;">${_escapeHtml(data.text)}</div></div>`;
-        chatMessagesEl.appendChild(wrapper.firstChild);
-        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-      } else {
-        // badge
-        if (!state.unreadCounts[friendId]) state.unreadCounts[friendId] = 0;
-        state.unreadCounts[friendId]++;
-        Friends.render();
-
-        _toast('💬 پیام جدید', data.text, 'info');
-        if (_audio()) _audio().play('chat');
-      }
-    },
-
-    bindEvents() {
-      const addBtn = document.getElementById('btnAddFriend');
-      const input = document.getElementById('friendCodeInput');
-      if (addBtn && input && !addBtn.dataset.bound) {
-        addBtn.dataset.bound = '1';
-        addBtn.addEventListener('click', () => {
-          const val = input.value.trim().toUpperCase();
-          if (val) {
-            Friends.addFriend(val);
-            input.value = '';
-          } else {
-            _toast('خطا', 'لطفاً کد دوست را وارد کنید', 'warning');
-          }
-        });
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') addBtn.click();
-        });
-      }
     }
   };
 
-  global.HokmFriends = Friends;
+  /* ─── ابزار UI ─── */
+  function _setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
 
-  // راه‌اندازی خودکار بعد از لود
+  function _setAvatarHTML(id, avatar) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
+      el.innerHTML = `<img src="${avatar}" alt="آواتار" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else {
+      el.textContent = avatar || '🌱';
+    }
+  }
+
+  function _timeAgo(timestamp) {
+    if (!timestamp) return '';
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return 'همین الان';
+    if (seconds < 3600) return `${_toPersianNumber(Math.floor(seconds / 60))} دقیقه پیش`;
+    if (seconds < 86400) return `${_toPersianNumber(Math.floor(seconds / 3600))} ساعت پیش`;
+    if (seconds < 604800) return `${_toPersianNumber(Math.floor(seconds / 86400))} روز پیش`;
+    return `${_toPersianNumber(Math.floor(seconds / 604800))} هفته پیش`;
+  }
+
+  function _modeLabel(mode, aiLevel) {
+    if (mode === 'online') return 'آنلاین';
+    const levels = { easy: 'AI آسان', medium: 'AI متوسط', hard: 'AI سخت', master: 'AI استاد' };
+    return levels[aiLevel] || 'آفلاین';
+  }
+
+  function _renderAchievementsMini() {
+    const grid = document.getElementById('achievementsMiniGrid');
+    if (!grid) return;
+    const storage = _storage();
+    if (!storage) return;
+    const achData = storage.getAchievements();
+    const unlocked = achData.unlocked || {};
+    const ACH_LIST = [
+      { id: 'first_game', icon: '🎬' }, { id: 'first_win', icon: '⭐' },
+      { id: 'wins_5', icon: '🌟' }, { id: 'wins_10', icon: '✨' },
+      { id: 'wins_50', icon: '💫' }, { id: 'streak_3', icon: '🔥' },
+      { id: 'streak_5', icon: '🔥' }, { id: 'streak_10', icon: '🔥' },
+      { id: 'elo_1300', icon: '🥈' }, { id: 'elo_1500', icon: '🥇' },
+      { id: 'elo_1800', icon: '👑' }, { id: 'elo_2000', icon: '🔥' }
+    ];
+    const unlockedCount = Object.keys(unlocked).length;
+    grid.innerHTML = ACH_LIST.map(a => {
+      const isUnlocked = !!unlocked[a.id];
+      return `<div class="achievement-mini ${isUnlocked ? 'unlocked' : 'locked'}" title="${a.id}" data-ach="${a.id}">${a.icon}</div>`;
+    }).join('');
+    const label = document.getElementById('achCountLabel');
+    if (label) {
+      label.textContent = `${_toPersianNumber(unlockedCount)} / ${_toPersianNumber(ACH_LIST.length)}`;
+    }
+  }
+
+  /* ─── Bind رویدادها ─── */
+  function _bindEvents() {
+    const bigAvatar = document.getElementById('profileAvatarBig');
+    if (bigAvatar && !bigAvatar.dataset.bound) {
+      bigAvatar.dataset.bound = '1';
+      bigAvatar.addEventListener('click', () => {
+        const input = document.getElementById('avatarUpload');
+        if (input) input.click();
+      });
+    }
+
+    const changeBtn = document.getElementById('btnChangeAvatar');
+    if (changeBtn && !changeBtn.dataset.bound) {
+      changeBtn.dataset.bound = '1';
+      changeBtn.addEventListener('click', () => _showAvatarPicker());
+    }
+
+    const uploadInput = document.getElementById('avatarUpload');
+    if (uploadInput && !uploadInput.dataset.bound) {
+      uploadInput.dataset.bound = '1';
+      uploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          await Profile.setAvatarFromFile(file);
+          if (_audio()) _audio().play('success');
+          if (_ui()) _ui().showToast('آواتار', 'آواتار با موفقیت تغییر کرد', 'success');
+        } catch (err) {
+          if (_ui()) _ui().showToast('خطا', err.message || 'خطا در بارگذاری', 'error');
+        }
+      });
+    }
+
+    const nameEl = document.getElementById('profileName');
+    if (nameEl && !nameEl.dataset.bound) {
+      nameEl.dataset.bound = '1';
+      nameEl.style.cursor = 'pointer';
+      nameEl.title = 'کلیک برای تغییر نام';
+      nameEl.addEventListener('click', () => _promptName());
+    }
+  }
+
+  /* ─── Modal: تغییر نام ─── */
+  function _promptName() {
+    const current = state.data.name;
+    const newName = prompt('نام جدید:', current);
+    if (newName && newName.trim() && newName.trim() !== current) {
+      if (Profile.setName(newName.trim())) {
+        if (_audio()) _audio().play('success');
+        if (_ui()) _ui().showToast('نام', 'نام با موفقیت تغییر کرد', 'success');
+      }
+    }
+  }
+
+  /* ─── Modal: Picker آواتار ─── */
+  function _showAvatarPicker() {
+    const picker = document.getElementById('modalContent');
+    const overlay = document.getElementById('modalOverlay');
+    if (!picker || !overlay) return;
+    const presets = Profile.getAvatarPresets();
+    picker.innerHTML = `
+      <h3 class="modal-title">یک آواتار انتخاب کن</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 10px; padding: 12px 0;">
+        ${presets.map(a => `
+          <button class="avatar-picker-btn" data-avatar="${a}" style="aspect-ratio: 1; font-size: 28px; background: var(--bg-elevated); border: 2px solid ${a === state.data.avatar ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 50%; cursor: pointer; transition: transform 0.2s;">
+            ${a}
+          </button>
+        `).join('')}
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="btnRandomAvatar">🎲 تصادفی</button>
+        <button class="btn btn-primary" id="btnUploadAvatar">📷 آپلود تصویر</button>
+      </div>
+    `;
+    overlay.classList.remove('hidden');
+    picker.querySelectorAll('.avatar-picker-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Profile.setAvatar(btn.dataset.avatar);
+        if (_audio()) _audio().play('softClick');
+        overlay.classList.add('hidden');
+        if (_ui()) _ui().showToast('آواتار', 'آواتار تغییر کرد', 'success');
+      });
+    });
+    const randBtn = document.getElementById('btnRandomAvatar');
+    if (randBtn) {
+      randBtn.addEventListener('click', () => {
+        Profile.randomAvatar();
+        if (_audio()) _audio().play('click');
+        overlay.classList.add('hidden');
+      });
+    }
+    const uploadBtn = document.getElementById('btnUploadAvatar');
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', () => {
+        const input = document.getElementById('avatarUpload');
+        if (input) input.click();
+        overlay.classList.add('hidden');
+      });
+    }
+  }
+
+  /* ─── Bootstrap ─── */
+  function bootstrap() {
+    Profile.init();
+    if (state.data.name === 'مهمان') {
+      setTimeout(() => {
+        if (state.data.name === 'مهمان') {
+          const name = prompt('اسمت چیه؟ (برای اینکه پیشرفتت ذخیره بشه)', '');
+          if (name && name.trim()) {
+            Profile.setName(name.trim());
+          }
+        }
+      }, 2500);
+    }
+  }
+
+  /* ─── Export ─── */
+  Profile.RANKS = RANKS;
+  Profile.AVATAR_PRESETS = AVATAR_PRESETS;
+  Profile.DAILY_BONUS_AMOUNT = DAILY_BONUS_AMOUNT;
+  global.HokmProfile = Profile;
+
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => setTimeout(() => Friends.init(), 500));
+      document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 50));
     } else {
-      setTimeout(() => Friends.init(), 500);
+      setTimeout(bootstrap, 50);
     }
   }
 
