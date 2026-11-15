@@ -7,7 +7,7 @@
   'use strict';
 
   // 🎯 آدرس سرور اصلی بازی آنلاین (server.py روی Render)
-  const GAME_SERVER_URL = 'https://hokm-friends.onrender.com'; // ← اگه آدرس سرور اصلیت فرق داره، اینو عوض کن
+  const GAME_SERVER_URL = 'https://hokm-1-1ikl.onrender.com/'; // ← اگه آدرس سرور اصلیت فرق داره، اینو عوض کن
 
   const state = {
     socket: null,
