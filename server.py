@@ -811,6 +811,23 @@ def on_room_leave():
         del rooms[room_code]
         print(f"🗑️ اتاق {room_code} خالی شد")
 
+@socketio.on("room:refresh")
+def on_room_refresh(data):
+    """🔄 آپدیت لیست بازیکنان برای پولینگ"""
+    code = data.get("code")
+    if not code or code not in rooms:
+        return
+    
+    room = rooms[code]
+    sid = request.sid
+    
+    # فقط اگه بازیکن توی این اتاق باشه
+    if sid in room.players:
+        # ارسال آپدیت به همه بازیکنان این اتاق
+        emit("room:update", {
+            "room": room.to_dict()
+        }, room=code)
+        
 @socketio.on("room:ready")
 def on_room_ready(data):
     sid = request.sid
