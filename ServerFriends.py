@@ -3,9 +3,13 @@
 """
 ═══════════════════════════════════════════════════════════════
    🃏 HOKM PRO v6.2.0 — ServerFriends.py
-   سرور اختصاصی دوستان، چت و دعوت به بازی
+   سرور اختصاصی دوستان، چت و احراز هویت (Render Ready)
 ═══════════════════════════════════════════════════════════════
 """
+
+# 🎯 مهم برای Render: باید قبل از هر ایمپورت دیگه‌ای باشه
+import eventlet
+eventlet.monkey_patch()
 
 import os
 import sys
@@ -14,12 +18,11 @@ import sqlite3
 import secrets
 import random
 import string
-from datetime import timedelta
 from functools import wraps
 from pathlib import Path
 
 try:
-    from flask import Flask, request, jsonify, session, g
+    from flask import Flask, request, jsonify, g
     from flask_cors import CORS
     from flask_socketio import SocketIO, emit, join_room
     import bcrypt
@@ -29,15 +32,16 @@ except ImportError as e:
     sys.exit(1)
 
 BASE_DIR = Path(__file__).resolve().parent
-# 🎯 آدرس دیسک مخصوص Render (برای ذخیره دائمی)
-DB_FRIENDS_PATH = Path("/data/hokm_friends.db") if os.path.exists("/data") else BASE_DIR / "hokm_friends.db"
+
+# 🎯 دیتابیس (اگر روی Render دیسک داری، مسیر رو به /data تغییر بده)
+DB_FRIENDS_PATH = BASE_DIR / "hokm_friends.db"
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = secrets.token_hex(32)
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
+app.config["SECRET_KEY"] = os.environ.get("HOKM_SECRET", secrets.token_hex(32))
 CORS(app, supports_credentials=True)
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+# 🎯 استفاده از eventlet برای Socket.io
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 # ═══════════════════════════════════════════════════════════
 # دیتابیس و توابع کمکی
@@ -67,11 +71,17 @@ def generate_friend_code():
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
+def verify_password(password, hashed):
+    try:
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except:
+        return False
+
 def init_db():
     db = sqlite3.connect(str(DB_FRIENDS_PATH))
     cursor = db.cursor()
     
-    # ۱. کاربران
+    # جدول کاربران
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +95,7 @@ def init_db():
         )
     """)
     
-    # ۲. دوستان
+    # جدول دوستان
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS friendships (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,7 +107,7 @@ def init_db():
         )
     """)
     
-    # ۳. پیام‌ها
+    # جدول پیام‌ها
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,7 +121,7 @@ def init_db():
     
     db.commit()
     db.close()
-    print(f"✅ دیتابیس دوستان در {DB_FRIENDS_PATH} آماده شد.")
+    print("✅ دیتابیس دوستان (hokm_friends.db) آماده شد.")
 
 def require_auth(f):
     @wraps(f)
@@ -130,7 +140,7 @@ def require_auth(f):
     return wrapper
 
 # ═══════════════════════════════════════════════════════════
-# API ها
+# API ها (ثبت‌نام، ورود و اطلاعات من)
 # ═══════════════════════════════════════════════════════════
 
 @app.route("/api/register", methods=["POST"])
@@ -141,28 +151,23 @@ def register():
     password = data.get("password") or ""
 
     if not name or not email or len(password) < 6:
-        return jsonify({"error": "اطلاعات نامعتبر"}), 400
+        return jsonify({"error": "اطلاعات نامعتبر است (رمز حداقل ۶ کاراکتر)"}), 400
 
     db = get_db()
-    
-    # چک کردن اینکه آیا کاربر قبلاً با این ایمیل ثبت‌نام کرده؟ (برای مهمان‌ها)
     existing = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
     if existing:
-        return jsonify({
-            "ok": True, 
-            "token": existing["user_id"], 
-            "friendCode": existing["friend_code"]
-        })
+        return jsonify({"error": "این ایمیل قبلاً ثبت شده است"}), 409
 
     user_id = generate_user_id()
     friend_code = generate_friend_code()
+    hashed = hash_password(password)
     ts = now_ms()
 
     try:
         db.execute("""
             INSERT INTO users (user_id, friend_code, name, email, password, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (user_id, friend_code, name, email, hash_password(password), ts))
+        """, (user_id, friend_code, name, email, hashed, ts))
         db.commit()
     except sqlite3.IntegrityError:
         return jsonify({"error": "خطا در ثبت‌نام"}), 500
@@ -170,10 +175,34 @@ def register():
     return jsonify({
         "ok": True, 
         "token": user_id, 
-        "friendCode": friend_code
+        "user": {"userId": user_id, "friendCode": friend_code, "name": name}
     })
 
-# 🎯 API جدید: گرفتن اطلاعات کاربر (برای پروفایل و نمایش کد HK)
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json() or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not email or not password:
+        return jsonify({"error": "ایمیل و رمز الزامی است"}), 400
+
+    db = get_db()
+    user = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+
+    if not user or not verify_password(password, user["password"]):
+        return jsonify({"error": "ایمیل یا رمز اشتباه است"}), 401
+
+    return jsonify({
+        "ok": True,
+        "token": user["user_id"],
+        "user": {
+            "userId": user["user_id"],
+            "friendCode": user["friend_code"],
+            "name": user["name"]
+        }
+    })
+
 @app.route("/api/me", methods=["GET"])
 @require_auth
 def get_me():
@@ -188,6 +217,10 @@ def get_me():
         "name": user["name"],
         "avatar": user["avatar"]
     })
+
+# ═══════════════════════════════════════════════════════════
+# API های دوستان
+# ═══════════════════════════════════════════════════════════
 
 @app.route("/api/friends", methods=["GET"])
 @require_auth
@@ -208,30 +241,60 @@ def add_friend():
     data = request.get_json() or {}
     friend_code = (data.get("friendCode") or "").strip().upper()
 
+    if not friend_code:
+        return jsonify({"error": "کد دوست‌یابی را وارد کنید"}), 400
+
     db = get_db()
     friend = db.execute("SELECT user_id FROM users WHERE friend_code = ?", (friend_code,)).fetchone()
     
     if not friend:
-        return jsonify({"error": "کاربر پیدا نشد"}), 404
+        return jsonify({"error": "کاربری با این کد پیدا نشد"}), 404
+    
     if friend["user_id"] == g.user_id:
         return jsonify({"error": "نمی‌توانید خودتان را اضافه کنید"}), 400
-    
+
+    # چک تکراری
+    existing = db.execute("""
+        SELECT 1 FROM friendships 
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+    """, (g.user_id, friend["user_id"], friend["user_id"], g.user_id)).fetchone()
+
+    if existing:
+        return jsonify({"error": "درخواست قبلاً ارسال شده یا شما دوست هستید"}), 409
+
     ts = now_ms()
-    try:
-        db.execute("""
-            INSERT INTO friendships (sender_id, receiver_id, status, created_at)
-            VALUES (?, ?, 'pending', ?)
-        """, (g.user_id, friend["user_id"], ts))
-        db.commit()
-    except sqlite3.IntegrityError:
-        return jsonify({"error": "درخواست قبلاً ارسال شده"}), 409
+    db.execute("""
+        INSERT INTO friendships (sender_id, receiver_id, status, created_at)
+        VALUES (?, ?, 'pending', ?)
+    """, (g.user_id, friend["user_id"], ts))
+    db.commit()
 
     socketio.emit("friend:new_request", {"from_user_id": g.user_id}, room=f"user_{friend['user_id']}")
+    return jsonify({"ok": True, "message": "درخواست دوستی ارسال شد"})
+
+@app.route("/api/friends/accept", methods=["POST"])
+@require_auth
+def accept_friend():
+    data = request.get_json() or {}
+    sender_id = data.get("senderId")
+    
+    db = get_db()
+    db.execute("""
+        UPDATE friendships SET status = 'accepted' 
+        WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'
+    """, (sender_id, g.user_id))
+    db.commit()
+    
+    socketio.emit("friend:accepted", {"by_user_id": g.user_id}, room=f"user_{sender_id}")
     return jsonify({"ok": True})
 
 # ═══════════════════════════════════════════════════════════
 # SocketIO ها (چت و دعوت)
 # ═══════════════════════════════════════════════════════════
+
+@socketio.on("connect")
+def on_connect():
+    print(f"🔌 Connected: {request.sid}")
 
 @socketio.on("auth")
 def on_auth(data):
@@ -275,7 +338,10 @@ def on_game_invite(data):
         "fromName": sender_name, "roomCode": room_code
     }, room=f"user_{friend_id}")
 
+# ═══════════════════════════════════════════════════════════
+# اجرای سرور
+# ═══════════════════════════════════════════════════════════
 if __name__ == "__main__":
     init_db()
     print("🚀 سرور دوستان Hokm Pro روی پورت 8081 اجرا شد")
-    socketio.run(app, host="0.0.0.0", port=8081, debug=True)
+    socketio.run(app, host="0.0.0.0", port=8081, debug=False)
