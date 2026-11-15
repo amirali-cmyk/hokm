@@ -765,6 +765,35 @@
         }
       }, 100);
     })();
+<!-- 🚨 ابزار عیب‌یابی سیستم دوستان -->
+<script>
+  window.debugFriends = async function() {
+    console.log('%c🔍 شروع تست سیستم دوستان...', 'color: #ffd60a; font-size: 16px; font-weight: bold;');
+    
+    // ۱. چک کردن توکن
+    const token = localStorage.getItem('hokm_auth_token') || (window.HokmProfile && window.HokmProfile.get().userId);
+    console.log('📌 Token (User ID):', token || '❌ وجود ندارد (کاربر لاگین نیست)');
+
+    // ۲. چک کردن اتصال به سرور
+    console.log('📌 Socket.io:', typeof io !== 'undefined' ? '✅ لود شده' : '❌ لود نشده');
+    
+    // ۳. تست مستقیم API
+    if (token) {
+      try {
+        const res = await fetch('https://hokm-friends.onrender.com/api/me', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        console.log('📌 پاسخ سرور (api/me):', res.status, data);
+      } catch (e) {
+        console.error('❌ خطا در ارتباط با سرور:', e.message);
+      }
+    } else {
+      console.warn('⚠️ چون توکن نداری، نمی‌تونیم به سرور وصل بشیم. باید اول لاگین کنی.');
+    }
+  };
+  
+    console.log('%c🛠️ ابزار تست آماده است. برای اجرا، توی Console تایپ کن:   debugFriends()', 'color:   #06d6a0; font-size: 14px;   font-weight: bold;');
   </script>
 </body>
 </html>
