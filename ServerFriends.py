@@ -38,8 +38,8 @@ DB_FRIENDS_PATH = BASE_DIR / "hokm_friends.db"
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("HOKM_SECRET", secrets.token_hex(32))
-CORS(app, supports_credentials=True)
 
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 # 🎯 استفاده از eventlet برای Socket.io
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
