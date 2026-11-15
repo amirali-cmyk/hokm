@@ -30,15 +30,9 @@
     return String(n).replace(/\d/g, d => fa[+d]);
   }
 
-  // گرفتن توکن (اگر مهمان باشه، یه توکن موقت می‌سازه)
+  // 🎯 فقط توکن واقعی لاگین رو قبول می‌کنه (توکن مهمان حذف شد)
   function _getAuthToken() {
-    let token = localStorage.getItem('hokm_auth_token');
-    if (!token) {
-      // ساخت توکن مهمان
-      token = 'guest_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-      localStorage.setItem('hokm_auth_token', token);
-    }
-    return token;
+    return localStorage.getItem('hokm_auth_token');
   }
 
   const Friends = {
@@ -51,16 +45,21 @@
       }
 
       this.bindEvents();
-      this.connectSocket();
-      this.loadData();
+      
+      // فقط اگه کاربر لاگین باشه به سرور وصل میشیم
+      const token = _getAuthToken();
+      if (token) {
+        this.connectSocket();
+        this.loadData();
+      }
+      
       this.render();
-
-      console.log('%c👥 Friends module initialized', 'color: #06d6a0; font-weight: bold;');
     },
 
     connectSocket() {
       const token = _getAuthToken();
-      
+      if (!token) return;
+
       if (state.socket) {
         state.socket.disconnect();
       }
@@ -118,6 +117,7 @@
     // 🎯 گرفتن کد HK از پروفایل یا سرور
     async loadMyInfo() {
       const token = _getAuthToken();
+      if (!token) return;
       
       // اول چک کن توی پروفایل محلی هست یا نه
       const profile = _profile()?.get();
@@ -126,7 +126,7 @@
         this.render();
       }
 
-      // بعد از سرور بگیر (اگه روی سرور ثبت شده باشه)
+      // بعد از سرور بگیر (برای اطمینان)
       try {
         const res = await fetch(`${FRIENDS_API}/api/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -138,21 +138,23 @@
           if (data.friendCode) {
             state.myFriendCode = data.friendCode;
             
-            // ذخیره در پروفایل محلی
-            const storage = _storage();
-            if (storage) {
-              const p = storage.getProfile();
-              p.friendCode = data.friendCode;
-              p.userId = token;
-              storage.setProfile(p);
+            // ذخیره در پروفایل محلی (فقط اگه تغییر کرده بود)
+            if (!profile || profile.friendCode !== data.friendCode) {
+              const storage = _storage();
+              if (storage) {
+                const p = storage.getProfile();
+                p.friendCode = data.friendCode;
+                p.userId = token;
+                storage.setProfile(p);
+              }
             }
             
             this.render();
-            console.log('%c✅ کد دوست‌یابی دریافت شد: ' + data.friendCode, 'color: #06d6a0; font-weight: bold;');
+            if (_ui() && _ui().currentScreen === 'profile' && _profile()) {
+              _profile().updateUI();
+            }
+            console.log('%c✅ کد دوست‌یابی از سرور دریافت شد: ' + data.friendCode, 'color: #06d6a0; font-weight: bold;');
           }
-        } else if (res.status === 401) {
-          // توکن معتبر نیست، کاربر باید ثبت‌نام کنه
-          console.warn('[Friends] کاربر در سرور دوستان وجود ندارد. لطفاً وارد حساب کاربری شوید.');
         }
       } catch (err) {
         console.warn('[Friends] خطا در دریافت اطلاعات از سرور:', err.message);
@@ -161,6 +163,7 @@
 
     async loadData() {
       const token = _getAuthToken();
+      if (!token) return;
 
       try {
         const res = await fetch(`${FRIENDS_API}/api/friends`, {
@@ -238,8 +241,9 @@
       const profileContainer = document.getElementById('profileFriendCode');
       
       let html = '';
+      const token = _getAuthToken();
       
-      if (state.myFriendCode && state.myFriendCode !== '---') {
+      if (token && state.myFriendCode && state.myFriendCode !== '---') {
         html = `
           <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--accent); border-radius: var(--radius-md); text-align: center;">
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">کد دوست‌یابی شما:</div>
@@ -264,6 +268,18 @@
     renderFriendsList() {
       const container = document.getElementById('friendsList');
       if (!container) return;
+
+      const token = _getAuthToken();
+      
+      if (!token) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-title">برای استفاده از دوستان وارد شوید</div>
+            <div class="empty-state-msg">ابتدا از حساب کاربری خود وارد شوید</div>
+          </div>
+        `;
+        return;
+      }
 
       if (state.friends.length === 0) {
         container.innerHTML = `
