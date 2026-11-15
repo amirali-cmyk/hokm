@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تست سرور بازی آنلاین</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      background: #0d1b2a;
+      color: #e0e1dd;
+      padding: 20px;
+      direction: rtl;
+      min-height: 100vh;
+    }
+    h1 { color: #ffd60a; margin-bottom: 20px; font-size: 22px; }
+    h2 { color: #06d6a0; margin: 20px 0 10px; font-size: 16px; }
+    .box {
+      background: #1e2d45;
+      border: 1px solid #2a3a55;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    .status.ok { background: rgba(6, 214, 160, 0.15); color: #06d6a0; }
+    .status.err { background: rgba(239, 71, 111, 0.15); color: #ef476f; }
+    .status.wait { background: rgba(255, 214, 10, 0.15); color: #ffd60a; }
+    input, button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #2a3a55;
+      font-family: inherit;
+      font-size: 14px;
+      margin: 4px;
+    }
+    input {
+      background: #0d1b2a;
+      color: #e0e1dd;
+      width: 180px;
+    }
+    button {
+      background: linear-gradient(135deg, #ffd60a, #b8860b);
+      color: #1a1a1a;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover { filter: brightness(1.1); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.secondary {
+      background: #2a3a55;
+      color: #e0e1dd;
+    }
+    #log {
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      direction: ltr;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .log-time { color: #6b7280; }
+    .log-ok { color: #06d6a0; }
+    .log-err { color: #ef476f; font-weight: bold; }
+    .log-warn { color: #ffd60a; }
+    .log-info { color: #118ab2; }
+    .log-event { color: #9b5de5; }
+    code {
+      background: #0d1b2a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #ffd60a;
+      font-size: 12px;
+    }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  </style>
+</head>
+<body>
+
+  <h1>🧪 تست سرور بازی آنلاین (Hokm Server)</h1>
+
+  <div class="box">
+    <h2>⚙️ تنظیمات اتصال</h2>
+    <div class="row">
+      <label>آدرس سرور:</label>
+      <input type="text" id="serverUrl" value="https://hokm-friends.onrender.com" style="width: 320px;">
+      <button id="btnConnect">🔌 اتصال</button>
+      <button id="btnDisconnect" class="secondary" disabled>❌ قطع</button>
+    </div>
+    <div style="margin-top: 12px;">
+      وضعیت: <span id="connectionStatus" class="status wait">در انتظار</span>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>🏠 ساخت اتاق</h2>
+    <div class="row">
+      <input type="text" id="playerName" value="علی (تست)" placeholder="اسم بازیکن">
+      <button id="btnCreateRoom" disabled>➕ ساخت اتاق</button>
+    </div>
+    <div style="margin-top: 12px;">
+      کد اتاق: <span id="myRoomCode" style="color: #ffd60a; font-weight: 700; font-size: 18px;">—</span>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>🚪 ورود به اتاق</h2>
+    <div class="row">
+      <input type="text" id="joinName" value="سارا (تست)" placeholder="اسم بازیکن">
+      <input type="text" id="joinCode" placeholder="کد اتاق" maxlength="6" style="text-transform: uppercase;">
+      <button id="btnJoinRoom" disabled>🚪 ورود</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>👥 بازیکنان اتاق</h2>
+    <div id="playersList" style="color: #a0a8b8; font-size: 13px;">هنوز بازیکنی نیست</div>
+  </div>
+
+  <div class="box">
+    <h2>📋 لاگ زنده (Live Log)</h2>
+    <div style="margin-bottom: 8px;">
+      <button id="btnClearLog" class="secondary" style="font-size: 12px; padding: 6px 12px;">🗑️ پاک کردن</button>
+    </div>
+    <div id="log">آماده...</div>
+  </div>
+
+  <!-- Socket.io -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="test-online.js"></script>
+
+</body>
+</html>
