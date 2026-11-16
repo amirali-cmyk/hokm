@@ -222,7 +222,7 @@
       return;
     }
 
-    await _delay(8000);
+    await _delay(800);
 
     const strengths = SUIT_LIST.map(suit => ({
       suit,
@@ -320,7 +320,9 @@
 
     console.log('%c✅ توزیع کامل شد — هر بازیکن ۱۳ کارت دارد', 'color: #06d6a0; font-weight: bold;');
 
-    await _delay(800);
+    // 🎯 ۵ ثانیه توقف برای دیدن کارت‌ها (طبق درخواست)
+    if (_ui()) _ui().showToast('👀 ۵ ثانیه...', 'کارت‌هات رو ببین', 'info', 5000);
+    await _delay(5000);
   }
 
   /* ─────────────────────────────────────────────
@@ -608,11 +610,18 @@
 
     const duration = Date.now() - state.gameStartTime;
 
+    // 🎯 حل مشکل ELO: محاسبه و اعمال تغییرات
     let eloChange = 0;
     if (_profile() && typeof _profile().calculateElo === 'function') {
       const aiLevelElos = { easy: 900, medium: 1100, hard: 1400, master: 1700 };
       const aiElo = aiLevelElos[state.players[1]?.aiLevel] || 1100;
       eloChange = _profile().calculateElo(aiElo, win);
+      
+      // 🎯 اعمال تغییرات ELO به پروفایل
+      if (_profile() && typeof _profile().applyEloChange === 'function') {
+        _profile().applyEloChange(eloChange);
+        console.log(`%c⚡ ELO تغییر کرد: ${eloChange > 0 ? '+' : ''}${eloChange}`, 'color: #ffd60a; font-weight: bold;');
+      }
     }
 
     let coinsReward = 0;
@@ -816,10 +825,10 @@
 
       console.log('%c🎴 مرحله ۱: ۵ کارت به هر بازیکن داده شد', 'color: #06d6a0; font-weight: bold;');
 
-      // 🎯 مرحله ۲: توقف ۳ ثانیه‌ای
-      if (_ui()) _ui().showToast('⏳ ۳ ثانیه...', 'کارت‌هات رو ببین', 'info', 3000);
+      // 🎯 مرحله ۲: توقف ۸ ثانیه‌ای (طبق درخواست)
+      if (_ui()) _ui().showToast('👀 ۸ ثانیه...', 'کارت‌هات رو ببین', 'info', 8000);
 
-      await _delay(3000);
+      await _delay(8000);
 
       // 🎯 مرحله ۳: حکم‌خوانی
       state.phase = PHASES.HOKM_SELECT;
