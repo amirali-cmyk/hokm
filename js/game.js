@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   🎮 HOKM PRO v6.1.1 — game.js
-   قلب بازی: منطق کامل، توزیع، حکم، دورها، امتیازدهی، تایمر
+   🎮 HOKM PRO v6.3.0 — game.js
+   قلب بازی: منطق کامل، توزیع مرحله‌ای، حکم، دورها، امتیازدهی
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -78,7 +78,9 @@
     listeners: [],
     aiThinking: false,
     isPaused: false,
-    turnCount: 0
+    turnCount: 0,
+    _pendingDeck: null,
+    _pendingDeckIndex: 0
   };
 
   /* ─────────────────────────────────────────────
@@ -184,33 +186,6 @@
     return players;
   }
 
-  /* ─────────────────────────────────────────────
-     توزیع کارت
-     ───────────────────────────────────────────── */
-  function _dealCards() {
-    const deck = _shuffle(_createDeck());
-    const count = state.playerCount;
-
-    let handSize;
-    if (count === 2) handSize = 26;
-    else handSize = 13;
-
-    let idx = 0;
-    for (let i = 0; i < count; i++) {
-      state.players[i].hand = [];
-    }
-
-    for (let round = 0; round < handSize; round++) {
-      for (let p = 0; p < count; p++) {
-        state.players[p].hand.push(deck[idx++]);
-      }
-    }
-
-    _sortHand(state.players[0]);
-    state.deck = deck.slice(idx);
-    return state.players.map(p => p.hand);
-  }
-
   function _sortHand(player) {
     if (!player || !player.hand) return;
     player.hand.sort((a, b) => {
@@ -243,8 +218,7 @@
     const player = state.players[callerIdx];
 
     if (!player.isAI) {
-      console.log('%c👑 منتظر انتخاب حکم از طرف کاربر...',
-        'color: #06d6a0; font-weight: bold;');
+      console.log('%c👑 منتظر انتخاب حکم از طرف کاربر...', 'color: #06d6a0; font-weight: bold;');
       return;
     }
 
@@ -257,8 +231,7 @@
     strengths.sort((a, b) => b.strength - a.strength);
     const bestSuit = strengths[0].suit;
 
-    console.log(`%c👑 ${player.name} حکم ${SUIT_NAMES_FA[bestSuit]} رو انتخاب کرد`,
-      'color: #ffd60a; font-weight: bold;');
+    console.log(`%c👑 ${player.name} حکم ${SUIT_NAMES_FA[bestSuit]} رو انتخاب کرد`, 'color: #ffd60a; font-weight: bold;');
 
     await _setHokm(bestSuit, callerIdx);
   }
@@ -276,8 +249,78 @@
       _ui().updateHokmDisplay(suit);
     }
 
+    // 🎯 توزیع ۴+۴ کارت باقی‌مونده
+    await _dealRemainingCards();
+
     await _delay(1200);
     _startPlaying();
+  }
+
+  /* ─────────────────────────────────────────────
+     🎯 توزیع ۴+۴ کارت باقی‌مونده (بعد از حکم)
+     ───────────────────────────────────────────── */
+  async function _dealRemainingCards() {
+    if (!state._pendingDeck) return;
+
+    const deck = state._pendingDeck;
+    let idx = state._pendingDeckIndex;
+
+    console.log('%c🎴 مرحله ۴: توزیع ۴ کارت دوم...', 'color: #ffd60a; font-weight: bold;');
+
+    // ۴ کارت اول
+    for (let round = 0; round < 4; round++) {
+      for (let p = 0; p < state.playerCount; p++) {
+        if (idx < deck.length) {
+          state.players[p].hand.push(deck[idx++]);
+        }
+      }
+    }
+
+    _sortHand(state.players[0]);
+
+    _emit('cards:dealt', {
+      hands: state.players.map(p => p.hand),
+      players: state.players,
+      stage: 'second_4'
+    });
+
+    for (let i = 0; i < 4; i++) {
+      if (_audio()) _audio().play('deal');
+      await _delay(80);
+    }
+
+    await _delay(600);
+
+    console.log('%c🎴 مرحله ۵: توزیع ۴ کارت آخر...', 'color: #ffd60a; font-weight: bold;');
+
+    // ۴ کارت دوم
+    for (let round = 0; round < 4; round++) {
+      for (let p = 0; p < state.playerCount; p++) {
+        if (idx < deck.length) {
+          state.players[p].hand.push(deck[idx++]);
+        }
+      }
+    }
+
+    _sortHand(state.players[0]);
+
+    _emit('cards:dealt', {
+      hands: state.players.map(p => p.hand),
+      players: state.players,
+      stage: 'final_4'
+    });
+
+    for (let i = 0; i < 4; i++) {
+      if (_audio()) _audio().play('deal');
+      await _delay(80);
+    }
+
+    state._pendingDeck = null;
+    state._pendingDeckIndex = idx;
+
+    console.log('%c✅ توزیع کامل شد — هر بازیکن ۱۳ کارت دارد', 'color: #06d6a0; font-weight: bold;');
+
+    await _delay(800);
   }
 
   /* ─────────────────────────────────────────────
@@ -572,14 +615,12 @@
       eloChange = _profile().calculateElo(aiElo, win);
     }
 
-    // 🎯 جایزه سکه
     let coinsReward = 0;
     if (_profile() && typeof _profile().addCoins === 'function') {
       coinsReward = win ? 50 : 10;
       _profile().addCoins(coinsReward);
 
-      console.log(`%c💰 +${coinsReward} سکه (${win ? 'برد' : 'باخت'})`,
-        'color: #ffd60a; font-weight: bold;');
+      console.log(`%c💰 +${coinsReward} سکه (${win ? 'برد' : 'باخت'})`, 'color: #ffd60a; font-weight: bold;');
     }
 
     const result = {
@@ -711,6 +752,7 @@
       state.timerSpeed = options.timerSpeed || settings.timerSpeed || 'normal';
       const aiLevel = options.aiLevel || settings.aiLevel || 'medium';
 
+      // ریست کامل
       state.phase = PHASES.IDLE;
       state.deck = [];
       state.hokm = null;
@@ -726,6 +768,8 @@
       state.isPaused = false;
       state.turnCount = 0;
       state.aiThinking = false;
+      state._pendingDeck = null;
+      state._pendingDeckIndex = 0;
 
       state.players = _createPlayers(state.playerCount, aiLevel);
 
@@ -743,20 +787,41 @@
       if (_audio()) _audio().play('shuffle');
       await _delay(600);
 
-      const hands = _dealCards();
+      // 🎯 مرحله ۱: توزیع ۵ کارت اول
+      const deck = _shuffle(_createDeck());
+      let deckIndex = 0;
 
-      _emit('cards:dealt', {
-        hands,
-        players: state.players
-      });
-
-      for (let i = 0; i < 13; i++) {
-        if (_audio()) _audio().play('deal');
-        await _delay(60);
+      for (let i = 0; i < state.playerCount; i++) {
+        state.players[i].hand = [];
       }
 
-      await _delay(500);
+      for (let round = 0; round < 5; round++) {
+        for (let p = 0; p < state.playerCount; p++) {
+          state.players[p].hand.push(deck[deckIndex++]);
+        }
+      }
 
+      _sortHand(state.players[0]);
+
+      _emit('cards:dealt', {
+        hands: state.players.map(p => p.hand),
+        players: state.players,
+        stage: 'initial_5'
+      });
+
+      for (let i = 0; i < 5; i++) {
+        if (_audio()) _audio().play('deal');
+        await _delay(80);
+      }
+
+      console.log('%c🎴 مرحله ۱: ۵ کارت به هر بازیکن داده شد', 'color: #06d6a0; font-weight: bold;');
+
+      // 🎯 مرحله ۲: توقف ۳ ثانیه‌ای
+      if (_ui()) _ui().showToast('⏳ ۳ ثانیه...', 'کارت‌هات رو ببین', 'info', 3000);
+
+      await _delay(3000);
+
+      // 🎯 مرحله ۳: حکم‌خوانی
       state.phase = PHASES.HOKM_SELECT;
       const callerIdx = _pickRandomHokmCaller();
       state.hokmCaller = callerIdx;
@@ -772,6 +837,10 @@
       } else {
         _autoSelectHokm(callerIdx);
       }
+
+      // ذخیره deck برای توزیع باقی کارت‌ها
+      state._pendingDeck = deck;
+      state._pendingDeckIndex = deckIndex;
 
       return state;
     },
@@ -821,12 +890,7 @@
         if (_audio()) _audio().play('error');
 
         if (_ui() && playerIdx === 0) {
-          _ui().showToast(
-            '❌ کارت غیرمجاز',
-            `باید از خال ${leadName} بازی کنی!`,
-            'error',
-            2500
-          );
+          _ui().showToast('❌ کارت غیرمجاز', `باید از خال ${leadName} بازی کنی!`, 'error', 2500);
         }
         return false;
       }
@@ -952,9 +1016,6 @@
 
   global.HokmGame = Game;
 
-  console.log(
-    '%c🎮 Game logic loaded (سخت‌گیرانه با پیروی از خال — v6.1.1)',
-    'color: #ef476f; font-weight: bold; font-size: 13px;'
-  );
+  console.log('%c🎮 Game logic loaded (v6.3.0 — توزیع مرحله‌ای)', 'color: #ef476f; font-weight: bold; font-size: 13px;');
 
 })(typeof window !== 'undefined' ? window : globalThis);
