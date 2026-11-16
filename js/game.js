@@ -222,7 +222,7 @@
       return;
     }
 
-    await _delay(800);
+    await _delay(8000);
 
     const strengths = SUIT_LIST.map(suit => ({
       suit,
