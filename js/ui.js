@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    🎨 HOKM PRO v6.3.0 — ui.js
-   ناوبری + رندر کامل بازی + Modal + Toast + انیمیشن
+   ناوبری + رندر کامل بازی + Modal + Toast + انیمیشن + ری‌اکشن
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -24,9 +24,10 @@
     tournament: 'screen-tournament',
     replay: 'screen-replay',
     online: 'screen-online',
-    auth: 'screen-auth',
-    stats: 'screen-stats'
+    auth: 'screen-auth'
   };
+
+  const TAB_SCREENS = ['menu', 'profile', 'settings', 'help'];
 
   const SEAT_MAP = {
     Bottom: 0,
@@ -55,6 +56,7 @@
   function _game() { return global.HokmGame; }
   function _audio() { return global.HokmAudio; }
   function _profile() { return global.HokmProfile; }
+  function _online() { return global.HokmOnline || global.HokmFriends; }
 
   function _emit(event, data) {
     state.listeners.forEach(({ event: e, handler }) => {
@@ -221,44 +223,6 @@
       if (_audio()) _audio().play('modalClose');
     },
 
-    openHelpModal() {
-      const html = `
-        <h2 class="modal-title" style="margin-bottom: 20px;">📖 راهنمای بازی حکم</h2>
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-          <div>
-            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🎯 هدف بازی</h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              ۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.
-            </p>
-          </div>
-          <div>
-            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🃏 ترتیب کارت‌ها</h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              A (14) > K (13) > Q (12) > J (11) > 10 > ... > 2
-            </p>
-          </div>
-          <div>
-            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">👑 حکم‌خوانی</h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              یک نفر حکم تعیین می‌کند. خال حکم بر همه چیز برتری دارد.
-            </p>
-          </div>
-          <div>
-            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">⚖️ قوانین طلایی</h3>
-            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              پیروی از خال الزامی است. اگر کارت هم‌خال داری، باید همون رو بازی کنی.
-            </p>
-          </div>
-        </div>
-        <div class="modal-actions" style="margin-top: 20px;">
-          <button class="btn btn-primary btn-block" onclick="HokmUI.closeModal()">
-            فهمیدم ✅
-          </button>
-        </div>
-      `;
-      UI.openModal(html);
-    },
-
     /* ═══════════════════════════════════════════
        بازی — شروع و خروج
        ═══════════════════════════════════════════ */
@@ -329,8 +293,9 @@
       const picker = _$('hokmPicker');
       if (picker) picker.classList.add('hidden');
 
-      const actions = _$('actionButtons');
-      if (actions) actions.style.display = 'none';
+      // حذف نوار ری‌اکشن اگه بود
+      const reactionBar = document.getElementById('reactionBar');
+      if (reactionBar) reactionBar.remove();
 
       document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
         s.classList.remove('hokm-caller');
@@ -380,6 +345,11 @@
           onclick: playable ? `HokmUI.handleCardClick('${card.id}')` : ''
         });
       }).join('');
+
+      if (isHokmCaller) {
+        console.log('%c🎴 کارت‌های تو برای انتخاب حکم آماده‌ست',
+          'color: #06d6a0; font-weight: bold;');
+      }
     },
 
     renderSeats(gameState) {
@@ -459,6 +429,10 @@
       });
     },
 
+    /* ═══════════════════════════════════════════
+       حکم‌خوانی
+       ═══════════════════════════════════════════ */
+
     showHokmPicker() {
       const picker = _$('hokmPicker');
       if (!picker) return;
@@ -473,10 +447,14 @@
         btn.addEventListener('click', () => {
           const suit = btn.dataset.suit;
           if (!suit) return;
-          console.log('%c👑 حکم انتخاب شد: ' + suit, 'color: #ffd60a; font-weight: bold;');
+          console.log('%c👑 حکم انتخاب شد: ' + suit,
+            'color: #ffd60a; font-weight: bold; font-size: 14px;');
           UI.handleHokmSelect(suit);
         });
       });
+
+      console.log('%c👑 پنجره انتخاب حکم باز شد',
+        'color: #06d6a0; font-weight: bold;');
     },
 
     hideHokmPicker() {
@@ -492,8 +470,115 @@
       if (ok) {
         UI.hideHokmPicker();
         if (_audio()) _audio().play('claimHokm');
+
+        UI.showToast(
+          '👑 حکم انتخابی',
+          `${SUIT_SYMBOLS[suit]} ${SUIT_FA[suit] || suit}`,
+          'success',
+          2500
+        );
+      } else {
+        UI.showToast('خطا', 'انتخاب حکم ناموفق', 'error');
       }
     },
+
+    /* ═══════════════════════════════════════════
+       ری‌اکشن (Emoji)
+       ═══════════════════════════════════════════ */
+
+    showReactionButtons() {
+      let existing = document.getElementById('reactionBar');
+      if (existing) existing.remove();
+
+      const reactions = ['👏', '😂', '🔥', '😎', '😭', '🤔', '❤️', '👍'];
+
+      const bar = document.createElement('div');
+      bar.id = 'reactionBar';
+      bar.style.cssText = `
+        position: fixed;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        background: rgba(13, 27, 42, 0.95);
+        padding: 8px 12px;
+        border-radius: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      `;
+
+      reactions.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.style.cssText = `
+          font-size: 24px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+          border-radius: 50%;
+          transition: transform 0.2s;
+        `;
+        btn.onmouseover = () => btn.style.transform = 'scale(1.3)';
+        btn.onmouseout = () => btn.style.transform = 'scale(1)';
+        btn.onclick = () => {
+          // نمایش روی صفحه
+          UI.showFloatingReaction(emoji, 0);
+          
+          // اگه آنلاین بود، به بقیه بفرست
+          const online = _online();
+          if (online && online.state && online.state.socket && online.state.isConnected) {
+            online.state.socket.emit('reaction:send', { 
+              emoji, 
+              playerName: _profile()?.get().name || 'تو' 
+            });
+          }
+          
+          bar.remove();
+        };
+        bar.appendChild(btn);
+      });
+
+      document.body.appendChild(bar);
+
+      setTimeout(() => {
+        if (bar.parentNode) bar.remove();
+      }, 5000);
+    },
+
+    showFloatingReaction(emoji, playerIdx) {
+      const positions = {
+        0: { bottom: '25%', left: '50%' },
+        1: { top: '35%', left: '20%' },
+        2: { top: '10%', left: '50%' },
+        3: { top: '35%', right: '20%' }
+      };
+
+      const pos = positions[playerIdx] || positions[0];
+      const el = document.createElement('div');
+      el.textContent = emoji;
+      el.style.cssText = `
+        position: fixed;
+        ${pos.top ? 'top: ' + pos.top + ';' : ''}
+        ${pos.bottom ? 'bottom: ' + pos.bottom + ';' : ''}
+        ${pos.left ? 'left: ' + pos.left + ';' : ''}
+        ${pos.right ? 'right: ' + pos.right + ';' : ''}
+        font-size: 48px;
+        z-index: 2000;
+        pointer-events: none;
+        animation: floatUp 2s ease-out forwards;
+        transform: translateX(-50%);
+      `;
+
+      document.body.appendChild(el);
+
+      setTimeout(() => el.remove(), 2000);
+    },
+
+    /* ═══════════════════════════════════════════
+       رویدادهای کاربر
+       ═══════════════════════════════════════════ */
 
     handleCardClick(cardId) {
       if (!_game()) return;
@@ -527,6 +612,7 @@
     },
 
     handlePass() {
+      // پاس دیگه توی بازی معنی نداره، ولی برای سازگاری نگه‌داری می‌شه
       if (!_game()) return;
       UI.showToast('باید حکم تعیین کنی', '', 'warning', 2000);
     },
@@ -689,6 +775,8 @@
       if (_audio()) _audio().play('achievement');
     },
 
+    /* ─── رویدادها ─── */
+
     on(event, handler) {
       const entry = { event, handler };
       state.listeners.push(entry);
@@ -756,11 +844,8 @@
       UI.renderGame();
     });
 
-    // 🎯 هر بار که کارت توزیع می‌شه (۵ کارت اول، ۴ کارت دوم، ۴ کارت آخر)
-    game.on('cards:dealt', ({ hands, players, stage }) => {
+    game.on('cards:dealt', ({ hands }) => {
       UI.renderHand(hands[0], game.getState());
-      UI.renderSeats(game.getState());
-      console.log(`[UI] Cards dealt - Stage: ${stage}, My hand: ${hands[0].length}`);
     });
 
     game.on('hokm:selecting', ({ callerIdx, player }) => {
@@ -774,6 +859,11 @@
         seat.classList.add('hokm-caller');
       }
 
+      console.log(
+        `%c👑 حکم‌خوان: ${player.name} (صندلی ${pos})`,
+        'color: #ffd60a; font-weight: bold; font-size: 14px;'
+      );
+
       if (callerIdx === 0) {
         UI.showToast('👑 نوبت توئه!', 'یه خال رو انتخاب کن', 'info', 3000);
       } else {
@@ -785,13 +875,18 @@
       UI.showHokmPicker();
     });
 
-    game.on('hokm:set', ({ suit }) => {
+    game.on('hokm:set', ({ suit, callerIdx }) => {
       UI.updateHokmDisplay(suit);
       UI.hideHokmPicker();
 
       document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
         s.classList.remove('hokm-caller');
       });
+
+      console.log(
+        `%c👑 حکم نهایی: ${SUIT_SYMBOLS[suit]} ${SUIT_FA[suit] || suit}`,
+        'color: #ffd60a; font-weight: bold; font-size: 14px;'
+      );
     });
 
     game.on('turn:start', ({ playerIdx }) => {
@@ -799,10 +894,7 @@
       UI.resetTimer();
       UI.renderHand(game.getMyHand(), game.getState());
 
-      const actions = _$('actionButtons');
-      if (actions) {
-        actions.style.display = playerIdx === 0 ? 'flex' : 'none';
-      }
+      // ❌ دکمه‌های پاس و حکم حذف شدن، اینجا دیگه نمایش داده نمی‌شن
 
       if (playerIdx === 0 && _audio()) {
         _audio().play('turn');
@@ -817,6 +909,11 @@
       UI.renderHand(game.getMyHand(), game.getState());
       UI.renderTrick(trick, game.getState());
       UI.renderSeats(game.getState());
+
+      // 🎯 اگه خودت بازی کردی، دکمه ری‌اکشن نمایش بده
+      if (playerIdx === 0) {
+        UI.showReactionButtons();
+      }
     });
 
     game.on('card:invalid', ({ playerIdx, card, leadSuit }) => {
@@ -827,7 +924,8 @@
     });
 
     game.on('trick:completed', ({ winner }) => {
-      const winnerPos = SEAT_POSITIONS[winner];
+      const seatPositions = SEAT_POSITIONS;
+      const winnerPos = seatPositions[winner];
       const seat = _$('seat' + winnerPos);
       if (seat) {
         seat.classList.add('winner-glow');
@@ -913,27 +1011,7 @@
           global.HokmReplay.render();
         }
         break;
-
-      case 'stats':
-        _renderStats();
-        break;
     }
-  }
-
-  function _renderStats() {
-    if (!global.HokmStorage) return;
-    const stats = global.HokmStorage.getStats();
-    const set = (id, val) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = _toPersianNumber(val);
-    };
-    
-    set('statsTotalGames', stats.gamesPlayed || 0);
-    set('statsTotalWins', stats.wins || 0);
-    set('statsTotalRounds', stats.roundsWon || 0);
-    set('statsHokmClaimed', stats.hokmClaimed || 0);
-    set('statsBestStreak', stats.bestStreak || 0);
-    set('statsPlayTime', Math.floor((stats.totalTimePlayed || 0) / 60000));
   }
 
   /* ─────────────────────────────────────────────
@@ -980,21 +1058,22 @@
       });
     }
 
-    const passBtn = _$('btnPass');
-    if (passBtn && !passBtn.dataset.bound) {
-      passBtn.dataset.bound = '1';
-      passBtn.addEventListener('click', () => UI.handlePass());
-    }
-    
-    const helpBtn = _$('btnOpenHelp');
-    if (helpBtn && !helpBtn.dataset.bound) {
-      helpBtn.dataset.bound = '1';
-      helpBtn.addEventListener('click', () => UI.openHelpModal());
-    }
+    // ❌ دکمه پاس حذف شده، پس این بخش هم حذف شد
 
     document.addEventListener('keydown', _handleKeyboard);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !state.modalOpen) {
+        if (state.currentScreen !== 'menu' && state.currentScreen !== 'game') {
+          UI.navigate('menu');
+        }
+      }
+    });
   }
 
+  /* ─────────────────────────────────────────────
+     منو کارت‌ها
+     ───────────────────────────────────────────── */
   function _handleMenuAction(action) {
     if (!action) return;
 
@@ -1008,6 +1087,9 @@
     }
   }
 
+  /* ─────────────────────────────────────────────
+     شورتکات‌های کیبورد
+     ───────────────────────────────────────────── */
   function _handleKeyboard(e) {
     const isInGame = state.currentScreen === 'game';
 
@@ -1041,19 +1123,20 @@
         }
         return;
       }
-
-      if (e.key.toLowerCase() === 'p') {
-        UI.handlePass();
-        return;
-      }
     }
   }
 
+  /* ─────────────────────────────────────────────
+     setText کمکی
+     ───────────────────────────────────────────── */
   function _setText(id, text) {
     const el = _$(id);
     if (el) el.textContent = text;
   }
 
+  /* ─────────────────────────────────────────────
+     Bootstrap
+     ───────────────────────────────────────────── */
   function bootstrap() {
     _bindGlobalEvents();
 
@@ -1078,6 +1161,9 @@
     );
   }
 
+  /* ─────────────────────────────────────────────
+     Export
+     ───────────────────────────────────────────── */
   UI.SCREENS = SCREENS;
   UI.SEAT_MAP = SEAT_MAP;
   UI.SEAT_POSITIONS = SEAT_POSITIONS;
