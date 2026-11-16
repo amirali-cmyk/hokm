@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   🎨 HOKM PRO v6.1.1 — ui.js
-   ناوبری + رندر کامل بازی + Modal + Toast + انیمیشن + آنلاین
+   🎨 HOKM PRO v6.3.0 — ui.js
+   ناوبری + رندر کامل بازی + Modal + Toast + انیمیشن
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -18,14 +18,14 @@
     profile: 'screen-profile',
     settings: 'screen-settings',
     help: 'screen-help',
-    stats: 'screen-stats',
     leaderboard: 'screen-leaderboard',
     achievements: 'screen-achievements',
     friends: 'screen-friends',
     tournament: 'screen-tournament',
     replay: 'screen-replay',
     online: 'screen-online',
-    auth: 'screen-auth'
+    auth: 'screen-auth',
+    stats: 'screen-stats'
   };
 
   const SEAT_MAP = {
@@ -44,23 +44,15 @@
     currentScreen: 'menu',
     previousScreen: 'menu',
     inGame: false,
-    isOnlineGame: false,
     modalOpen: false,
     hokmPickerBound: false,
-    listeners: [],
-    onlineData: {
-      mySeat: 0,
-      currentTurnSeat: 0,
-      hokm: null,
-      myCards: []
-    }
+    listeners: []
   };
 
   /* ─────────────────────────────────────────────
      کمکی‌ها
      ───────────────────────────────────────────── */
   function _game() { return global.HokmGame; }
-  function _online() { return global.HokmOnline; }
   function _audio() { return global.HokmAudio; }
   function _profile() { return global.HokmProfile; }
 
@@ -96,7 +88,10 @@
   const UI = {
 
     navigate(screenName, options = {}) {
-      if (!SCREENS[screenName]) return;
+      if (!SCREENS[screenName]) {
+        console.warn('[UI] Unknown screen:', screenName);
+        return;
+      }
 
       if (state.inGame && screenName !== 'game' && !options.force) {
         if (confirm('از بازی خارج می‌شوید؟')) {
@@ -120,7 +115,7 @@
       UI.updateTabs(screenName);
       _onScreenEnter(screenName);
 
-      _emit('navigate', { screen: screenName });
+      _emit('navigate', { screen: screenName, previous: state.previousScreen });
       return true;
     },
 
@@ -135,6 +130,7 @@
           (tabName === 'game' && (activeTab === 'menu' || activeTab === 'game')) ||
           tabName === activeTab;
         tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
       });
     },
 
@@ -143,6 +139,7 @@
     },
 
     /* ─── Toast ─── */
+
     showToast(title, message = '', type = 'info', duration = 3500) {
       const container = _$('toastContainer');
       if (!container) return null;
@@ -157,6 +154,7 @@
 
       const toast = document.createElement('div');
       toast.className = `toast toast-${type}`;
+      toast.setAttribute('role', 'alert');
       toast.innerHTML = `
         <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
         <div class="toast-body">
@@ -176,6 +174,7 @@
     },
 
     /* ─── Modal ─── */
+
     openModal(html, options = {}) {
       const overlay = _$('modalOverlay');
       const content = _$('modalContent');
@@ -204,7 +203,9 @@
 
       if (!state.escHandler) {
         state.escHandler = (e) => {
-          if (e.key === 'Escape' && state.modalOpen) UI.closeModal();
+          if (e.key === 'Escape' && state.modalOpen) {
+            UI.closeModal();
+          }
         };
         document.addEventListener('keydown', state.escHandler);
       }
@@ -216,7 +217,46 @@
 
       overlay.classList.add('hidden');
       state.modalOpen = false;
+
       if (_audio()) _audio().play('modalClose');
+    },
+
+    openHelpModal() {
+      const html = `
+        <h2 class="modal-title" style="margin-bottom: 20px;">📖 راهنمای بازی حکم</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🎯 هدف بازی</h3>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+              ۴ بازیکن در ۲ تیم روبه‌روی هم. باید ۷ دست از ۱۳ دست رو ببرید.
+            </p>
+          </div>
+          <div>
+            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">🃏 ترتیب کارت‌ها</h3>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+              A (14) > K (13) > Q (12) > J (11) > 10 > ... > 2
+            </p>
+          </div>
+          <div>
+            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">👑 حکم‌خوانی</h3>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+              یک نفر حکم تعیین می‌کند. خال حکم بر همه چیز برتری دارد.
+            </p>
+          </div>
+          <div>
+            <h3 style="color: var(--accent); font-size: 16px; margin-bottom: 8px;">⚖️ قوانین طلایی</h3>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
+              پیروی از خال الزامی است. اگر کارت هم‌خال داری، باید همون رو بازی کنی.
+            </p>
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px;">
+          <button class="btn btn-primary btn-block" onclick="HokmUI.closeModal()">
+            فهمیدم ✅
+          </button>
+        </div>
+      `;
+      UI.openModal(html);
     },
 
     /* ═══════════════════════════════════════════
@@ -231,7 +271,6 @@
 
       try {
         state.inGame = true;
-        state.isOnlineGame = false;
 
         UI.navigate('game', { force: true });
         UI.resetGameView();
@@ -250,14 +289,11 @@
     },
 
     exitGame() {
-      if (state.isOnlineGame) {
-        if (_online()) _online().leaveRoom();
-      } else {
-        if (_game()) _game().quit();
+      if (_game()) {
+        _game().quit();
       }
 
       state.inGame = false;
-      state.isOnlineGame = false;
 
       UI.resetGameView();
 
@@ -299,18 +335,10 @@
       document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
         s.classList.remove('hokm-caller');
       });
-
-      // ریست آنلاین
-      state.onlineData = {
-        mySeat: 0,
-        currentTurnSeat: 0,
-        hokm: null,
-        myCards: []
-      };
     },
 
     /* ═══════════════════════════════════════════
-       رندر آفلاین
+       رندر بازی
        ═══════════════════════════════════════════ */
 
     renderGame() {
@@ -318,7 +346,10 @@
       const s = _game().getState();
 
       UI.updateScores(s.scores, s.trickCount);
-      if (s.hokm) UI.updateHokmDisplay(s.hokm);
+
+      if (s.hokm) {
+        UI.updateHokmDisplay(s.hokm);
+      }
 
       UI.renderHand(s.players[0]?.hand || [], s);
       UI.renderSeats(s);
@@ -332,7 +363,10 @@
 
       const valid = _game().getValidCards(0);
       const validIds = new Set(valid.map(c => c.id));
-      const isMyTurn = gameState.currentPlayer === 0 && gameState.phase === 'playing';
+      const isMyTurn = gameState.currentPlayer === 0 &&
+                       gameState.phase === 'playing';
+      const isSelectingHokm = gameState.phase === 'hokmSelect';
+      const isHokmCaller = isSelectingHokm && gameState.hokmCaller === 0;
 
       hand.innerHTML = cards.map((card, i) => {
         const isValid = validIds.has(card.id);
@@ -342,6 +376,7 @@
         return _renderCardHTML(card, {
           playable,
           disabled,
+          index: i,
           onclick: playable ? `HokmUI.handleCardClick('${card.id}')` : ''
         });
       }).join('');
@@ -349,6 +384,7 @@
 
     renderSeats(gameState) {
       const players = gameState.players;
+
       const seatMap = {
         Bottom: players[0],
         Left: players[1],
@@ -385,6 +421,7 @@
       if (!center) return;
 
       center.innerHTML = '';
+
       const positionMap = ['bottom', 'left', 'top', 'right'];
 
       trick.forEach(({ playerIdx, card }) => {
@@ -393,6 +430,7 @@
         el.dataset.cardId = card.id;
         el.dataset.pos = positionMap[playerIdx] || 'bottom';
         el.innerHTML = _cardInnerHTML(card);
+
         center.appendChild(el);
       });
     },
@@ -416,54 +454,10 @@
       ['Top', 'Left', 'Right', 'Bottom'].forEach((pos) => {
         const seat = _$('seat' + pos);
         if (!seat) return;
-        seat.classList.toggle('active', SEAT_MAP[pos] === playerIdx);
+        const seatIdx = SEAT_MAP[pos];
+        seat.classList.toggle('active', seatIdx === playerIdx);
       });
     },
-
-    /* ═══════════════════════════════════════════
-       رندر آنلاین
-       ═══════════════════════════════════════════ */
-
-    renderOnlineHand(cards) {
-      state.onlineData.myCards = cards;
-      const hand = _$('playerHand');
-      if (!hand) return;
-
-      const isMyTurn = state.onlineData.currentTurnSeat === state.onlineData.mySeat;
-
-      hand.innerHTML = cards.map((card, i) => {
-        return _renderCardHTML(card, {
-          playable: isMyTurn,
-          disabled: false,
-          onclick: isMyTurn ? `HokmUI.handleOnlineCardClick(${i})` : ''
-        });
-      }).join('');
-    },
-
-    handleOnlineCardClick(index) {
-      const card = state.onlineData.myCards[index];
-      if (!card) return;
-
-      if (state.onlineData.currentTurnSeat !== state.onlineData.mySeat) {
-        UI.showToast('نوبت تو نیست', '', 'warning', 1500);
-        return;
-      }
-
-      if (_online()) {
-        _online().playCard(card);
-      }
-    },
-
-    handleOnlineHokmSelect(suit) {
-      if (_online()) {
-        _online().setHokm(suit);
-        UI.hideHokmPicker();
-      }
-    },
-
-    /* ═══════════════════════════════════════════
-       حکم‌خوانی
-       ═══════════════════════════════════════════ */
 
     showHokmPicker() {
       const picker = _$('hokmPicker');
@@ -474,16 +468,13 @@
       if (state.hokmPickerBound) return;
       state.hokmPickerBound = true;
 
-      picker.querySelectorAll('.suit-btn').forEach(btn => {
+      const buttons = picker.querySelectorAll('.suit-btn');
+      buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           const suit = btn.dataset.suit;
           if (!suit) return;
-          
-          if (state.isOnlineGame) {
-            UI.handleOnlineHokmSelect(suit);
-          } else {
-            UI.handleHokmSelect(suit);
-          }
+          console.log('%c👑 حکم انتخاب شد: ' + suit, 'color: #ffd60a; font-weight: bold;');
+          UI.handleHokmSelect(suit);
         });
       });
     },
@@ -495,21 +486,18 @@
 
     handleHokmSelect(suit) {
       if (!_game()) return;
+
       const ok = _game().selectHokm(suit);
 
       if (ok) {
         UI.hideHokmPicker();
         if (_audio()) _audio().play('claimHokm');
-        UI.showToast('👑 حکم انتخابی', `${SUIT_SYMBOLS[suit]} ${SUIT_FA[suit] || suit}`, 'success', 2500);
       }
     },
 
-    /* ═══════════════════════════════════════════
-       رویدادهای کاربر
-       ═══════════════════════════════════════════ */
-
     handleCardClick(cardId) {
       if (!_game()) return;
+
       const hand = _game().getMyHand();
       const card = hand.find(c => c.id === cardId);
       if (!card) return;
@@ -581,8 +569,14 @@
       const eloChange = result.eloChange || 0;
       const coinsReward = result.coinsReward || 0;
       const eloSign = eloChange >= 0 ? '+' : '';
-      const eloColor = eloChange > 0 ? 'var(--color-success)' : eloChange < 0 ? 'var(--color-danger)' : 'var(--text-muted)';
+      const eloColor = eloChange > 0
+        ? 'var(--color-success)'
+        : eloChange < 0
+          ? 'var(--color-danger)'
+          : 'var(--text-muted)';
+
       const duration = result.durationMs || 0;
+
       const title = win ? '🏆 بردی!' : '💔 باختی';
       const titleColor = win ? 'var(--color-success)' : 'var(--color-danger)';
 
@@ -600,13 +594,23 @@
             <strong style="font-family: var(--font-num);">${_toPersianNumber(opponentScore)}</strong>
           </p>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
+
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-bottom: 20px;
+        ">
           <div class="stat-card">
-            <div class="stat-value" style="color: ${eloColor};">${_toPersianNumber(eloSign + eloChange)}</div>
+            <div class="stat-value" style="color: ${eloColor};">
+              ${_toPersianNumber(eloSign + eloChange)}
+            </div>
             <div class="stat-label">تغییر ELO</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" style="color: var(--accent);">🪙 ${_toPersianNumber(coinsReward)}</div>
+            <div class="stat-value" style="color: var(--accent);">
+              🪙 ${_toPersianNumber(coinsReward)}
+            </div>
             <div class="stat-label">سکه</div>
           </div>
           <div class="stat-card">
@@ -614,11 +618,18 @@
             <div class="stat-label">مدت بازی</div>
           </div>
         </div>
+
         <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
-          <button class="btn btn-primary btn-large btn-block" id="btnPlayAgain">🎮 بازی مجدد</button>
+          <button class="btn btn-primary btn-large btn-block" id="btnPlayAgain">
+            🎮 بازی مجدد
+          </button>
           <div style="display: flex; gap: 10px;">
-            <button class="btn btn-outline" style="flex:1;" id="btnShareResult">📤 اشتراک‌گذاری</button>
-            <button class="btn btn-ghost" style="flex:1;" id="btnBackToMenu">🏠 منو</button>
+            <button class="btn btn-outline" style="flex:1;" id="btnShareResult">
+              📤 اشتراک‌گذاری
+            </button>
+            <button class="btn btn-ghost" style="flex:1;" id="btnBackToMenu">
+              🏠 منو
+            </button>
           </div>
         </div>
       `;
@@ -657,7 +668,9 @@
         });
       }
 
-      if (win) UI.celebrateWin();
+      if (win) {
+        UI.celebrateWin();
+      }
     },
 
     celebrateWin() {
@@ -672,10 +685,10 @@
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 5000);
       }
+
       if (_audio()) _audio().play('achievement');
     },
 
-    /* ─── رویدادها ─── */
     on(event, handler) {
       const entry = { event, handler };
       state.listeners.push(entry);
@@ -683,7 +696,9 @@
     },
 
     off(event, handler) {
-      state.listeners = state.listeners.filter(l => !(l.event === event && l.handler === handler));
+      state.listeners = state.listeners.filter(
+        l => !(l.event === event && l.handler === handler)
+      );
     }
   };
 
@@ -692,7 +707,9 @@
      ───────────────────────────────────────────── */
   function _renderCardHTML(card, opts = {}) {
     const classes = ['card-face'];
-    if (card.suit === 'hearts' || card.suit === 'diamonds') classes.push('red');
+    if (card.suit === 'hearts' || card.suit === 'diamonds') {
+      classes.push('red');
+    }
     if (opts.playable) classes.push('playable');
     if (opts.disabled) classes.push('disabled');
     if (opts.selected) classes.push('selected');
@@ -715,29 +732,48 @@
     const rank = card.symbol || card.rank;
 
     return `
-      <div class="card-corner top"><span class="card-rank">${rank}</span></div>
+      <div class="card-corner top">
+        <span class="card-rank">${rank}</span>
+      </div>
       <div class="card-suit">${symbol}</div>
-      <div class="card-corner bottom"><span class="card-rank">${rank}</span></div>
+      <div class="card-corner bottom">
+        <span class="card-rank">${rank}</span>
+      </div>
     `;
   }
 
   /* ─────────────────────────────────────────────
-     اتصال رویدادهای game.js (آفلاین)
+     اتصال رویدادهای game.js
      ───────────────────────────────────────────── */
   function _bindGameEvents() {
     const game = _game();
-    if (!game || game._uiBound) return;
+    if (!game) return;
+
+    if (game._uiBound) return;
     game._uiBound = true;
 
-    game.on('game:start', () => UI.renderGame());
-    game.on('cards:dealt', ({ hands }) => UI.renderHand(hands[0], game.getState()));
-    
+    game.on('game:start', ({ players }) => {
+      UI.renderGame();
+    });
+
+    // 🎯 هر بار که کارت توزیع می‌شه (۵ کارت اول، ۴ کارت دوم، ۴ کارت آخر)
+    game.on('cards:dealt', ({ hands, players, stage }) => {
+      UI.renderHand(hands[0], game.getState());
+      UI.renderSeats(game.getState());
+      console.log(`[UI] Cards dealt - Stage: ${stage}, My hand: ${hands[0].length}`);
+    });
+
     game.on('hokm:selecting', ({ callerIdx, player }) => {
-      document.querySelectorAll('.player-seat.hokm-caller').forEach(s => s.classList.remove('hokm-caller'));
+      document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
+        s.classList.remove('hokm-caller');
+      });
+
       const pos = SEAT_POSITIONS[callerIdx];
       const seat = _$('seat' + pos);
-      if (seat) seat.classList.add('hokm-caller');
-      
+      if (seat) {
+        seat.classList.add('hokm-caller');
+      }
+
       if (callerIdx === 0) {
         UI.showToast('👑 نوبت توئه!', 'یه خال رو انتخاب کن', 'info', 3000);
       } else {
@@ -745,27 +781,49 @@
       }
     });
 
-    game.on('hokm:waitingForUser', () => UI.showHokmPicker());
+    game.on('hokm:waitingForUser', () => {
+      UI.showHokmPicker();
+    });
 
     game.on('hokm:set', ({ suit }) => {
       UI.updateHokmDisplay(suit);
       UI.hideHokmPicker();
-      document.querySelectorAll('.player-seat.hokm-caller').forEach(s => s.classList.remove('hokm-caller'));
+
+      document.querySelectorAll('.player-seat.hokm-caller').forEach(s => {
+        s.classList.remove('hokm-caller');
+      });
     });
 
     game.on('turn:start', ({ playerIdx }) => {
       UI.highlightCurrentPlayer(playerIdx);
       UI.resetTimer();
       UI.renderHand(game.getMyHand(), game.getState());
+
       const actions = _$('actionButtons');
-      if (actions) actions.style.display = playerIdx === 0 ? 'flex' : 'none';
-      if (playerIdx === 0 && _audio()) _audio().play('turn');
+      if (actions) {
+        actions.style.display = playerIdx === 0 ? 'flex' : 'none';
+      }
+
+      if (playerIdx === 0 && _audio()) {
+        _audio().play('turn');
+      }
     });
 
     game.on('card:played', ({ playerIdx, card, trick }) => {
+      if (global.HokmAI) {
+        global.HokmAI.recordPlayedCard(playerIdx, card);
+      }
+
       UI.renderHand(game.getMyHand(), game.getState());
       UI.renderTrick(trick, game.getState());
       UI.renderSeats(game.getState());
+    });
+
+    game.on('card:invalid', ({ playerIdx, card, leadSuit }) => {
+      console.warn(
+        `%c❌ کارت غیرمجاز از ${playerIdx}: ${card.id} | خال جاری: ${leadSuit}`,
+        'color: #ef476f; font-weight: bold;'
+      );
     });
 
     game.on('trick:completed', ({ winner }) => {
@@ -775,6 +833,9 @@
         seat.classList.add('winner-glow');
         setTimeout(() => seat.classList.remove('winner-glow'), 1500);
       }
+
+      const cards = document.querySelectorAll('#trickCenter .card-face');
+      cards.forEach(c => c.classList.add('winner'));
     });
 
     game.on('trick:new', () => {
@@ -784,36 +845,38 @@
       }, 1200);
     });
 
-    game.on('score:changed', ({ scores, trickCount }) => UI.updateScores(scores, trickCount));
-    game.on('timer:start', () => UI.resetTimer());
-    game.on('timer:tick', ({ remaining, duration }) => UI.updateTimer(remaining, duration));
-    game.on('timer:stop', () => UI.resetTimer());
+    game.on('score:changed', ({ scores, trickCount }) => {
+      UI.updateScores(scores, trickCount);
+    });
+
+    game.on('timer:start', () => {
+      UI.resetTimer();
+    });
+
+    game.on('timer:tick', ({ remaining, duration }) => {
+      UI.updateTimer(remaining, duration);
+    });
+
+    game.on('timer:stop', () => {
+      UI.resetTimer();
+    });
 
     game.on('game:ended', (result) => {
       state.inGame = false;
+
       const backBtn = _$('btnBackFromGame');
       if (backBtn) backBtn.classList.add('hidden');
-      setTimeout(() => UI.showGameEnd(result), 1500);
-    });
-  }
 
-  /* ─────────────────────────────────────────────
-     اتصال رویدادهای آنلاین
-     ───────────────────────────────────────────── */
-  function _bindOnlineEvents() {
-    const online = _online();
-    if (!online || online._uiBound) return;
-    online._uiBound = true;
-
-    online.on('connected', () => {
-      UI.showToast('🌐 متصل شد', 'به سرور آنلاین وصل شدی', 'success');
+      setTimeout(() => {
+        UI.showGameEnd(result);
+      }, 1500);
     });
 
-    online.on('disconnected', () => {
-      UI.showToast('⚠️ قطع شد', 'اتصال به سرور قطع شد', 'warning');
+    game.on('turn:timeout', ({ playerIdx }) => {
+      if (playerIdx === 0) {
+        UI.showToast('وقتت تموم شد!', 'یک کارت تصادفی بازی شد', 'warning');
+      }
     });
-
-    // ⚠️ از این به بعد رویدادهای Socket در online.js خودش رندر می‌کنه
   }
 
   /* ─────────────────────────────────────────────
@@ -822,37 +885,55 @@
   function _onScreenEnter(screenName) {
     switch (screenName) {
       case 'profile':
-        if (_profile() && typeof _profile().updateUI === 'function') _profile().updateUI();
+        if (_profile() && typeof _profile().updateUI === 'function') {
+          _profile().updateUI();
+        }
         break;
+
+      case 'leaderboard':
+        if (global.HokmLeaderboard && typeof global.HokmLeaderboard.load === 'function') {
+          global.HokmLeaderboard.load();
+        }
+        break;
+
+      case 'achievements':
+        if (global.HokmAchievements && typeof global.HokmAchievements.renderPage === 'function') {
+          global.HokmAchievements.renderPage();
+        }
+        break;
+
+      case 'friends':
+        if (global.HokmFriends && typeof global.HokmFriends.render === 'function') {
+          global.HokmFriends.render();
+        }
+        break;
+
+      case 'replay':
+        if (global.HokmReplay && typeof global.HokmReplay.render === 'function') {
+          global.HokmReplay.render();
+        }
+        break;
+
       case 'stats':
         _renderStats();
-        break;
-      case 'leaderboard':
-        if (global.HokmLeaderboard && typeof global.HokmLeaderboard.load === 'function') global.HokmLeaderboard.load();
-        break;
-      case 'achievements':
-        if (global.HokmAchievements && typeof global.HokmAchievements.renderPage === 'function') global.HokmAchievements.renderPage();
-        break;
-      case 'friends':
-        if (global.HokmFriends && typeof global.HokmFriends.render === 'function') global.HokmFriends.render();
-        break;
-      case 'replay':
-        if (global.HokmReplay && typeof global.HokmReplay.render === 'function') global.HokmReplay.render();
         break;
     }
   }
 
-  /* ─── رندر آمار ─── */
   function _renderStats() {
     if (!global.HokmStorage) return;
     const stats = global.HokmStorage.getStats();
-    const set = (id, val) => { const el = $(id); if (el) el.textContent = val; };
-    set('statsTotalGames', _toPersianNumber(stats.gamesPlayed || 0));
-    set('statsTotalWins', _toPersianNumber(stats.wins || 0));
-    set('statsTotalRounds', _toPersianNumber(stats.roundsWon || 0));
-    set('statsHokmClaimed', _toPersianNumber(stats.hokmClaimed || 0));
-    set('statsBestStreak', _toPersianNumber(stats.bestStreak || 0));
-    set('statsPlayTime', _toPersianNumber(Math.floor((stats.totalTimePlayed || 0) / 60000)));
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = _toPersianNumber(val);
+    };
+    
+    set('statsTotalGames', stats.gamesPlayed || 0);
+    set('statsTotalWins', stats.wins || 0);
+    set('statsTotalRounds', stats.roundsWon || 0);
+    set('statsHokmClaimed', stats.hokmClaimed || 0);
+    set('statsBestStreak', stats.bestStreak || 0);
+    set('statsPlayTime', Math.floor((stats.totalTimePlayed || 0) / 60000));
   }
 
   /* ─────────────────────────────────────────────
@@ -864,27 +945,38 @@
       tab.dataset.bound = '1';
       tab.addEventListener('click', () => {
         const name = tab.dataset.tab;
-        UI.navigate(name === 'game' ? 'menu' : name);
+        if (name === 'game') {
+          UI.navigate('menu');
+        } else {
+          UI.navigate(name);
+        }
       });
     });
 
     _$$('.menu-card').forEach(card => {
       if (card.dataset.bound) return;
       card.dataset.bound = '1';
-      card.addEventListener('click', () => _handleMenuAction(card.dataset.action));
+      card.addEventListener('click', () => {
+        const action = card.dataset.action;
+        _handleMenuAction(action);
+      });
     });
 
     const startBtn = _$('btnStartGame');
     if (startBtn && !startBtn.dataset.bound) {
       startBtn.dataset.bound = '1';
-      startBtn.addEventListener('click', () => UI.startGame());
+      startBtn.addEventListener('click', () => {
+        UI.startGame();
+      });
     }
 
     const backBtn = _$('btnBackFromGame');
     if (backBtn && !backBtn.dataset.bound) {
       backBtn.dataset.bound = '1';
       backBtn.addEventListener('click', () => {
-        if (confirm('از بازی خارج می‌شوید؟')) UI.exitGame();
+        if (confirm('از بازی خارج می‌شوید؟')) {
+          UI.exitGame();
+        }
       });
     }
 
@@ -893,30 +985,11 @@
       passBtn.dataset.bound = '1';
       passBtn.addEventListener('click', () => UI.handlePass());
     }
-
-    // ساخت اتاق
-    const createRoomBtn = _$('btnCreateRoom');
-    if (createRoomBtn && !createRoomBtn.dataset.bound) {
-      createRoomBtn.dataset.bound = '1';
-      createRoomBtn.addEventListener('click', () => {
-        if (_online()) _online().createRoom();
-        else UI.showToast('خطا', 'ماژول آنلاین لود نشده', 'error');
-      });
-    }
-
-    // ورود به اتاق
-    const joinRoomBtn = _$('btnJoinRoom');
-    if (joinRoomBtn && !joinRoomBtn.dataset.bound) {
-      joinRoomBtn.dataset.bound = '1';
-      joinRoomBtn.addEventListener('click', () => {
-        const input = _$('roomCodeInput');
-        const code = input?.value?.trim().toUpperCase();
-        if (!code || code.length !== 6) {
-          UI.showToast('خطا', 'کد اتاق باید ۶ رقم باشد', 'error');
-          return;
-        }
-        if (_online()) _online().joinRoom(code);
-      });
+    
+    const helpBtn = _$('btnOpenHelp');
+    if (helpBtn && !helpBtn.dataset.bound) {
+      helpBtn.dataset.bound = '1';
+      helpBtn.addEventListener('click', () => UI.openHelpModal());
     }
 
     document.addEventListener('keydown', _handleKeyboard);
@@ -924,22 +997,54 @@
 
   function _handleMenuAction(action) {
     if (!action) return;
+
     switch (action) {
-      case 'online': UI.navigate('online'); break;
-      case 'tournament': UI.navigate('tournament'); break;
-      case 'leaderboard': UI.navigate('leaderboard'); break;
-      case 'achievements': UI.navigate('achievements'); break;
-      case 'friends': UI.navigate('friends'); break;
-      case 'replay': UI.navigate('replay'); break;
+      case 'online':        UI.navigate('online'); break;
+      case 'tournament':    UI.navigate('tournament'); break;
+      case 'leaderboard':   UI.navigate('leaderboard'); break;
+      case 'achievements':  UI.navigate('achievements'); break;
+      case 'friends':       UI.navigate('friends'); break;
+      case 'replay':        UI.navigate('replay'); break;
     }
   }
 
   function _handleKeyboard(e) {
+    const isInGame = state.currentScreen === 'game';
+
     if (e.altKey) {
       switch (e.key.toLowerCase()) {
         case 'm': e.preventDefault(); UI.navigate('menu'); break;
         case 'p': e.preventDefault(); UI.navigate('profile'); break;
         case 's': e.preventDefault(); UI.navigate('settings'); break;
+        case 'h': e.preventDefault(); UI.navigate('help'); break;
+        case 't':
+          e.preventDefault();
+          if (global.HokmThemes) global.HokmThemes.toggle();
+          break;
+      }
+      return;
+    }
+
+    if (isInGame) {
+      if (e.key === 'Escape' && !state.modalOpen) {
+        if (confirm('از بازی خارج می‌شوید؟')) {
+          UI.exitGame();
+        }
+        return;
+      }
+
+      if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key, 10) - 1;
+        const hand = _game()?.getMyHand() || [];
+        if (hand[idx]) {
+          UI.handleCardClick(hand[idx].id);
+        }
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'p') {
+        UI.handlePass();
+        return;
       }
     }
   }
@@ -949,31 +1054,30 @@
     if (el) el.textContent = text;
   }
 
-  /* ─────────────────────────────────────────────
-     Bootstrap
-     ───────────────────────────────────────────── */
   function bootstrap() {
     _bindGlobalEvents();
-    _bindOnlineEvents();
 
     setTimeout(() => {
       if (_game() && _game().hasSavedGame()) {
         const resume = confirm('بازی قبلی ذخیره شده. ادامه می‌دهید؟');
         if (resume) {
           UI.startGame();
-          setTimeout(() => { _game().loadSaved(); UI.renderGame(); }, 500);
+          setTimeout(() => {
+            _game().loadSaved();
+            UI.renderGame();
+          }, 500);
         } else {
           _game().clearSaved();
         }
       }
     }, 2000);
 
-    console.log('%c🎨 UI ready (v6.1.1 — Online support)', 'color: #118ab2; font-weight: bold;');
+    console.log(
+      '%c🎨 UI ready (v6.3.0)',
+      'color: #118ab2; font-weight: bold; font-size: 13px;'
+    );
   }
 
-  /* ─────────────────────────────────────────────
-     Export
-     ───────────────────────────────────────────── */
   UI.SCREENS = SCREENS;
   UI.SEAT_MAP = SEAT_MAP;
   UI.SEAT_POSITIONS = SEAT_POSITIONS;
@@ -981,8 +1085,11 @@
   global.HokmUI = UI;
 
   if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootstrap);
-    else bootstrap();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
+    }
   }
 
 })(typeof window !== 'undefined' ? window : globalThis);
