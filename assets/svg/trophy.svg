@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="جام قهرمانی">
+
+  <defs>
+    <!-- گرادیانت بدنه جام -->
+    <linearGradient id="trophyBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="20%"  stop-color="#ffe066"/>
+      <stop offset="50%"  stop-color="#ffd700"/>
+      <stop offset="80%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت دسته‌ها -->
+    <linearGradient id="trophyHandle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#6b4c00"/>
+      <stop offset="30%"  stop-color="#d4af37"/>
+      <stop offset="60%"  stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت پایه -->
+    <linearGradient id="trophyBase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#8b6300"/>
+      <stop offset="40%"  stop-color="#6b4c00"/>
+      <stop offset="100%" stop-color="#3a2800"/>
+    </linearGradient>
+
+    <!-- گرادیانت ستاره وسط (سفید-طلایی) -->
+    <radialGradient id="trophyStar" cx="35%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="50%"  stop-color="#fff7c2"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </radialGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="trophyShine" cx="30%" cy="25%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش بیرونی -->
+    <radialGradient id="trophyAura" cx="50%" cy="45%" r="55%">
+      <stop offset="50%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="80%"  stop-color="#ffd700" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش طلایی -->
+    <filter id="trophyGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله درخشش بیرونی -->
+  <ellipse cx="32" cy="30" rx="30" ry="28" fill="url(#trophyAura)"/>
+
+  <!-- سایه پایین -->
+  <ellipse cx="32" cy="58" rx="16" ry="2.5" 
+           fill="#000000" opacity="0.45"/>
+
+  <!-- ============ جام ============ -->
+  <g filter="url(#trophyGlow)">
+
+    <!-- ============ دسته چپ ============ -->
+    <path d="M 14 18 
+             C 4 18, 2 26, 6 32 
+             C 9 36, 14 38, 18 36
+             L 18 32
+             C 14 33, 10 32, 8 28
+             C 6 24, 9 21, 15 21 Z"
+          fill="url(#trophyHandle)"
+          stroke="#4a3300"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- ============ دسته راست (قرینه) ============ -->
+    <path d="M 50 18 
+             C 60 18, 62 26, 58 32 
+             C 55 36, 50 38, 46 36
+             L 46 32
+             C 50 33, 54 32, 56 28
+             C 58 24, 55 21, 49 21 Z"
+          fill="url(#trophyHandle)"
+          stroke="#4a3300"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- ============ کاسه جام ============ -->
+    <path d="M 16 12 
+             Q 16 34, 32 40 
+             Q 48 34, 48 12 
+             Z"
+          fill="url(#trophyBody)"
+          stroke="#6b4c00"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+
+    <!-- خط لبه بالای جام -->
+    <ellipse cx="32" cy="12" rx="16" ry="3" 
+             fill="url(#trophyBody)"
+             stroke="#6b4c00"
+             stroke-width="0.7"/>
+
+    <!-- هایلایت داخل لبه -->
+    <ellipse cx="32" cy="11.5" rx="13" ry="1.6" 
+             fill="#fff7c2" 
+             opacity="0.5"/>
+
+    <!-- ============ ستاره وسط جام ============ -->
+    <g transform="translate(32 22)">
+      <path d="M 0 -7 
+               L 2 -2 
+               L 7.5 -2 
+               L 3 1.5 
+               L 4.6 7 
+               L 0 3.8 
+               L -4.6 7 
+               L -3 1.5 
+               L -7.5 -2 
+               L -2 -2 Z"
+            fill="url(#trophyStar)"
+            stroke="#8b6300"
+            stroke-width="0.4"
+            stroke-linejoin="round"/>
+      <circle cx="-1.5" cy="-2" r="0.7" fill="#ffffff" opacity="0.9"/>
+    </g>
+
+    <!-- ============ ساق جام ============ -->
+    <path d="M 28 40 L 36 40 L 36 48 L 28 48 Z"
+          fill="url(#trophyBody)"
+          stroke="#6b4c00"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- خط میانی ساق -->
+    <line x1="28" y1="44" x2="36" y2="44"
+          stroke="#8b6300"
+          stroke-width="0.5"
+          opacity="0.7"/>
+
+    <!-- ============ پایه جام ============ -->
+    <!-- صفحه بالای پایه -->
+    <rect x="22" y="48" width="20" height="4" rx="1.5" ry="1.5"
+          fill="url(#trophyBase)"
+          stroke="#2a1f00"
+          stroke-width="0.6"/>
+
+    <!-- صفحه پایین پایه -->
+    <rect x="18" y="52" width="28" height="5" rx="2" ry="2"
+          fill="url(#trophyBase)"
+          stroke="#2a1f00"
+          stroke-width="0.7"/>
+
+    <!-- خط برجسته روی صفحه پایین -->
+    <line x1="20" y1="53" x2="44" y2="53"
+          stroke="#d4af37"
+          stroke-width="0.4"
+          opacity="0.6"/>
+
+    <!-- ============ هایلایت‌های براق ============ -->
+    <!-- روی کاسه (چپ) -->
+    <ellipse cx="24" cy="22" rx="4" ry="6"
+             fill="url(#trophyShine)"
+             transform="rotate(-15 24 22)"/>
+    <circle cx="23" cy="19" r="1" fill="#ffffff" opacity="0.95"/>
+
+    <!-- روی لبه بالا -->
+    <ellipse cx="24" cy="11" rx="4" ry="1.2"
+             fill="#ffffff"
+             opacity="0.7"/>
+
+    <!-- ============ ستاره‌های براق (sparkles) ============ -->
+    <g fill="#ffffff" opacity="0.9">
+      <path d="M 52 8 L 52.8 10.5 L 55.3 11.3 L 52.8 12.1 L 52 14.6 L 51.2 12.1 L 48.7 11.3 L 51.2 10.5 Z"/>
+      <path d="M 12 26 L 12.6 27.7 L 14.3 28.3 L 12.6 28.9 L 12 30.6 L 11.4 28.9 L 9.7 28.3 L 11.4 27.7 Z"/>
+    </g>
+    <circle cx="52" cy="11.3" r="0.7" fill="#ffffff"/>
+    <circle cx="12" cy="28.3" r="0.5" fill="#ffffff"/>
+
+  </g>
+</svg>
