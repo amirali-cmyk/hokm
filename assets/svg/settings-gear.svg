@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="تنظیمات">
+
+  <defs>
+    <!-- گرادیانت بدنه چرخ‌دنده -->
+    <linearGradient id="gearBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="70%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت حلقه میانی -->
+    <linearGradient id="gearRing" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#d4af37"/>
+      <stop offset="50%"  stop-color="#8b6300"/>
+      <stop offset="100%" stop-color="#6b4c00"/>
+    </linearGradient>
+
+    <!-- گرادیانت سوراخ مرکزی -->
+    <radialGradient id="gearCore" cx="40%" cy="35%" r="70%">
+      <stop offset="0%"   stop-color="#1a3028"/>
+      <stop offset="70%"  stop-color="#0a1512"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="gearShine" cx="35%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش بیرونی -->
+    <radialGradient id="gearAura" cx="50%" cy="50%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="85%"  stop-color="#ffd700" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش طلایی -->
+    <filter id="gearGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله درخشش بیرونی -->
+  <circle cx="32" cy="32" r="31" fill="url(#gearAura)"/>
+
+  <!-- ============ چرخ‌دنده ============ -->
+  <g filter="url(#gearGlow)">
+
+    <!-- دندانه‌ها (۸ عدد) — با rotate تکرار می‌شن -->
+    <g fill="url(#gearBody)" stroke="#6b4c00" stroke-width="0.7" stroke-linejoin="round">
+      <rect x="29" y="2" width="6" height="9" rx="1.2" ry="1.2"/>
+      <rect x="29" y="53" width="6" height="9" rx="1.2" ry="1.2"/>
+      <rect x="2" y="29" width="9" height="6" rx="1.2" ry="1.2"/>
+      <rect x="53" y="29" width="9" height="6" rx="1.2" ry="1.2"/>
+
+      <!-- دندانه‌های گوشه (چرخیده) -->
+      <g transform="rotate(45 32 32)">
+        <rect x="29" y="2" width="6" height="9" rx="1.2" ry="1.2"/>
+        <rect x="29" y="53" width="6" height="9" rx="1.2" ry="1.2"/>
+        <rect x="2" y="29" width="9" height="6" rx="1.2" ry="1.2"/>
+        <rect x="53" y="29" width="9" height="6" rx="1.2" ry="1.2"/>
+      </g>
+    </g>
+
+    <!-- حلقه بیرونی چرخ‌دنده -->
+    <circle cx="32" cy="32" r="21" 
+            fill="url(#gearBody)" 
+            stroke="#6b4c00" 
+            stroke-width="0.9"/>
+
+    <!-- حلقه داخلی برجسته (لبه) -->
+    <circle cx="32" cy="32" r="18" 
+            fill="none" 
+            stroke="#fff3b0" 
+            stroke-width="0.8" 
+            opacity="0.6"/>
+
+    <!-- حلقه میانی تیره‌تر -->
+    <circle cx="32" cy="32" r="13" 
+            fill="url(#gearRing)" 
+            stroke="#4a3300" 
+            stroke-width="0.6"/>
+
+    <!-- هایلایت روی حلقه میانی -->
+    <ellipse cx="26" cy="26" rx="6" ry="4"
+             fill="url(#gearShine)"
+             transform="rotate(-30 26 26)"/>
+
+    <!-- سوراخ مرکزی (کوره) -->
+    <circle cx="32" cy="32" r="7" 
+            fill="url(#gearCore)" 
+            stroke="#4a3300" 
+            stroke-width="0.8"/>
+
+    <!-- نقطه هایلایت داخل سوراخ -->
+    <circle cx="30" cy="30" r="1.2" fill="#ffd700" opacity="0.5"/>
+
+    <!-- نقطه براق اصلی -->
+    <circle cx="24" cy="24" r="1" fill="#ffffff" opacity="0.95"/>
+
+  </g>
+</svg>
