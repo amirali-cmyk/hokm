@@ -1,0 +1,13 @@
+<img src="assets/svg/card-back.svg" width="100">
+<img src="assets/svg/coin.svg" width="100">
+<img src="assets/svg/gem.svg" width="100">
+<img src="assets/svg/crown-vip.svg" width="100">
+<img src="assets/svg/card-suits.svg" width="100">
+<img src="assets/svg/settings-gear.svg" width="100">
+<img src="assets/svg/trophy.svg" width="100">
+<img src="assets/svg/gift-box.svg" width="100">
+<img src="assets/svg/shop-icon.svg" width="100">
+<img src="assets/svg/clover-icon.svg" width="100">
+<img src="assets/svg/target-icon.svg" width="100">
+<img src="assets/svg/avatar-default.svg" width="100">
+<img src="assets/svg/chest-icon.svg" width="100">
