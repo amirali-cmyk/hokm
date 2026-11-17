@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="فروشگاه">
+
+  <defs>
+    <!-- گرادیانت بدنه فروشگاه -->
+    <linearGradient id="shopBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#2a4035"/>
+      <stop offset="50%"  stop-color="#1a3028"/>
+      <stop offset="100%" stop-color="#0a1512"/>
+    </linearGradient>
+
+    <!-- گرادیانت سایبان راه‌راه قرمز -->
+    <linearGradient id="shopAwningRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ff4d6d"/>
+      <stop offset="50%"  stop-color="#c81e1e"/>
+      <stop offset="100%" stop-color="#8b0000"/>
+    </linearGradient>
+
+    <!-- گرادیانت سایبان راه‌راه طلایی -->
+    <linearGradient id="shopAwningGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="50%"  stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+
+    <!-- گرادیانت درب -->
+    <linearGradient id="shopDoor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#8b6300"/>
+      <stop offset="50%"  stop-color="#6b4c00"/>
+      <stop offset="100%" stop-color="#3a2800"/>
+    </linearGradient>
+
+    <!-- گرادیانت ویترین (شیشه) -->
+    <linearGradient id="shopWindow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#a8d5ff" stop-opacity="0.6"/>
+      <stop offset="50%"  stop-color="#5ba3d9" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0.7"/>
+    </linearGradient>
+
+    <!-- گرادیانت تابلوی فروشگاه -->
+    <linearGradient id="shopSign" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="40%"  stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="shopShine" cx="30%" cy="25%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="shopAura" cx="50%" cy="50%" r="50%">
+      <stop offset="60%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="85%"  stop-color="#ffd700" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش طلایی -->
+    <filter id="shopGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله درخشش -->
+  <circle cx="32" cy="32" r="31" fill="url(#shopAura)"/>
+
+  <!-- سایه پایین -->
+  <ellipse cx="32" cy="58" rx="20" ry="2.5" 
+           fill="#000000" opacity="0.4"/>
+
+  <!-- ============ فروشگاه ============ -->
+  <g filter="url(#shopGlow)">
+
+    <!-- ============ بدنه فروشگاه ============ -->
+    <rect x="10" y="24" width="44" height="32" rx="2" ry="2"
+          fill="url(#shopBody)"
+          stroke="#6b4c00"
+          stroke-width="0.9"/>
+
+    <!-- ============ تابلوی فروشگاه (بالای بدنه) ============ -->
+    <rect x="12" y="26" width="40" height="7" rx="1.5" ry="1.5"
+          fill="url(#shopSign)"
+          stroke="#6b4c00"
+          stroke-width="0.6"/>
+
+    <!-- خط برجسته تابلو -->
+    <line x1="14" y1="28" x2="50" y2="28"
+          stroke="#fff7c2"
+          stroke-width="0.4"
+          opacity="0.7"/>
+
+    <!-- نماد روی تابلو (سکه کوچک) -->
+    <g transform="translate(32 29.5)">
+      <circle r="2.4" fill="#8b6300" opacity="0.4"/>
+      <circle r="1.8" fill="#fff3b0"/>
+      <circle r="1" fill="#b8860b"/>
+    </g>
+
+    <!-- ============ ویترین شیشه‌ای (چپ) ============ -->
+    <rect x="15" y="38" width="14" height="12" rx="1" ry="1"
+          fill="url(#shopWindow)"
+          stroke="#1a3a5c"
+          stroke-width="0.6"/>
+
+    <!-- خط عمودی وسط ویترین -->
+    <line x1="22" y1="38" x2="22" y2="50"
+          stroke="#0a1f33"
+          stroke-width="0.4"
+          opacity="0.6"/>
+
+    <!-- هایلایت روی شیشه -->
+    <ellipse cx="18" cy="42" rx="2.5" ry="1.5"
+             fill="#ffffff"
+             opacity="0.5"
+             transform="rotate(-30 18 42)"/>
+
+    <!-- ============ درب (راست) ============ -->
+    <rect x="36" y="38" width="14" height="18" rx="1.5" ry="1.5"
+          fill="url(#shopDoor)"
+          stroke="#2a1f00"
+          stroke-width="0.7"/>
+
+    <!-- خط عمودی وسط درب -->
+    <line x1="43" y1="38" x2="43" y2="56"
+          stroke="#2a1f00"
+          stroke-width="0.4"
+          opacity="0.5"/>
+
+    <!-- دستگیره درب -->
+    <circle cx="47" cy="47" r="0.9" fill="#ffd700"/>
+    <circle cx="47" cy="47" r="0.4" fill="#fff3b0"/>
+
+    <!-- ============ سایبان راه‌راه بالای ویترین ============ -->
+    <g>
+      <!-- پس‌زمینه سایبان (قرمز) -->
+      <path d="M 8 24 L 56 24 L 52 20 L 12 20 Z"
+            fill="url(#shopAwningRed)"/>
+
+      <!-- راه‌راه‌های طلایی -->
+      <path d="M 12 20 L 16 24 L 20 20 Z" fill="url(#shopAwningGold)"/>
+      <path d="M 24 20 L 28 24 L 32 20 Z" fill="url(#shopAwningGold)"/>
+      <path d="M 36 20 L 40 24 L 44 20 Z" fill="url(#shopAwningGold)"/>
+      <path d="M 48 20 L 52 24 L 56 20 Z" fill="url(#shopAwningGold)"/>
+
+      <!-- خطوط ظریف روی سایبان -->
+      <path d="M 8 24 L 56 24" stroke="#2a1f00" stroke-width="0.4" opacity="0.6"/>
+      <path d="M 12 20 L 52 20" stroke="#2a1f00" stroke-width="0.4" opacity="0.6"/>
+    </g>
+
+    <!-- لبه پایین سایبان (پارچه آویزان) -->
+    <path d="M 8 24 Q 10 27 12 24 Q 14 27 16 24 Q 18 27 20 24 Q 22 27 24 24 Q 26 27 28 24 Q 30 27 32 24 Q 34 27 36 24 Q 38 27 40 24 Q 42 27 44 24 Q 46 27 48 24 Q 50 27 52 24 Q 54 27 56 24"
+          fill="none"
+          stroke="#8b0000"
+          stroke-width="0.8"
+          opacity="0.8"/>
+
+    <!-- ============ هایلایت براق ============ -->
+    <ellipse cx="14" cy="30" rx="3" ry="1.5"
+             fill="url(#shopShine)"
+             opacity="0.5"/>
+
+    <!-- ============ ستاره براق (sparkle) ============ -->
+    <g fill="#ffffff" opacity="0.9">
+      <path d="M 54 12 L 54.6 13.7 L 56.3 14.3 L 54.6 14.9 L 54 16.6 L 53.4 14.9 L 51.7 14.3 L 53.4 13.7 Z"/>
+    </g>
+    <circle cx="54" cy="14.3" r="0.5" fill="#ffffff"/>
+
+  </g>
+</svg>
