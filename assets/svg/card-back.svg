@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 200 300" 
+     width="200" height="300"
+     role="img" 
+     aria-label="پشت کارت حکم">
+  
+  <defs>
+    <!-- گرادیانت مخمل سبز -->
+    <radialGradient id="velvetBg" cx="50%" cy="40%" r="75%">
+      <stop offset="0%"  stop-color="#1f3d33"/>
+      <stop offset="55%" stop-color="#122620"/>
+      <stop offset="100%" stop-color="#0a1512"/>
+    </radialGradient>
+
+    <!-- گرادیانت طلایی قاب -->
+    <linearGradient id="goldFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fff3b0"/>
+      <stop offset="25%"  stop-color="#ffd700"/>
+      <stop offset="55%"  stop-color="#d4af37"/>
+      <stop offset="80%"  stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت طلایی برای خطوط اسلیمی -->
+    <linearGradient id="goldLine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#ffd700" stop-opacity="0.95"/>
+      <stop offset="50%"  stop-color="#b8860b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- درخشش مرکزی -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ffd700" stop-opacity="0.35"/>
+      <stop offset="60%"  stop-color="#ffd700" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش طلایی -->
+    <filter id="goldGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- الگوی اسلیمی تکرارشونده -->
+    <pattern id="arabesque" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="url(#goldLine)" stroke-width="1" opacity="0.45">
+        <path d="M25 5 Q35 15 25 25 Q15 15 25 5 Z"/>
+        <path d="M25 25 Q35 35 25 45 Q15 35 25 25 Z"/>
+        <circle cx="25" cy="25" r="2" fill="#ffd700" stroke="none" opacity="0.8"/>
+        <path d="M0 25 Q10 15 20 25" opacity="0.35"/>
+        <path d="M30 25 Q40 35 50 25" opacity="0.35"/>
+      </g>
+    </pattern>
+
+    <!-- برش گوشه‌های کارت (radius) -->
+    <clipPath id="cardClip">
+      <rect x="0" y="0" width="200" height="300" rx="18" ry="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- ============ بدنه کارت ============ -->
+  <g clip-path="url(#cardClip)">
+
+    <!-- پس‌زمینه مخمل -->
+    <rect x="0" y="0" width="200" height="300" fill="url(#velvetBg)"/>
+
+    <!-- الگوی اسلیمی سراسری -->
+    <rect x="0" y="0" width="200" height="300" fill="url(#arabesque)" opacity="0.9"/>
+
+    <!-- هاله درخشش مرکزی -->
+    <ellipse cx="100" cy="150" rx="95" ry="140" fill="url(#centerGlow)"/>
+
+    <!-- قاب طلایی بیرونی -->
+    <rect x="6" y="6" width="188" height="288" rx="14" ry="14"
+          fill="none" stroke="url(#goldFrame)" stroke-width="3"
+          filter="url(#goldGlow)"/>
+
+    <!-- قاب طلایی داخلی نازک -->
+    <rect x="14" y="14" width="172" height="272" rx="10" ry="10"
+          fill="none" stroke="url(#goldFrame)" stroke-width="1.2" opacity="0.85"/>
+
+    <!-- گوشه‌های تزئینی (flourish) -->
+    <g stroke="url(#goldFrame)" stroke-width="1.8" fill="none" 
+       stroke-linecap="round" stroke-linejoin="round" filter="url(#goldGlow)">
+      <!-- بالا-چپ -->
+      <path d="M22 22 Q22 40 40 40"/>
+      <path d="M22 22 Q40 22 40 40"/>
+      <circle cx="30" cy="30" r="2.2" fill="#ffd700" stroke="none"/>
+      <!-- بالا-راست -->
+      <path d="M178 22 Q178 40 160 40"/>
+      <path d="M178 22 Q160 22 160 40"/>
+      <circle cx="170" cy="30" r="2.2" fill="#ffd700" stroke="none"/>
+      <!-- پایین-چپ -->
+      <path d="M22 278 Q22 260 40 260"/>
+      <path d="M22 278 Q40 278 40 260"/>
+      <circle cx="30" cy="270" r="2.2" fill="#ffd700" stroke="none"/>
+      <!-- پایین-راست -->
+      <path d="M178 278 Q178 260 160 260"/>
+      <path d="M178 278 Q160 278 160 260"/>
+      <circle cx="170" cy="270" r="2.2" fill="#ffd700" stroke="none"/>
+    </g>
+
+    <!-- ============ نشان مرکزی ============ -->
+    <g transform="translate(100 150)" filter="url(#goldGlow)">
+
+      <!-- حلقه طلایی بیرونی -->
+      <circle r="42" fill="none" stroke="url(#goldFrame)" stroke-width="2.5"/>
+      <circle r="36" fill="none" stroke="url(#goldFrame)" stroke-width="1" opacity="0.7"/>
+
+      <!-- پرتوهای خورشیدی -->
+      <g stroke="url(#goldFrame)" stroke-width="1.2" opacity="0.85">
+        <line x1="0" y1="-42" x2="0" y2="-52"/>
+        <line x1="0" y1="42"  x2="0" y2="52"/>
+        <line x1="-42" y1="0" x2="-52" y2="0"/>
+        <line x1="42"  y1="0" x2="52"  y2="0"/>
+        <line x1="-30" y1="-30" x2="-36" y2="-36"/>
+        <line x1="30"  y1="-30" x2="36"  y2="-36"/>
+        <line x1="-30" y1="30"  x2="-36" y2="36"/>
+        <line x1="30"  y1="30"  x2="36"  y2="36"/>
+      </g>
+
+      <!-- نماد حکم (خال پیک/اسلیمی) -->
+      <path d="M0 -24 
+               C -14 -8, -22 4, -16 16 
+               Q -10 24, 0 18 
+               Q 10 24, 16 16 
+               C 22 4, 14 -8, 0 -24 Z"
+            fill="url(#goldFrame)" 
+            opacity="0.95"/>
+      <path d="M0 -24 
+               C -14 -8, -22 4, -16 16 
+               Q -10 24, 0 18 
+               Q 10 24, 16 16 
+               C 22 4, 14 -8, 0 -24 Z"
+            fill="none" 
+            stroke="#fff3b0" 
+            stroke-width="0.8" 
+            opacity="0.6"/>
+
+      <!-- نقطه طلایی وسط -->
+      <circle r="3.5" fill="#fff3b0"/>
+      <circle r="3.5" fill="none" stroke="#b8860b" stroke-width="0.6"/>
+    </g>
+
+    <!-- خطوط زینتی بالا و پایین نشان -->
+    <g stroke="url(#goldFrame)" stroke-width="1.4" opacity="0.8">
+      <line x1="55" y1="150" x2="45" y2="150"/>
+      <line x1="145" y1="150" x2="155" y2="150"/>
+    </g>
+
+    <!-- ============ برچسب پایین (HOKM PRO) ============ -->
+    <g transform="translate(100 268)" filter="url(#goldGlow)">
+      <text x="0" y="0"
+            text-anchor="middle"
+            font-family="Playfair Display, serif"
+            font-size="9"
+            font-weight="700"
+            letter-spacing="3"
+            fill="url(#goldFrame)">
+        HOKM PRO
+      </text>
+    </g>
+
+    <!-- شماره نسخه کوچک بالا-وسط -->
+    <text x="100" y="10"
+          text-anchor="middle"
+          font-family="Vazirmatn, sans-serif"
+          font-size="4.5"
+          letter-spacing="1.5"
+          fill="#d4af37"
+          opacity="0.55">
+      ★ v7.0 ★
+    </text>
+
+  </g>
+
+  <!-- سایه عمیق روی کارت (برای حس 3D) -->
+  <rect x="0" y="0" width="200" height="300" rx="18" ry="18"
+        fill="none" 
+        stroke="rgba(0,0,0,0.6)" 
+        stroke-width="1"/>
+</svg>
