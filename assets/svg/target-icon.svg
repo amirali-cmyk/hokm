@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="دوستان و چالش">
+
+  <defs>
+    <!-- گرادیانت حلقه بیرونی -->
+    <linearGradient id="targetOuter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="70%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت حلقه میانی (قرمز یاقوتی) -->
+    <linearGradient id="targetMiddle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ff6b7f"/>
+      <stop offset="50%"  stop-color="#c81e1e"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+
+    <!-- گرادیانت حلقه داخلی (طلایی روشن) -->
+    <linearGradient id="targetInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="50%"  stop-color="#fff7c2"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </linearGradient>
+
+    <!-- گرادیانت تیر -->
+    <linearGradient id="targetArrow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="50%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#6b4c00"/>
+    </linearGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="targetShine" cx="32%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="targetAura" cx="50%" cy="50%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#ffd700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش -->
+    <filter id="targetGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله درخشش -->
+  <circle cx="32" cy="32" r="31" fill="url(#targetAura)"/>
+
+  <!-- سایه پایین -->
+  <ellipse cx="32" cy="58" rx="18" ry="2.5" 
+           fill="#000000" opacity="0.4"/>
+
+  <!-- ============ هدف ============ -->
+  <g filter="url(#targetGlow)">
+
+    <!-- حلقه بیرونی طلایی -->
+    <circle cx="32" cy="32" r="22"
+            fill="url(#targetOuter)"
+            stroke="#6b4c00"
+            stroke-width="0.9"/>
+
+    <!-- حلقه قرمز میانی -->
+    <circle cx="32" cy="32" r="16"
+            fill="url(#targetMiddle)"
+            stroke="#4a0000"
+            stroke-width="0.7"/>
+
+    <!-- حلقه سفید-طلایی داخلی -->
+    <circle cx="32" cy="32" r="10"
+            fill="url(#targetInner)"
+            stroke="#8b6300"
+            stroke-width="0.7"/>
+
+    <!-- قلب قرمز (bullseye) -->
+    <circle cx="32" cy="32" r="5"
+            fill="url(#targetMiddle)"
+            stroke="#4a0000"
+            stroke-width="0.6"/>
+
+    <!-- نقطه مرکزی -->
+    <circle cx="32" cy="32" r="1.6" fill="#fff7c2"/>
+    <circle cx="31.4" cy="31.4" r="0.6" fill="#ffffff"/>
+
+    <!-- ============ تیر (Arrow) ============ -->
+    <!-- بدنه تیر -->
+    <rect x="34" y="30" width="18" height="2.4" rx="1" ry="1"
+          fill="url(#targetArrow)"
+          stroke="#6b4c00"
+          stroke-width="0.5"
+          transform="rotate(-35 32 32)"/>
+
+    <!-- پر تیر (fletching) -->
+    <path d="M 50 26 L 54 22 L 52 28 Z"
+          fill="url(#targetMiddle)"
+          stroke="#4a0000"
+          stroke-width="0.4"
+          transform="rotate(-35 32 32)"/>
+    <path d="M 50 32 L 55 30 L 52 35 Z"
+          fill="url(#targetOuter)"
+          stroke="#6b4c00"
+          stroke-width="0.4"
+          transform="rotate(-35 32 32)"/>
+
+    <!-- نوک تیر (در قلب هدف) -->
+    <path d="M 30 30 L 27 32 L 30 34 Z"
+          fill="url(#targetOuter)"
+          stroke="#6b4c00"
+          stroke-width="0.5"
+          transform="rotate(-35 32 32)"/>
+
+    <!-- ============ هایلایت براق ============ -->
+    <!-- روی حلقه بیرونی (بالا-چپ) -->
+    <ellipse cx="22" cy="20" rx="6" ry="4"
+             fill="url(#targetShine)"
+             opacity="0.7"
+             transform="rotate(-35 22 20)"/>
+    <circle cx="21" cy="19" r="1" fill="#ffffff" opacity="0.95"/>
+
+    <!-- ============ ستاره‌های براق (sparkles) ============ -->
+    <g fill="#ffffff" opacity="0.9">
+      <path d="M 54 12 L 54.7 14 L 56.7 14.7 L 54.7 15.4 L 54 17.4 L 53.3 15.4 L 51.3 14.7 L 53.3 14 Z"/>
+      <path d="M 10 42 L 10.5 43.5 L 12 44 L 10.5 44.5 L 10 46 L 9.5 44.5 L 8 44 L 9.5 43.5 Z"/>
+    </g>
+    <circle cx="54" cy="14.7" r="0.6" fill="#ffffff"/>
+    <circle cx="10" cy="44" r="0.4" fill="#ffffff"/>
+
+  </g>
+</svg>
