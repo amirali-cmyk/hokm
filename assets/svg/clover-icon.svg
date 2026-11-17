@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="شانس">
+
+  <defs>
+    <!-- گرادیانت برگ طلایی -->
+    <linearGradient id="cloverLeaf" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="70%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت برگ تیره‌تر (برای عمق) -->
+    <linearGradient id="cloverLeafDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#d4af37"/>
+      <stop offset="60%"  stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="#6b4c00"/>
+    </linearGradient>
+
+    <!-- گرادیانت ساقه -->
+    <linearGradient id="cloverStem" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#b8860b"/>
+      <stop offset="50%"  stop-color="#8b6300"/>
+      <stop offset="100%" stop-color="#3a2800"/>
+    </linearGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="cloverShine" cx="35%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش سبز-طلایی -->
+    <radialGradient id="cloverAura" cx="50%" cy="45%" r="55%">
+      <stop offset="50%"  stop-color="#2ecc71" stop-opacity="0"/>
+      <stop offset="75%"  stop-color="#2ecc71" stop-opacity="0.25"/>
+      <stop offset="90%"  stop-color="#ffd700" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش -->
+    <filter id="cloverGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله درخشش -->
+  <circle cx="32" cy="30" r="31" fill="url(#cloverAura)"/>
+
+  <!-- سایه پایین -->
+  <ellipse cx="32" cy="58" rx="14" ry="2.5" 
+           fill="#000000" opacity="0.4"/>
+
+  <!-- ============ شبدر ============ -->
+  <g filter="url(#cloverGlow)">
+
+    <!-- ============ ساقه ============ -->
+    <path d="M 32 32 Q 30 44 28 52 Q 30 52 31 48 Q 32 42 33 36 Z"
+          fill="url(#cloverStem)"
+          stroke="#3a2800"
+          stroke-width="0.5"
+          stroke-linejoin="round"/>
+
+    <!-- برگ پایین-چپ (با سایه) -->
+    <path d="M 32 32 
+             C 22 32, 14 38, 16 46 
+             C 18 50, 26 50, 30 44 
+             C 32 40, 32 36, 32 32 Z"
+          fill="url(#cloverLeafDark)"
+          stroke="#6b4c00"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- برگ پایین-راست (با سایه) -->
+    <path d="M 32 32 
+             C 42 32, 50 38, 48 46 
+             C 46 50, 38 50, 34 44 
+             C 32 40, 32 36, 32 32 Z"
+          fill="url(#cloverLeafDark)"
+          stroke="#6b4c00"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- برگ بالا-چپ (روشن‌تر) -->
+    <path d="M 32 32 
+             C 22 30, 14 22, 18 14 
+             C 22 8, 30 12, 32 22 
+             C 32 26, 32 29, 32 32 Z"
+          fill="url(#cloverLeaf)"
+          stroke="#6b4c00"
+          stroke-width="0.7"
+          stroke-linejoin="round"/>
+
+    <!-- برگ بالا-راست (روشن‌ترین — اصلی) -->
+    <path d="M 32 32 
+             C 42 30, 50 22, 46 14 
+             C 42 8, 34 12, 32 22 
+             C 32 26, 32 29, 32 32 Z"
+          fill="url(#cloverLeaf)"
+          stroke="#6b4c00"
+          stroke-width="0.7"
+          stroke-linejoin="round"/>
+
+    <!-- ============ رگبرگ‌ها ============ -->
+    <g stroke="#8b6300" stroke-width="0.5" fill="none" opacity="0.55">
+      <!-- برگ بالا-راست -->
+      <path d="M 32 32 Q 38 24 44 16"/>
+      <path d="M 36 26 Q 40 26 42 28"/>
+      <path d="M 38 22 Q 42 21 43 22"/>
+      <!-- برگ بالا-چپ -->
+      <path d="M 32 32 Q 26 24 20 16"/>
+      <path d="M 28 26 Q 24 26 22 28"/>
+      <!-- برگ پایین-راست -->
+      <path d="M 32 32 Q 38 40 44 46"/>
+      <path d="M 36 38 Q 40 38 42 40"/>
+      <!-- برگ پایین-چپ -->
+      <path d="M 32 32 Q 26 40 20 46"/>
+      <path d="M 28 38 Q 24 38 22 40"/>
+    </g>
+
+    <!-- ============ نقطه مرکزی (قلب شبدر) ============ -->
+    <circle cx="32" cy="32" r="2.2"
+            fill="url(#cloverLeaf)"
+            stroke="#6b4c00"
+            stroke-width="0.5"/>
+    <circle cx="31.4" cy="31.4" r="0.7" fill="#ffffff" opacity="0.9"/>
+
+    <!-- ============ هایلایت براق ============ -->
+    <!-- روی برگ بالا-راست -->
+    <ellipse cx="38" cy="20" rx="3" ry="4"
+             fill="url(#cloverShine)"
+             opacity="0.7"
+             transform="rotate(30 38 20)"/>
+    <circle cx="38" cy="19" r="0.9" fill="#ffffff" opacity="0.95"/>
+
+    <!-- روی برگ پایین-راست -->
+    <ellipse cx="38" cy="40" rx="2" ry="2.5"
+             fill="#ffffff"
+             opacity="0.35"
+             transform="rotate(-30 38 40)"/>
+
+    <!-- ============ ستاره‌های براق (sparkles) ============ -->
+    <g fill="#ffffff" opacity="0.95">
+      <path d="M 52 10 L 52.7 12 L 54.7 12.7 L 52.7 13.4 L 52 15.4 L 51.3 13.4 L 49.3 12.7 L 51.3 12 Z"/>
+      <path d="M 10 22 L 10.5 23.5 L 12 24 L 10.5 24.5 L 10 26 L 9.5 24.5 L 8 24 L 9.5 23.5 Z"/>
+      <path d="M 14 46 L 14.5 47.5 L 16 48 L 14.5 48.5 L 14 50 L 13.5 48.5 L 12 48 L 13.5 47.5 Z"/>
+    </g>
+    <circle cx="52" cy="12.7" r="0.6" fill="#ffffff"/>
+    <circle cx="10" cy="24" r="0.4" fill="#ffffff"/>
+    <circle cx="14" cy="48" r="0.4" fill="#ffffff"/>
+
+  </g>
+</svg>
