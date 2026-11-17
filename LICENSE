@@ -1,28 +1,53 @@
-Copyright (c) 2026 Amirali Kamrani.
+AMIRALI KAMRANI PROPRIETARY LICENSE (AKPL)
 
-PROPRIETARY LICENSE — ALL RIGHTS RESERVED
+ALL RIGHTS RESERVED
+
+Copyright (c) 2026 Amirali Kamrani.
 
 All Rights Reserved.
 
-This repository and all its contents, including source code, software, graphics, assets, designs, and documentation, are the exclusive intellectual property of Amirali Kamrani.
+1. Ownership
 
-WITHOUT PRIOR WRITTEN PERMISSION, NO PERSON OR ENTITY MAY:
+All source code, software, designs, graphics, assets, documentation, and original materials in this repository are the exclusive intellectual property of Amirali Kamrani, except for third-party materials governed by their respective licenses.
 
-1. Copy or reproduce any part of the source code.
-2. Modify, adapt, or create derivative works.
-3. Redistribute, publish, or sublicense the code.
-4. Use the code in commercial or non-commercial projects.
-5. Sell, rent, or otherwise exploit the software.
-6. Claim ownership or authorship of any part of this project.
+2. Restrictions
 
-PUBLIC ACCESS TO THIS REPOSITORY DOES NOT GRANT ANY LICENSE OR PERMISSION TO USE ITS CONTENTS.
+Without prior explicit written permission from the copyright holder, no person or organization is permitted to:
 
-Viewing the source code is permitted solely for personal inspection and evaluation.
+- Copy or reproduce the source code.
+- Modify, adapt, or create derivative works.
+- Redistribute or republish any part of the project.
+- Use the code in personal or commercial projects.
+- Sell, sublicense, or commercially exploit the software.
+- Claim authorship or ownership of the original work.
 
-Any unauthorized use may result in legal action to the extent permitted by applicable law.
+3. Public Repository
 
-For licensing and commercial permissions, contact:
+Making this repository publicly accessible does not grant any license or permission to reuse, copy, modify, or distribute its contents.
+
+Viewing the source code for inspection and evaluation is permitted.
+
+4. Third-Party Components
+
+Third-party libraries and dependencies remain subject to their respective licenses and terms.
+
+5. Permissions
+
+Any exception to these restrictions requires prior written authorization from:
+
+Amirali Kamrani
 
 Email: installchessmaster@gmail.com
 
-THE SOFTWARE IS PROVIDED WITHOUT ANY LICENSE OR PERMISSION, EXPRESS OR IMPLIED, EXCEPT AS EXPRESSLY AUTHORIZED IN WRITING BY THE COPYRIGHT HOLDER.
+6. Copyright Protection
+
+All rights not expressly granted are reserved by the copyright holder.
+
+Unauthorized use may be subject to legal remedies under applicable laws.
+
+---
+
+Owner: Amirali Kamrani
+Project: Hokm Pro
+License: AKPL — All Rights Reserved
+Year: 2026
