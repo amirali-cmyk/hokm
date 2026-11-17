@@ -1,11 +1,6 @@
-# هسته فریم‌ورک وب و SocketIO
 Flask>=3.1.0
 Flask-SocketIO>=5.6.0
 python-socketio>=5.16.0
-
-# سرور و کوروتین (کلید حل مشکل Worker failed to boot)
 gunicorn==23.0.0
-eventlet==0.33.3
-
-# رمزنگاری
+eventlet==0.36.1
 bcrypt>=5.0.0
