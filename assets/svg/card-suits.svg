@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 256 64" 
+     width="256" height="64"
+     role="img" 
+     aria-label="چهار خال بازی حکم">
+
+  <defs>
+    <!-- ============ گرادیانت‌های طلایی (برای حالت حکم) ============ -->
+    <linearGradient id="suitGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="35%"  stop-color="#ffd700"/>
+      <stop offset="75%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- ============ گرادیانت قلب (قرمز یاقوتی) ============ -->
+    <linearGradient id="suitHeart" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ff6b7f"/>
+      <stop offset="50%"  stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+
+    <!-- ============ گرادیانت خشت (قرمز مسی) ============ -->
+    <linearGradient id="suitDiamond" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ffb088"/>
+      <stop offset="50%"  stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#9f1239"/>
+    </linearGradient>
+
+    <!-- ============ هایلایت براق ============ -->
+    <radialGradient id="suitShine" cx="35%" cy="28%" r="30%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ============ فیلتر درخشش ============ -->
+    <filter id="suitGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ============================================================
+       خال ۱: پیک ♠ (Spades) — خانه اول
+       ============================================================ -->
+  <g transform="translate(32 32)" filter="url(#suitGlow)">
+    <!-- بدنه پیک -->
+    <path d="M 0 -22 
+             C -8 -12, -20 -2, -20 8 
+             C -20 16, -12 20, -5 16 
+             C -2 14, 0 11, 0 8 
+             C 0 11, 2 14, 5 16 
+             C 12 20, 20 16, 20 8 
+             C 20 -2, 8 -12, 0 -22 Z"
+          fill="url(#suitGold)"
+          stroke="#6b4c00"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+    <!-- ساق پیک -->
+    <path d="M -4 16 Q -6 22 -10 26 L 10 26 Q 6 22 4 16 Z"
+          fill="url(#suitGold)"
+          stroke="#6b4c00"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+    <!-- هایلایت -->
+    <ellipse cx="-6" cy="-4" rx="5" ry="3.5"
+             fill="url(#suitShine)"
+             transform="rotate(-25 -6 -4)"/>
+    <circle cx="-7" cy="-5" r="0.9" fill="#ffffff"/>
+  </g>
+
+  <!-- ============================================================
+       خال ۲: قلب ♥ (Hearts) — خانه دوم
+       ============================================================ -->
+  <g transform="translate(96 32)" filter="url(#suitGlow)">
+    <!-- بدنه قلب -->
+    <path d="M 0 20 
+             C -14 6, -22 -2, -22 -10 
+             C -22 -18, -14 -24, -6 -22 
+             C -2 -21, 0 -17, 0 -13 
+             C 0 -17, 2 -21, 6 -22 
+             C 14 -24, 22 -18, 22 -10 
+             C 22 -2, 14 6, 0 20 Z"
+          fill="url(#suitHeart)"
+          stroke="#4a0000"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+    <!-- هایلایت بالا-چپ -->
+    <ellipse cx="-10" cy="-14" rx="5" ry="3.5"
+             fill="url(#suitShine)"
+             transform="rotate(-25 -10 -14)"/>
+    <circle cx="-11" cy="-15" r="0.9" fill="#ffffff"/>
+    <!-- هایلایت کوچک بالا-راست -->
+    <ellipse cx="9" cy="-14" rx="2.5" ry="1.8"
+             fill="#ffffff"
+             opacity="0.6"
+             transform="rotate(25 9 -14)"/>
+  </g>
+
+  <!-- ============================================================
+       خال ۳: خشت ♦ (Diamonds) — خانه سوم
+       ============================================================ -->
+  <g transform="translate(160 32)" filter="url(#suitGlow)">
+    <!-- بدنه خشت (لوزی) -->
+    <path d="M 0 -24 
+             L 18 0 
+             L 0 24 
+             L -18 0 Z"
+          fill="url(#suitDiamond)"
+          stroke="#7f1d1d"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+    <!-- خط داخلی برجسته -->
+    <path d="M 0 -18 
+             L 13 0 
+             L 0 18 
+             L -13 0 Z"
+          fill="none"
+          stroke="#ffb088"
+          stroke-width="0.6"
+          opacity="0.7"/>
+    <!-- هایلایت بالا-چپ -->
+    <ellipse cx="-6" cy="-8" rx="4" ry="2.5"
+             fill="url(#suitShine)"
+             transform="rotate(-35 -6 -8)"/>
+    <circle cx="-6" cy="-9" r="0.8" fill="#ffffff"/>
+  </g>
+
+  <!-- ============================================================
+       خال ۴: گشنیز ♣ (Clubs) — خانه چهارم
+       ============================================================ -->
+  <g transform="translate(224 32)" filter="url(#suitGlow)">
+    <!-- بدنه گشنیز (سه دایره + ساق) -->
+    <!-- دایره بالا -->
+    <circle cx="0" cy="-12" r="9" 
+            fill="url(#suitGold)"
+            stroke="#6b4c00"
+            stroke-width="0.7"/>
+    <!-- دایره چپ -->
+    <circle cx="-9" cy="2" r="9" 
+            fill="url(#suitGold)"
+            stroke="#6b4c00"
+            stroke-width="0.7"/>
+    <!-- دایره راست -->
+    <circle cx="9" cy="2" r="9" 
+            fill="url(#suitGold)"
+            stroke="#6b4c00"
+            stroke-width="0.7"/>
+    <!-- مثلث وصل‌کننده (پوشاننده) -->
+    <path d="M 0 -6 L 6 6 L -6 6 Z"
+          fill="url(#suitGold)"
+          stroke="#6b4c00"
+          stroke-width="0.4"/>
+    <!-- ساق -->
+    <path d="M -4 8 Q -6 16 -10 22 L 10 22 Q 6 16 4 8 Z"
+          fill="url(#suitGold)"
+          stroke="#6b4c00"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+    <!-- هایلایت روی دایره بالا -->
+    <ellipse cx="-3" cy="-16" rx="3" ry="2"
+             fill="url(#suitShine)"
+             transform="rotate(-25 -3 -16)"/>
+    <circle cx="-3" cy="-17" r="0.7" fill="#ffffff"/>
+  </g>
+
+</svg>
