@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="جم بنفش">
+
+  <defs>
+    <!-- بدنه اصلی جم -->
+    <linearGradient id="gemBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#d8b4fe"/>
+      <stop offset="30%"  stop-color="#a855f7"/>
+      <stop offset="70%"  stop-color="#7e22ce"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
+    </linearGradient>
+
+    <!-- وجه چپ روشن‌تر -->
+    <linearGradient id="gemFaceLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#e9d5ff"/>
+      <stop offset="60%"  stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+
+    <!-- وجه راست تیره‌تر -->
+    <linearGradient id="gemFaceRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#a855f7"/>
+      <stop offset="60%"  stop-color="#7e22ce"/>
+      <stop offset="100%" stop-color="#4c1d95"/>
+    </linearGradient>
+
+    <!-- وجه بالایی (تاج) -->
+    <linearGradient id="gemFaceTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#f3e8ff"/>
+      <stop offset="50%"  stop-color="#d8b4fe"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+
+    <!-- هاله درخشش بنفش -->
+    <radialGradient id="gemAura" cx="50%" cy="50%" r="50%">
+      <stop offset="50%"  stop-color="#a855f7" stop-opacity="0"/>
+      <stop offset="78%"  stop-color="#a855f7" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="gemHighlight" cx="35%" cy="30%" r="30%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- فیلتر درخشش -->
+    <filter id="gemGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله بیرونی -->
+  <circle cx="32" cy="32" r="31" fill="url(#gemAura)"/>
+
+  <!-- سایه زیر (حس شناور بودن) -->
+  <ellipse cx="32" cy="58" rx="14" ry="3" 
+           fill="#000000" opacity="0.4"/>
+
+  <!-- ============ بدنه جم (برش کریستالی) ============ -->
+  <g filter="url(#gemGlow)">
+
+    <!-- وجه بالا (تاج) -->
+    <polygon points="20,18 44,18 50,26 14,26" 
+             fill="url(#gemFaceTop)" 
+             stroke="#5b21b6" 
+             stroke-width="0.6" 
+             stroke-linejoin="round"/>
+
+    <!-- وجه چپ -->
+    <polygon points="14,26 50,26 36,50 28,50" 
+             fill="url(#gemFaceLeft)" 
+             stroke="#5b21b6" 
+             stroke-width="0.5" 
+             stroke-linejoin="round"
+             opacity="0.95"/>
+
+    <!-- وجه راست (تیره‌تر برای عمق) -->
+    <polygon points="50,26 44,50 36,50" 
+             fill="url(#gemFaceRight)" 
+             stroke="#4c1d95" 
+             stroke-width="0.5" 
+             stroke-linejoin="round"/>
+
+    <!-- وجه چپ-جلو -->
+    <polygon points="14,26 28,50 22,48" 
+             fill="url(#gemFaceRight)" 
+             stroke="#4c1d95" 
+             stroke-width="0.5" 
+             stroke-linejoin="round"
+             opacity="0.9"/>
+
+    <!-- خطوط برش داخلی -->
+    <g stroke="#f3e8ff" stroke-width="0.4" fill="none" opacity="0.65">
+      <line x1="20" y1="18" x2="28" y2="50"/>
+      <line x1="44" y1="18" x2="36" y2="50"/>
+      <line x1="14" y1="26" x2="50" y2="26"/>
+      <line x1="22" y1="26" x2="32" y2="18"/>
+      <line x1="42" y1="26" x2="32" y2="18"/>
+    </g>
+
+    <!-- لبه‌های درخشان -->
+    <polygon points="20,18 44,18 50,26 14,26" 
+             fill="none" 
+             stroke="#f3e8ff" 
+             stroke-width="0.8" 
+             opacity="0.7"/>
+    <polygon points="20,18 28,50 22,48 14,26" 
+             fill="none" 
+             stroke="#e9d5ff" 
+             stroke-width="0.6" 
+             opacity="0.5"/>
+  </g>
+
+  <!-- هایلایت براق بالا-چپ -->
+  <ellipse cx="24" cy="24" rx="7" ry="4" 
+           fill="url(#gemHighlight)" 
+           opacity="0.85"
+           transform="rotate(-20 24 24)"/>
+
+  <!-- نقطه درخشش -->
+  <circle cx="23" cy="23" r="1.4" fill="#ffffff" opacity="0.98"/>
+
+  <!-- ============ ستاره براق (sparkle) ============ -->
+  <g fill="#ffffff" opacity="0.9">
+    <path d="M 48 18 L 49 20 L 51 21 L 49 22 L 48 24 L 47 22 L 45 21 L 47 20 Z"/>
+  </g>
+  <circle cx="48" cy="21" r="0.9" fill="#ffffff"/>
+</svg>
