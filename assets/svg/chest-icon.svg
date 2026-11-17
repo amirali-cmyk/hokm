@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="صندوق گنج">
+
+  <defs>
+    <!-- چوب بدنه -->
+    <linearGradient id="chestWood" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#8b5a2b"/>
+      <stop offset="40%"  stop-color="#6b4423"/>
+      <stop offset="80%"  stop-color="#4a2e15"/>
+      <stop offset="100%" stop-color="#2a1a0a"/>
+    </linearGradient>
+
+    <!-- چوب درب -->
+    <linearGradient id="chestLid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#a06b3a"/>
+      <stop offset="50%"  stop-color="#7a4f28"/>
+      <stop offset="100%" stop-color="#4a2e15"/>
+    </linearGradient>
+
+    <!-- نوار طلایی -->
+    <linearGradient id="chestBand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="70%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- قفل برنزی -->
+    <radialGradient id="chestLock" cx="35%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="40%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#6b4c00"/>
+    </radialGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="chestShine" cx="30%" cy="25%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="chestAura" cx="50%" cy="50%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#ffd700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="chestGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله + سایه -->
+  <circle cx="32" cy="32" r="31" fill="url(#chestAura)"/>
+  <ellipse cx="32" cy="58" rx="20" ry="2.5" fill="#000000" opacity="0.45"/>
+
+  <g filter="url(#chestGlow)">
+
+    <!-- بدنه -->
+    <rect x="10" y="30" width="44" height="24" rx="2" ry="2"
+          fill="url(#chestWood)"
+          stroke="#2a1a0a"
+          stroke-width="0.8"/>
+    <line x1="12" y1="40" x2="52" y2="40"
+          stroke="#2a1a0a" stroke-width="0.4" opacity="0.5"/>
+
+    <!-- درب قوس‌دار -->
+    <path d="M 10 30 L 10 22 Q 10 14, 32 14 Q 54 14, 54 22 L 54 30 Z"
+          fill="url(#chestLid)"
+          stroke="#2a1a0a"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+    <path d="M 12 24 Q 12 18, 32 18 Q 52 18, 52 24"
+          fill="none" stroke="#2a1a0a" stroke-width="0.4" opacity="0.5"/>
+
+    <!-- نوارهای طلایی عمودی -->
+    <rect x="16" y="14" width="4" height="40"
+          fill="url(#chestBand)" stroke="#6b4c00" stroke-width="0.5"/>
+    <rect x="44" y="14" width="4" height="40"
+          fill="url(#chestBand)" stroke="#6b4c00" stroke-width="0.5"/>
+
+    <!-- نوار افقی -->
+    <rect x="8" y="28" width="48" height="3"
+          fill="url(#chestBand)" stroke="#6b4c00" stroke-width="0.5"/>
+    <line x1="9" y1="29" x2="55" y2="29"
+          stroke="#fff7c2" stroke-width="0.3" opacity="0.7"/>
+
+    <!-- قفل -->
+    <rect x="27" y="30" width="10" height="10" rx="1.5" ry="1.5"
+          fill="url(#chestLock)" stroke="#6b4c00" stroke-width="0.6"/>
+    <circle cx="32" cy="35" r="1.6" fill="#2a1a0a"/>
+    <path d="M 31 35 L 31 38 L 33 38 L 33 35 Z" fill="#2a1a0a"/>
+    <ellipse cx="29" cy="32" rx="1.5" ry="1"
+             fill="#ffffff" opacity="0.6"/>
+
+    <!-- هایلایت درب -->
+    <ellipse cx="20" cy="20" rx="5" ry="3"
+             fill="url(#chestShine)" opacity="0.5"
+             transform="rotate(-20 20 20)"/>
+
+    <!-- sparkles -->
+    <g fill="#ffffff" opacity="0.95">
+      <path d="M 52 8 L 52.7 10 L 54.7 10.7 L 52.7 11.4 L 52 13.4 L 51.3 11.4 L 49.3 10.7 L 51.3 10 Z"/>
+      <path d="M 12 10 L 12.5 11.5 L 14 12 L 12.5 12.5 L 12 14 L 11.5 12.5 L 10 12 L 11.5 11.5 Z"/>
+    </g>
+    <circle cx="52" cy="10.7" r="0.6" fill="#ffffff"/>
+    <circle cx="12" cy="12" r="0.4" fill="#ffffff"/>
+
+  </g>
+</svg>
