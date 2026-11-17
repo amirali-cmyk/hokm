@@ -1,7 +1,11 @@
-Flask>=3.0.0
-Flask-Cors>=4.0.0
-Flask-SocketIO>=5.3.0
-python-socketio>=5.10.0
+# هسته فریم‌ورک وب و SocketIO
+Flask>=3.1.0
+Flask-SocketIO>=5.6.0
+python-socketio>=5.16.0
+
+# سرور و کوروتین (کلید حل مشکل Worker failed to boot)
 gunicorn==23.0.0
 eventlet==0.33.3
-bcrypt==5.0.0
+
+# رمزنگاری
+bcrypt>=5.0.0
