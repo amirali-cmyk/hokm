@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="خانه">
+
+  <defs>
+    <!-- گرادیانت بدنه خانه -->
+    <linearGradient id="homeBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#2a4035"/>
+      <stop offset="50%"  stop-color="#1a3028"/>
+      <stop offset="100%" stop-color="#0a1512"/>
+    </linearGradient>
+
+    <!-- گرادیانت سقف (طلایی-برنزی) -->
+    <linearGradient id="homeRoof" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="35%"  stop-color="#ffd700"/>
+      <stop offset="75%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت درب (طلایی) -->
+    <linearGradient id="homeDoor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="50%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#6b4c00"/>
+    </linearGradient>
+
+    <!-- گرادیانت پنجره (شیشه آبی) -->
+    <linearGradient id="homeWindow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#a8d5ff" stop-opacity="0.7"/>
+      <stop offset="50%"  stop-color="#5ba3d9" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- گرادیانت دودکش -->
+    <linearGradient id="homeChimney" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#8b6300"/>
+      <stop offset="50%"  stop-color="#6b4c00"/>
+      <stop offset="100%" stop-color="#3a2800"/>
+    </linearGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="homeShine" cx="32%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="homeAura" cx="50%" cy="50%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#ffd700" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="homeGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله + سایه -->
+  <circle cx="32" cy="32" r="31" fill="url(#homeAura)"/>
+  <ellipse cx="32" cy="58" rx="20" ry="2.5" fill="#000000" opacity="0.4"/>
+
+  <g filter="url(#homeGlow)">
+
+    <!-- ============ دودکش ============ -->
+    <rect x="42" y="14" width="6" height="12" rx="0.5" ry="0.5"
+          fill="url(#homeChimney)"
+          stroke="#2a1f00"
+          stroke-width="0.6"/>
+    <!-- درپوش دودکش -->
+    <rect x="40.5" y="12" width="9" height="2.5" rx="0.5" ry="0.5"
+          fill="url(#homeRoof)"
+          stroke="#6b4c00"
+          stroke-width="0.5"/>
+
+    <!-- ============ بدنه خانه ============ -->
+    <rect x="12" y="30" width="40" height="24" rx="1.5" ry="1.5"
+          fill="url(#homeBody)"
+          stroke="#6b4c00"
+          stroke-width="0.9"/>
+
+    <!-- خط چوبی روی بدنه -->
+    <line x1="14" y1="40" x2="50" y2="40"
+          stroke="#6b4c00" stroke-width="0.4" opacity="0.4"/>
+
+    <!-- ============ سقف شیب‌دار ============ -->
+    <path d="M 8 32 
+             L 32 12 
+             L 56 32 
+             L 54 32 
+             L 32 15 
+             L 10 32 Z"
+          fill="url(#homeRoof)"
+          stroke="#6b4c00"
+          stroke-width="0.7"
+          stroke-linejoin="round"/>
+
+    <!-- خط برجسته روی سقف -->
+    <path d="M 10 30 L 32 13 L 54 30"
+          fill="none" stroke="#fff7c2" stroke-width="0.5" opacity="0.6"/>
+
+    <!-- ============ درب ============ -->
+    <path d="M 27 54 
+             L 27 42 
+             Q 27 39, 32 39 
+             Q 37 39, 37 42 
+             L 37 54 
+             Z"
+          fill="url(#homeDoor)"
+          stroke="#4a3300"
+          stroke-width="0.7"
+          stroke-linejoin="round"/>
+
+    <!-- دستگیره درب -->
+    <circle cx="34.5" cy="47" r="1" fill="#6b4c00"/>
+    <circle cx="34.5" cy="47" r="0.4" fill="#fff7c2"/>
+
+    <!-- ============ پنجره چپ ============ -->
+    <rect x="16" y="36" width="7" height="7" rx="0.8" ry="0.8"
+          fill="url(#homeWindow)"
+          stroke="#6b4c00"
+          stroke-width="0.6"/>
+    <!-- چلیپا -->
+    <line x1="19.5" y1="36" x2="19.5" y2="43"
+          stroke="#6b4c00" stroke-width="0.4" opacity="0.7"/>
+    <line x1="16" y1="39.5" x2="23" y2="39.5"
+          stroke="#6b4c00" stroke-width="0.4" opacity="0.7"/>
+    <!-- هایلایت شیشه -->
+    <ellipse cx="18" cy="38" rx="1.5" ry="1"
+             fill="#ffffff" opacity="0.5"
+             transform="rotate(-30 18 38)"/>
+
+    <!-- ============ پنجره راست ============ -->
+    <rect x="41" y="36" width="7" height="7" rx="0.8" ry="0.8"
+          fill="url(#homeWindow)"
+          stroke="#6b4c00"
+          stroke-width="0.6"/>
+    <line x1="44.5" y1="36" x2="44.5" y2="43"
+          stroke="#6b4c00" stroke-width="0.4" opacity="0.7"/>
+    <line x1="41" y1="39.5" x2="48" y2="39.5"
+          stroke="#6b4c00" stroke-width="0.4" opacity="0.7"/>
+    <ellipse cx="43" cy="38" rx="1.5" ry="1"
+             fill="#ffffff" opacity="0.5"
+             transform="rotate(-30 43 38)"/>
+
+    <!-- ============ هایلایت روی سقف ============ -->
+    <ellipse cx="20" cy="26" rx="4" ry="2"
+             fill="url(#homeShine)"
+             opacity="0.5"
+             transform="rotate(-30 20 26)"/>
+
+    <!-- ============ sparkle ============ -->
+    <g fill="#ffffff" opacity="0.9">
+      <path d="M 54 14 L 54.6 15.7 L 56.3 16.3 L 54.6 16.9 L 54 18.6 L 53.4 16.9 L 51.7 16.3 L 53.4 15.7 Z"/>
+    </g>
+    <circle cx="54" cy="16.3" r="0.5" fill="#ffffff"/>
+
+  </g>
+</svg>
