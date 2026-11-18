@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="اعلان‌ها">
+
+  <defs>
+    <!-- گرادیانت بدنه زنگ -->
+    <linearGradient id="bellBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="70%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- گرادیانت لبه پایین زنگ -->
+    <linearGradient id="bellRim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#d4af37"/>
+      <stop offset="50%"  stop-color="#8b6300"/>
+      <stop offset="100%" stop-color="#4a3300"/>
+    </linearGradient>
+
+    <!-- گرادیانت گوی قرمز -->
+    <radialGradient id="bellDot" cx="35%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#ff6b7f"/>
+      <stop offset="50%"  stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </radialGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="bellShine" cx="32%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="bellAura" cx="50%" cy="45%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#ffd700" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="bellGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله -->
+  <circle cx="32" cy="32" r="31" fill="url(#bellAura)"/>
+
+  <g filter="url(#bellGlow)">
+
+    <!-- ============ دسته بالای زنگ ============ -->
+    <path d="M 27 12 Q 27 8, 32 8 Q 37 8, 37 12"
+          fill="none"
+          stroke="url(#bellBody)"
+          stroke-width="2.5"
+          stroke-linecap="round"/>
+
+    <!-- ============ بدنه زنگ ============ -->
+    <path d="M 14 42 
+             Q 14 30, 22 22 
+             Q 26 18, 32 18 
+             Q 38 18, 42 22 
+             Q 50 30, 50 42 
+             L 50 44 
+             L 14 44 
+             Z"
+          fill="url(#bellBody)"
+          stroke="#6b4c00"
+          stroke-width="0.8"
+          stroke-linejoin="round"/>
+
+    <!-- خط برجسته وسط بدنه -->
+    <path d="M 18 30 Q 22 22, 32 22 Q 42 22, 46 30"
+          fill="none"
+          stroke="#fff7c2"
+          stroke-width="0.6"
+          opacity="0.5"/>
+
+    <!-- ============ لبه پایین زنگ (rim) ============ -->
+    <rect x="12" y="42" width="40" height="4" rx="1.5" ry="1.5"
+          fill="url(#bellRim)"
+          stroke="#3a2800"
+          stroke-width="0.6"/>
+
+    <!-- خط برجسته روی rim -->
+    <line x1="14" y1="43" x2="50" y2="43"
+          stroke="#d4af37" stroke-width="0.4" opacity="0.7"/>
+
+    <!-- ============ گوی پایین زنگ ============ -->
+    <circle cx="32" cy="50" r="3.5"
+            fill="url(#bellBody)"
+            stroke="#6b4c00"
+            stroke-width="0.7"/>
+    <circle cx="31" cy="49" r="1" fill="#ffffff" opacity="0.7"/>
+
+    <!-- ============ گوی قرمز اعلان (بالا-راست) ============ -->
+    <circle cx="48" cy="14" r="6"
+            fill="url(#bellDot)"
+            stroke="#4a0000"
+            stroke-width="0.8"/>
+    <circle cx="46.5" cy="12.5" r="1.5" fill="#ffffff" opacity="0.9"/>
+
+    <!-- هاله پالس دور گوی قرمز -->
+    <circle cx="48" cy="14" r="8"
+            fill="none"
+            stroke="#e11d48"
+            stroke-width="0.8"
+            opacity="0.5"/>
+
+    <!-- ============ هایلایت براق روی بدنه ============ -->
+    <ellipse cx="24" cy="28" rx="4" ry="5"
+             fill="url(#bellShine)"
+             opacity="0.6"
+             transform="rotate(-20 24 28)"/>
+    <circle cx="23" cy="26" r="0.9" fill="#ffffff" opacity="0.95"/>
+
+    <!-- ============ قوس‌های صوتی (سمت چپ) ============ -->
+    <g stroke="#ffd700" stroke-width="1.2" fill="none" 
+       stroke-linecap="round" opacity="0.7">
+      <path d="M 8 26 Q 5 32, 8 38"/>
+      <path d="M 4 22 Q 0 32, 4 42" opacity="0.5"/>
+    </g>
+
+    <!-- sparkle -->
+    <g fill="#ffffff" opacity="0.9">
+      <path d="M 10 14 L 10.6 15.7 L 12.3 16.3 L 10.6 16.9 L 10 18.6 L 9.4 16.9 L 7.7 16.3 L 9.4 15.7 Z"/>
+    </g>
+
+  </g>
+</svg>
