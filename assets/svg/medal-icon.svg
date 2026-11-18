@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 64 64" 
+     width="64" height="64"
+     role="img" 
+     aria-label="مدال دستاورد">
+
+  <defs>
+    <!-- گرادیانت مدال طلایی -->
+    <radialGradient id="medalGold" cx="35%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="30%"  stop-color="#ffd700"/>
+      <stop offset="65%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </radialGradient>
+
+    <!-- گرادیانت روبان قرمز -->
+    <linearGradient id="medalRibbon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#ff4d6d"/>
+      <stop offset="50%"  stop-color="#c81e1e"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+
+    <!-- گرادیانت روبان طلایی -->
+    <linearGradient id="medalRibbonGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#fff7c2"/>
+      <stop offset="50%"  stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6300"/>
+    </linearGradient>
+
+    <!-- هایلایت براق -->
+    <radialGradient id="medalShine" cx="32%" cy="28%" r="35%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- هاله درخشش -->
+    <radialGradient id="medalAura" cx="50%" cy="55%" r="50%">
+      <stop offset="55%"  stop-color="#ffd700" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#ffd700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="medalGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- هاله -->
+  <circle cx="32" cy="36" r="28" fill="url(#medalAura)"/>
+
+  <g filter="url(#medalGlow)">
+
+    <!-- ============ روبان‌ها ============ -->
+    <!-- روبان چپ -->
+    <path d="M 22 4 L 30 20 L 26 24 L 18 8 Z"
+          fill="url(#medalRibbon)"
+          stroke="#4a0000"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+    <!-- روبان راست -->
+    <path d="M 42 4 L 34 20 L 38 24 L 46 8 Z"
+          fill="url(#medalRibbon)"
+          stroke="#4a0000"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- نوار طلایی روی روبان چپ -->
+    <path d="M 24 6 L 31 20 L 29 21 L 22 7 Z"
+          fill="url(#medalRibbonGold)" opacity="0.7"/>
+    <!-- نوار طلایی روی روبان راست -->
+    <path d="M 40 6 L 33 20 L 35 21 L 42 7 Z"
+          fill="url(#medalRibbonGold)" opacity="0.7"/>
+
+    <!-- ============ حلقه مدال ============ -->
+    <circle cx="32" cy="38" r="18"
+            fill="url(#medalGold)"
+            stroke="#6b4c00"
+            stroke-width="1"/>
+
+    <!-- حلقه داخلی برجسته -->
+    <circle cx="32" cy="38" r="14"
+            fill="none"
+            stroke="#fff7c2"
+            stroke-width="1"
+            opacity="0.6"/>
+
+    <!-- حلقه تزئینی نقطه‌چین -->
+    <circle cx="32" cy="38" r="16"
+            fill="none"
+            stroke="#8b6300"
+            stroke-width="0.6"
+            stroke-dasharray="1.5 1.5"
+            opacity="0.7"/>
+
+    <!-- ============ ستاره پنج‌پر وسط ============ -->
+    <path d="M 32 28 
+             L 34.5 34 
+             L 41 34.5 
+             L 36 38.5 
+             L 37.5 45 
+             L 32 41.5 
+             L 26.5 45 
+             L 28 38.5 
+             L 23 34.5 
+             L 29.5 34 Z"
+          fill="#fff7c2"
+          stroke="#8b6300"
+          stroke-width="0.6"
+          stroke-linejoin="round"/>
+
+    <!-- هایلایت ستاره -->
+    <path d="M 30 32 L 31.5 35 L 34 35.2 L 32 36.5 L 32.8 39 L 30.5 37.2 L 28.5 38.5 L 29 36 L 27 34.7 L 29.2 34.5 Z"
+          fill="#ffffff" opacity="0.6"/>
+
+    <!-- ============ هایلایت براق مدال ============ -->
+    <ellipse cx="24" cy="30" rx="5" ry="3"
+             fill="url(#medalShine)"
+             transform="rotate(-25 24 30)"/>
+    <circle cx="23" cy="29" r="0.9" fill="#ffffff"/>
+
+    <!-- ============ sparkles ============ -->
+    <g fill="#ffffff" opacity="0.95">
+      <path d="M 54 26 L 54.7 28 L 56.7 28.7 L 54.7 29.4 L 54 31.4 L 53.3 29.4 L 51.3 28.7 L 53.3 28 Z"/>
+      <path d="M 10 42 L 10.5 43.5 L 12 44 L 10.5 44.5 L 10 46 L 9.5 44.5 L 8 44 L 9.5 43.5 Z"/>
+    </g>
+
+  </g>
+</svg>
