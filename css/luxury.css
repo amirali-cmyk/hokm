@@ -1,0 +1,770 @@
+/* ═══════════════════════════════════════════════════════════
+   ✨ HOKM PRO v7.0.0 — luxury.css
+   افکت‌های ویژه سطح AAA: شیشه، درخشش، ذرات، کارت‌های 3D
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   ۱. بافت مخمل پس‌زمینه (Velvet Texture)
+   ═══════════════════════════════════════════ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--gold-bright) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 70% 60%, var(--gold-bright) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 40% 80%, var(--gold-bright) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 85% 25%, var(--gold-bright) 0.5px, transparent 0.5px);
+  background-size: 120px 120px, 180px 180px, 140px 140px, 200px 200px;
+  animation: bgPan 60s linear infinite;
+}
+
+/* ═══════════════════════════════════════════
+   ۲. کارت‌های شیشه‌ای لوکس (Luxury Glass Cards)
+   ═══════════════════════════════════════════ */
+.luxury-glass {
+  background:
+    linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%),
+    rgba(20, 35, 30, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(255, 215, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   ۳. حاشیه طلایی درخشان (Golden Border)
+   ═══════════════════════════════════════════ */
+.gold-glow-border {
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  background-image: linear-gradient(135deg, var(--gold-shine), var(--gold-bright), var(--gold-dark), var(--gold-bright), var(--gold-shine));
+  background-size: 300% 300%;
+  animation: goldBorderShine 4s ease infinite;
+}
+
+.gold-glow-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--gradient-gold);
+  opacity: 0.3;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+.gold-glow-border > * {
+  background: var(--bg-secondary);
+  border-radius: calc(var(--radius-lg) - 2px);
+  padding: var(--space-4);
+}
+
+@keyframes goldBorderShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ═══════════════════════════════════════════
+   ۴. درخشش متحرک روی دکمه‌های مهم (Shimmer)
+   ═══════════════════════════════════════════ */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.5), transparent 30%);
+  animation: shimmerRotate 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.shimmer-btn:hover::before {
+  opacity: 1;
+}
+
+@keyframes shimmerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   ۵. افکت کارت 3D (Perspective)
+   ═══════════════════════════════════════════ */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: transform var(--t-normal) var(--ease-luxury);
+}
+
+.card-3d:hover {
+  transform: perspective(1200px) rotateX(-5deg) rotateY(5deg) translateZ(10px);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۶. هاله آواتار درخشان (Avatar Glow Ring)
+   ═══════════════════════════════════════════ */
+.avatar-glow-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-glow-ring::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    var(--gold-shine),
+    var(--gold-bright),
+    var(--gold-dark),
+    var(--gold-bright),
+    var(--gold-shine));
+  animation: avatarRingSpin 4s linear infinite;
+  z-index: -1;
+  filter: blur(2px);
+}
+
+.avatar-glow-ring::after {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.6;
+  z-index: -2;
+  animation: avatarPulse 2s ease-in-out infinite;
+}
+
+@keyframes avatarRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   ۷. ذرات طلایی شناور (Floating Particles)
+   ═══════════════════════════════════════════ */
+.gold-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.gold-particles::before,
+.gold-particles::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow:
+    0 0 10px var(--gold-bright),
+    0 0 20px var(--accent-glow);
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+.gold-particles::before {
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.gold-particles::after {
+  bottom: 15%;
+  right: 20%;
+  animation-delay: 3s;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(20px, -30px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۸. متن با درخشش نئون (Neon Text)
+   ═══════════════════════════════════════════ */
+.neon-text {
+  color: var(--gold-bright);
+  text-shadow:
+    0 0 5px var(--gold-bright),
+    0 0 10px var(--gold-bright),
+    0 0 20px var(--accent-glow),
+    0 0 40px var(--accent-glow),
+    0 0 80px var(--accent-glow);
+  animation: neonFlicker 4s linear infinite;
+}
+
+/* ═══════════════════════════════════════════
+   ۹. دکمه با موج کلیک (Ripple Button)
+   ═══════════════════════════════════════════ */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-btn .ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  animation: rippleExpand 0.8s var(--ease-smooth);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۰. سایه سه‌بعدی عمیق (Deep 3D Shadow)
+   ═══════════════════════════════════════════ */
+.deep-shadow {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.3),
+    0 12px 24px rgba(0, 0, 0, 0.35),
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 40px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۱. پس‌زمینه کارت با بافت کاغذی
+   ═══════════════════════════════════════════ */
+.card-texture {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    radial-gradient(circle at 80% 40%, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 15px 15px, 20px 20px, 10px 10px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۲. آیکون‌های پالس‌دار (Pulsing Icons)
+   ═══════════════════════════════════════════ */
+.icon-pulse {
+  position: relative;
+  display: inline-block;
+}
+
+.icon-pulse::before,
+.icon-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  animation: iconPulseRing 2s ease-out infinite;
+}
+
+.icon-pulse::after {
+  animation-delay: 1s;
+}
+
+@keyframes iconPulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۳. کارت با گوشه‌های تزئینی (Ornament Corners)
+   ═══════════════════════════════════════════ */
+.ornament-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.ornament-card::before,
+.ornament-card::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--gold-bright);
+  opacity: 0.7;
+}
+
+.ornament-card::before {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 8px;
+}
+
+.ornament-card::after {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+}
+
+/* ═══════════════════════════════════════════
+   ۱۴. زیرنویس طلایی (Gold Underline)
+   ═══════════════════════════════════════════ */
+.gold-underline {
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.gold-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gradient-gold);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 15px var(--accent-glow);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-normal) var(--ease-luxury);
+}
+
+.gold-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۵. جایزه با افکت نور (Prize Glow)
+   ═══════════════════════════════════════════ */
+.prize-glow {
+  position: relative;
+  filter: drop-shadow(0 0 10px var(--gold-bright));
+}
+
+.prize-glow::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.7;
+  z-index: -1;
+  animation: prizePulse 2s ease-in-out infinite;
+}
+
+@keyframes prizePulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۶. خط تزئینی با الماس (Diamond Divider)
+   ═══════════════════════════════════════════ */
+.diamond-divider {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  margin: var(--space-5) 0;
+}
+
+.diamond-divider::before {
+  content: '◆';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  color: var(--gold-bright);
+  background: var(--bg-primary);
+  padding: 0 12px;
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۷. کارت با گرادیانت طلایی مرزی (Gradient Border Card)
+   ═══════════════════════════════════════════ */
+.gradient-border-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  z-index: 1;
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle, 0deg),
+    var(--gold-shine),
+    var(--gold-bright),
+    var(--gold-dark),
+    var(--purple-bright),
+    var(--gold-bright),
+    var(--gold-shine));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  animation: rotateBorder 4s linear infinite;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorder {
+  to { --angle: 360deg; }
+}
+
+/* ═══════════════════════════════════════════
+   ۱۸. افکت هاور سه‌بعدی (Lift on Hover)
+   ═══════════════════════════════════════════ */
+.lift-hover {
+  transition:
+    transform var(--t-normal) var(--ease-luxury),
+    box-shadow var(--t-normal) var(--ease-smooth);
+}
+
+.lift-hover:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 35px var(--accent-glow);
+}
+
+.lift-hover:active {
+  transform: translateY(-3px) scale(0.98);
+}
+
+/* ═══════════════════════════════════════════
+   ۱۹. افکت بادکنک (Balloon Pop)
+   ═══════════════════════════════════════════ */
+.balloon {
+  animation: balloonBounce 3s ease-in-out infinite;
+}
+
+@keyframes balloonBounce {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۲۰. کارت برنده با نور (Winner Spotlight)
+   ═══════════════════════════════════════════ */
+.winner-spotlight {
+  position: relative;
+  animation: winnerSpotlight 1.5s ease-in-out infinite;
+}
+
+.winner-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+  animation: spotlightExpand 1.5s ease-in-out infinite;
+}
+
+@keyframes winnerSpotlight {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+@keyframes spotlightExpand {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════
+   ۲۱. بج VIP (VIP Badge)
+   ═══════════════════════════════════════════ */
+.vip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--accent-text-on);
+  background: var(--gradient-gold);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--gold-shine);
+  box-shadow:
+    0 0 15px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۲. افکت مایع (Liquid Fill)
+   ═══════════════════════════════════════════ */
+.liquid-fill {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-fill::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--fill-level, 50%);
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  opacity: 0.4;
+  transition: height var(--t-slow) var(--ease-smooth);
+  border-radius: inherit;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۳. افکت پرتره با قاب طلایی (Portrait Frame)
+   ═══════════════════════════════════════════ */
+.portrait-frame {
+  position: relative;
+  display: inline-block;
+  padding: 6px;
+  background: var(--gradient-gold);
+  border-radius: 50%;
+  box-shadow:
+    0 0 30px var(--accent-glow),
+    inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.portrait-frame > * {
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--bg-primary);
+}
+
+/* ═══════════════════════════════════════════
+   ۲۴. سایه سطحی (Elevation Levels)
+   ═══════════════════════════════════════════ */
+.elevation-0 { box-shadow: none; }
+.elevation-1 { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+.elevation-2 { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); }
+.elevation-3 { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+.elevation-4 { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow); }
+.elevation-5 { box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 50px var(--accent-glow); }
+
+/* ═══════════════════════════════════════════
+   ۲۵. افکت‌های ویژه تعاملی (Interactive Effects)
+   ═══════════════════════════════════════════ */
+
+/* کشش (Tilt) */
+.tilt-hover {
+  transition: transform var(--t-normal) var(--ease-smooth);
+}
+
+.tilt-hover:hover {
+  transform: rotate(-2deg) scale(1.02);
+}
+
+/* چرخش (Rotate) */
+.rotate-hover:hover {
+  transform: rotate(8deg);
+}
+
+/* زوم نرم (Soft Zoom) */
+.soft-zoom:hover {
+  transform: scale(1.05);
+}
+
+/* تکان (Wiggle) */
+.wiggle-hover:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۶. محافظت در برابر اسکرول افقی
+   ═══════════════════════════════════════════ */
+.no-scroll-x {
+  overflow-x: hidden;
+}
+
+.only-scroll-y {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۷. افکت نور روی Hover (Mouse Light)
+   ═══════════════════════════════════════════ */
+.mouse-light {
+  position: relative;
+  overflow: hidden;
+}
+
+.mouse-light::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--t-fast);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  left: var(--mouse-x, 0);
+  top: var(--mouse-y, 0);
+}
+
+.mouse-light:hover::before {
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════
+   ۲۸. افکت بلور پس‌زمینه‌ها
+   ═══════════════════════════════════════════ */
+.blur-bg {
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+}
+
+.blur-bg-soft {
+  backdrop-filter: blur(15px) saturate(150%);
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
+}
+
+/* ═══════════════════════════════════════════
+   ۲۹. سایه متن برای خوانایی
+   ═══════════════════════════════════════════ */
+.text-shadow-soft {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.text-shadow-strong {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.text-shadow-gold {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 0 20px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════
+   ۳۰. کلاس‌های مینی‌مالیستیک
+   ═══════════════════════════════════════════ */
+.border-0 { border: none !important; }
+.border-gold { border: 1px solid var(--gold-mid); }
+.border-strong-gold { border: 2px solid var(--gold-bright); }
+
+.ring-gold {
+  box-shadow: 0 0 0 4px var(--accent-soft), 0 0 25px var(--accent-glow);
+}
+
+.divide-gold > * + * {
+  border-top: 1px solid var(--gold-dark);
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+/* ═══════════════════════════════════════════
+   ۳۱. ذرات در حال انفجار (Burst Particles)
+   ═══════════════════════════════════════════ */
+.burst-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 15px var(--gold-bright);
+  pointer-events: none;
+  animation: burstParticle 1.5s var(--ease-out) forwards;
+}
+
+@keyframes burstParticle {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--burst-x, 100px), var(--burst-y, -100px)) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--burst-x, 100px) * 2), calc(var(--burst-y, -100px) * 2)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ۳۲. کارت با گوشه‌های نوری (Light Corner)
+   ═══════════════════════════════════════════ */
+.light-corner {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-corner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle at top right, var(--accent-soft), transparent 60%);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════
+   ۳۳. پس‌زمینه نور نقطه‌ای (Spotlight BG)
+   ═══════════════════════════════════════════ */
+.spotlight-bg {
+  background:
+    radial-gradient(circle at 50% 20%, var(--accent-soft) 0%, transparent 55%),
+    var(--bg-secondary);
+}
