@@ -3,82 +3,483 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a1512" id="metaThemeColor" />
-  <meta name="description" content="بازی حکم ایرانی حرفه‌ای — Hokm Pro v7.0.0" />
+  <meta name="theme-color" content="#0d1b2a" id="metaThemeColor" />
+  <meta name="description" content="بازی حکم ایرانی حرفه‌ای" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>حکم حرفه‌ای — Hokm Pro</title>
 
-  <link rel="icon" type="image/svg+xml" href="assets/svg/card-suits.svg" />
-  <link rel="apple-touch-icon" href="assets/svg/card-suits.svg" />
+  <!-- لوگو و آیکون اصلی کد ۱ حفظ شده‌اند -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Playfair+Display:wght@700;900&display=swap"
+    rel="stylesheet"
+  />
 
+  <!-- فایل‌های CSS اصلی کد ۱ -->
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/themes.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/screens.css" />
   <link rel="stylesheet" href="css/animations.css" />
   <link rel="stylesheet" href="css/responsive.css" />
-  <link rel="stylesheet" href="css/luxury.css" />
-</head>
-<body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
-  <!-- ═══════════════════════════════════════════
-       Splash Screen
-       ═══════════════════════════════════════════ -->
+  <!-- استایل لاکچری کد ۲ -->
+  <link rel="stylesheet" href="css/luxury.css" />
+
+  <style>
+    :root {
+      --topbar-h: 96px;
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --topbar-h: 90px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      :root {
+        --topbar-h: 86px;
+      }
+    }
+
+    .top-bar {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: var(--z-sticky) !important;
+      background: rgba(13, 27, 42, 0.85) !important;
+      backdrop-filter: blur(16px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35) !important;
+      padding: 6px 12px 8px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      height: auto !important;
+    }
+
+    .top-bar-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .top-bar-row-top .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      flex: 0 0 auto !important;
+    }
+
+    .top-bar-row-top .tabs {
+      flex: 0 1 auto !important;
+      display: flex !important;
+      gap: 2px !important;
+      padding: 3px !important;
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-radius: 9999px !important;
+      margin: 0 auto !important;
+    }
+
+    .top-bar-row-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 4px;
+    }
+
+    .top-bar-row-bottom .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+      flex: 0 0 auto !important;
+    }
+
+    #btnThemeToggle,
+    #btnSoundToggle,
+    #btnBackFromGame {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 34px !important;
+      height: 34px !important;
+      padding: 0 !important;
+      font-size: 17px !important;
+      line-height: 1 !important;
+      color: var(--text-primary) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      flex-shrink: 0 !important;
+    }
+
+    #btnThemeToggle img,
+    #btnSoundToggle img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    #btnThemeToggle:hover,
+    #btnSoundToggle:hover {
+      background: var(--accent-soft) !important;
+      border-color: var(--accent) !important;
+      transform: scale(1.1) !important;
+    }
+
+    #btnThemeToggle:active,
+    #btnSoundToggle:active,
+    #btnBackFromGame:active {
+      transform: scale(0.92) !important;
+    }
+
+    #btnBackFromGame:hover {
+      background: var(--color-danger) !important;
+      border-color: var(--color-danger) !important;
+      color: #fff !important;
+      transform: scale(1.1) !important;
+    }
+
+    .app {
+      padding-top: var(--topbar-h) !important;
+    }
+
+    .screen[data-screen="game"] .game-container {
+      height: calc(100vh - var(--topbar-h)) !important;
+      height: calc(100dvh - var(--topbar-h)) !important;
+    }
+
+    .player-hand .card-face {
+      margin: 0 -6px !important;
+    }
+
+    @media (max-width: 600px) {
+      .player-hand .card-face {
+        margin: 0 -8px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .player-hand .card-face {
+        margin: 0 -10px !important;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .player-hand .card-face {
+        margin: 0 -4px !important;
+      }
+    }
+
+    .player-seat.hokm-caller {
+      position: relative;
+    }
+
+    .player-seat.hokm-caller .seat-avatar {
+      border-color: #ffd60a !important;
+      box-shadow:
+        0 0 0 4px rgba(255, 214, 10, 0.3),
+        0 0 25px rgba(255, 214, 10, 0.6) !important;
+      animation: crownPulse 1.5s ease-in-out infinite !important;
+    }
+
+    .player-seat.hokm-caller::after {
+      content: '👑';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      animation: crownFloat 2s ease-in-out infinite;
+      pointer-events: none;
+      filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.9));
+      z-index: 10;
+    }
+
+    @keyframes crownPulse {
+      0%,
+      100% {
+        box-shadow:
+          0 0 0 4px rgba(255, 214, 10, 0.3),
+          0 0 25px rgba(255, 214, 10, 0.6);
+      }
+
+      50% {
+        box-shadow:
+          0 0 0 8px rgba(255, 214, 10, 0.1),
+          0 0 40px rgba(255, 214, 10, 0.9);
+      }
+    }
+
+    @keyframes crownFloat {
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(-6px);
+      }
+    }
+
+    /* آیکون‌های SVG بدون تغییر در ابعاد ساختار اصلی */
+    .menu-card-icon img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .btn-start-icon img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .quick-avatar img,
+    .profile-avatar-big img,
+    .seat-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .quick-coins-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+
+    .tournament-icon {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+
+    .tournament-badge img {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    .tournament-coin-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 600px) {
+      .top-bar {
+        padding: 4px 8px 6px !important;
+        gap: 3px !important;
+      }
+
+      .top-title {
+        display: none !important;
+      }
+
+      .top-bar-row-top .tab {
+        padding: 5px 8px !important;
+        min-height: 32px !important;
+      }
+
+      .top-bar-row-top .tab-label {
+        display: none !important;
+      }
+
+      .top-bar-row-top .tab-icon {
+        font-size: 16px !important;
+      }
+
+      #btnThemeToggle,
+      #btnSoundToggle,
+      #btnBackFromGame {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .top-bar-row-top .tab {
+        padding: 4px 6px !important;
+        min-height: 30px !important;
+      }
+
+      .top-bar-row-top .tab-icon {
+        font-size: 15px !important;
+      }
+
+      #btnThemeToggle,
+      #btnSoundToggle,
+      #btnBackFromGame {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 15px !important;
+      }
+    }
+  </style>
+</head>
+
+<body
+  data-theme="dark"
+  data-accent="gold"
+  data-card-theme="classic"
+  data-bg="gradient"
+>
+
+  <!-- Splash Screen -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-logo-wrap">
         <div class="splash-ring"></div>
-        <img src="assets/svg/card-suits.svg" alt="حکم" class="splash-logo" />
+        <img
+          src="assets/logo.svg"
+          alt="حکم"
+          class="splash-logo"
+        />
       </div>
+
       <h1 class="splash-title">حُکم</h1>
-      <p class="splash-subtitle">Hokm Pro — نسخه ۷.۰</p>
+      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۳</p>
+
       <div class="splash-loading-bar">
-        <div class="splash-loading-fill" id="splashFill"></div>
+        <div
+          class="splash-loading-fill"
+          id="splashFill"
+        ></div>
       </div>
-      <button class="btn-skip" id="btnSkipSplash" type="button">ورود سریع ⏭</button>
-      <p class="splash-version">v7.0.0</p>
+
+      <button
+        class="btn-skip"
+        id="btnSkipSplash"
+        type="button"
+      >
+        ورود سریع ⏭
+      </button>
+
+      <p class="splash-version">v6.3.0</p>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       اپلیکیشن اصلی
-       ═══════════════════════════════════════════ -->
   <div id="app" class="app hidden">
 
+    <!-- نوار بالایی -->
     <header class="top-bar" id="topBar">
       <div class="top-bar-row-top">
+
         <div class="top-bar-right">
-          <img src="assets/svg/card-suits.svg" alt="" class="top-logo" />
+          <img
+            src="assets/logo.svg"
+            alt=""
+            class="top-logo"
+          />
           <span class="top-title">حُکم</span>
         </div>
-        <nav class="tabs" role="tablist" aria-label="ناوبری اصلی">
-          <button class="tab active" data-tab="game" role="tab" aria-selected="true" type="button">
-            <span class="tab-icon">🎮</span><span class="tab-label">بازی</span>
+
+        <nav
+          class="tabs"
+          role="tablist"
+          aria-label="ناوبری اصلی"
+        >
+          <button
+            class="tab active"
+            data-tab="game"
+            role="tab"
+            aria-selected="true"
+            type="button"
+          >
+            <span class="tab-icon">🎮</span>
+            <span class="tab-label">بازی</span>
           </button>
-          <button class="tab" data-tab="profile" role="tab" type="button">
-            <span class="tab-icon">👤</span><span class="tab-label">پروفایل</span>
+
+          <button
+            class="tab"
+            data-tab="profile"
+            role="tab"
+            type="button"
+          >
+            <span class="tab-icon">👤</span>
+            <span class="tab-label">پروفایل</span>
           </button>
-          <button class="tab" data-tab="settings" role="tab" type="button">
-            <span class="tab-icon">⚙️</span><span class="tab-label">تنظیمات</span>
+
+          <button
+            class="tab"
+            data-tab="settings"
+            role="tab"
+            type="button"
+          >
+            <span class="tab-icon">⚙️</span>
+            <span class="tab-label">تنظیمات</span>
           </button>
-          <button class="tab" data-tab="stats" role="tab" type="button">
-            <span class="tab-icon">📊</span><span class="tab-label">آمار</span>
+
+          <button
+            class="tab"
+            data-tab="stats"
+            role="tab"
+            type="button"
+          >
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">آمار</span>
           </button>
         </nav>
       </div>
+
       <div class="top-bar-row-bottom">
-        <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">
-          <img src="assets/svg/dark-mode-toggle.svg" alt="" style="width:22px;height:22px;" />
+        <button
+          class="icon-btn"
+          id="btnThemeToggle"
+          aria-label="تغییر تم شب/روز"
+          title="شب/روز"
+          type="button"
+        >
+          <img
+            src="assets/svg/dark-mode-toggle.svg"
+            alt=""
+          />
         </button>
+
         <div class="top-bar-left">
-          <button class="icon-btn hidden" id="btnBackFromGame" aria-label="بازگشت به منو" title="منو" type="button">↩</button>
-          <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">
-            <img src="assets/svg/sound-icon.svg" alt="" style="width:22px;height:22px;" />
+          <button
+            class="icon-btn hidden"
+            id="btnBackFromGame"
+            aria-label="بازگشت به منو"
+            title="منو"
+            type="button"
+          >
+            ↩
+          </button>
+
+          <button
+            class="icon-btn"
+            id="btnSoundToggle"
+            aria-label="صدا"
+            title="صدا"
+            type="button"
+          >
+            <img
+              src="assets/svg/sound-icon.svg"
+              alt=""
+            />
           </button>
         </div>
       </div>
@@ -86,163 +487,417 @@
 
     <main class="main-content" id="mainContent">
 
-      <!-- ═══════ صفحه منو ═══════ -->
-      <section class="screen active" id="screen-menu" data-screen="menu">
+      <!-- صفحه منو -->
+      <section
+        class="screen active"
+        id="screen-menu"
+        data-screen="menu"
+      >
         <div class="menu-container">
 
-          <button class="btn-start-big shimmer-btn" id="btnStartGame" type="button">
+          <button
+            class="btn-start-big"
+            id="btnStartGame"
+            type="button"
+          >
             <span class="btn-start-icon">
-              <img src="assets/svg/card-front-frame.svg" alt="" style="width:48px;height:48px;" />
+              <img
+                src="assets/svg/card-front-frame.svg"
+                alt=""
+              />
             </span>
-            <span class="btn-start-text">شروع بازی</span>
-            <span class="btn-start-sub">آفلاین با هوش مصنوعی</span>
+
+            <span class="btn-start-text">
+              شروع بازی
+            </span>
+
+            <span class="btn-start-sub">
+              آفلاین با هوش مصنوعی
+            </span>
           </button>
 
           <div class="menu-secondary-grid">
-            <button class="menu-card lift-hover" data-action="online" type="button">
+
+            <button
+              class="menu-card"
+              data-action="online"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/target-icon.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/target-icon.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">بازی آنلاین</span>
               <span class="menu-card-sub">با دوستان</span>
             </button>
-            <button class="menu-card lift-hover" data-action="tournament" type="button">
+
+            <button
+              class="menu-card"
+              data-action="tournament"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/trophy.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/trophy.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">تورنمنت</span>
               <span class="menu-card-sub">هفتگی</span>
             </button>
-            <button class="menu-card lift-hover" data-action="leaderboard" type="button">
+
+            <button
+              class="menu-card"
+              data-action="leaderboard"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/medal-icon.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/medal-icon.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">لیدربورد</span>
               <span class="menu-card-sub">Top 100</span>
             </button>
-            <button class="menu-card lift-hover" data-action="achievements" type="button">
+
+            <button
+              class="menu-card"
+              data-action="achievements"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/medal-icon.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/medal-icon.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">دستاوردها</span>
-              <span class="menu-card-sub" id="achCountLabel">۰ / ۱۲</span>
+              <span
+                class="menu-card-sub"
+                id="achCountLabel"
+              >
+                ۰ / ۱۲
+              </span>
             </button>
-            <button class="menu-card lift-hover" data-action="friends" type="button">
+
+            <button
+              class="menu-card"
+              data-action="friends"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/chat-icon.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/chat-icon.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">دوستان</span>
-              <span class="menu-card-sub" id="friendsCountLabel">۰ آنلاین</span>
+              <span
+                class="menu-card-sub"
+                id="friendsCountLabel"
+              >
+                ۰ آنلاین
+              </span>
             </button>
-            <button class="menu-card lift-hover" data-action="replay" type="button">
+
+            <button
+              class="menu-card"
+              data-action="replay"
+              type="button"
+            >
               <span class="menu-card-icon">
-                <img src="assets/svg/clover-icon.svg" alt="" style="width:40px;height:40px;" />
+                <img
+                  src="assets/svg/clover-icon.svg"
+                  alt=""
+                />
               </span>
               <span class="menu-card-title">پخش مجدد</span>
               <span class="menu-card-sub">بازی‌های اخیر</span>
             </button>
+
           </div>
 
-          <div class="quick-profile luxury-glass">
-            <div class="quick-avatar avatar-glow-ring" id="quickAvatar">
-              <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+          <div class="quick-profile" id="quickProfile">
+
+            <div class="quick-avatar" id="quickAvatar">
+              <img
+                src="assets/svg/avatar-default.svg"
+                alt=""
+              />
             </div>
+
             <div class="quick-info">
-              <div class="quick-name" id="quickName">مهمان</div>
+              <div
+                class="quick-name"
+                id="quickName"
+              >
+                مهمان
+              </div>
+
               <div class="quick-elo">
                 <span id="quickElo">۱۰۰۰</span>
-                <span class="quick-rank" id="quickRank">تازه‌کار</span>
-                <span style="color: var(--gold-bright); font-family: var(--font-num); margin-right: auto; font-weight: 900; display:flex; align-items:center; gap:4px;">
-                  <img src="assets/svg/coin.svg" alt="" style="width:20px;height:20px;" />
+
+                <span
+                  class="quick-rank"
+                  id="quickRank"
+                >
+                  تازه‌کار
+                </span>
+
+                <span
+                  style="
+                    color: var(--accent);
+                    font-family: var(--font-num);
+                    margin-right: auto;
+                    font-weight: 700;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                >
+                  <img
+                    class="quick-coins-icon"
+                    src="assets/svg/coin.svg"
+                    alt=""
+                  />
                   <span id="quickCoins">۵۰۰</span>
                 </span>
               </div>
             </div>
-            <button class="quick-login-btn" id="btnLogin" type="button">ورود / ثبت‌نام</button>
+
+            <button
+              class="quick-login-btn"
+              id="btnLogin"
+              type="button"
+            >
+              ورود / ثبت‌نام
+            </button>
+
           </div>
         </div>
       </section>
-
-      <!-- ═══════ صفحه پروفایل ═══════ -->
-      <section class="screen" id="screen-profile" data-screen="profile">
+      <!-- صفحه پروفایل -->
+      <section
+        class="screen"
+        id="screen-profile"
+        data-screen="profile"
+      >
         <div class="profile-container">
+
           <div class="profile-header-card">
-            <div class="profile-avatar-big avatar-glow-ring" id="profileAvatarBig">
-              <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+            <div
+              class="profile-avatar-big"
+              id="profileAvatarBig"
+            >
+              <img
+                src="assets/svg/avatar-default.svg"
+                alt=""
+              />
             </div>
-            <input type="file" id="avatarUpload" accept="image/*" hidden />
-            <button class="btn-change-avatar" id="btnChangeAvatar" type="button">تغییر آواتار</button>
-            <h2 class="profile-name" id="profileName">مهمان</h2>
-            <p class="profile-rank" id="profileRank">تازه‌کار — ۱۰۰۰</p>
+
+            <input
+              type="file"
+              id="avatarUpload"
+              accept="image/*"
+              hidden
+            />
+
+            <button
+              class="btn-change-avatar"
+              id="btnChangeAvatar"
+              type="button"
+            >
+              تغییر آواتار
+            </button>
+
+            <h2
+              class="profile-name"
+              id="profileName"
+            >
+              مهمان
+            </h2>
+
+            <p
+              class="profile-rank"
+              id="profileRank"
+            >
+              تازه‌کار — ۱۰۰۰
+            </p>
+
             <div id="profileFriendCode"></div>
+
             <div class="profile-elo-bar">
-              <div class="profile-elo-fill" id="profileEloFill"></div>
+              <div
+                class="profile-elo-fill"
+                id="profileEloFill"
+              ></div>
             </div>
           </div>
 
           <div class="stats-grid">
-            <div class="stat-card" style="grid-column: span 2; background: var(--gradient-gold);">
-              <div class="stat-value" id="statCoins" style="color: var(--accent-text-on); font-size: 34px; display:flex; align-items:center; gap:8px; justify-content:center;">
-                <img src="assets/svg/coin.svg" alt="" style="width:32px;height:32px;" />
+
+            <div
+              class="stat-card"
+              style="
+                grid-column: span 2;
+                background: linear-gradient(135deg, #ffd60a, #b8860b);
+              "
+            >
+              <div
+                class="stat-value"
+                id="statCoins"
+                style="
+                  color: #1a1a1a;
+                  font-size: 32px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 8px;
+                "
+              >
+                <img
+                  src="assets/svg/coin.svg"
+                  alt=""
+                  style="width:32px;height:32px;"
+                />
                 <span>۵۰۰</span>
               </div>
-              <div class="stat-label" style="color: var(--accent-text-on); font-weight: 800;">سکه‌های من</div>
+
+              <div
+                class="stat-label"
+                style="color: #1a1a1a; font-weight: 700;"
+              >
+                سکه‌های من
+              </div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statWins">۰</div>
               <div class="stat-label">برد</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statLosses">۰</div>
               <div class="stat-label">باخت</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statWinRate">۰٪</div>
               <div class="stat-label">نرخ برد</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statStreak">۰</div>
               <div class="stat-label">برد پیاپی</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statBestStreak">۰</div>
               <div class="stat-label">رکورد پیاپی</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-value" id="statGames">۰</div>
               <div class="stat-label">کل بازی</div>
             </div>
+
           </div>
 
-          <h3 class="section-title">📜 تاریخچه بازی‌های اخیر</h3>
-          <div class="history-list" id="historyList">
-            <p class="empty-msg">هنوز بازی‌ای انجام نداده‌ای</p>
+          <h3 class="section-title">
+            📜 تاریخچه بازی‌های اخیر
+          </h3>
+
+          <div
+            class="history-list"
+            id="historyList"
+          >
+            <p class="empty-msg">
+              هنوز بازی‌ای انجام نداده‌ای
+            </p>
           </div>
 
-          <h3 class="section-title">🏅 دستاوردها</h3>
-          <div class="achievements-mini-grid" id="achievementsMiniGrid"></div>
+          <h3 class="section-title">
+            🏅 دستاوردها
+          </h3>
+
+          <div
+            class="achievements-mini-grid"
+            id="achievementsMiniGrid"
+          ></div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه تنظیمات ═══════ -->
-      <section class="screen" id="screen-settings" data-screen="settings">
+      <!-- صفحه تنظیمات -->
+      <section
+        class="screen"
+        id="screen-settings"
+        data-screen="settings"
+      >
         <div class="settings-container">
-          <h2 class="screen-title gold-title">⚙️ تنظیمات</h2>
+
+          <h2 class="screen-title">
+            ⚙️ تنظیمات
+          </h2>
 
           <div class="setting-group">
-            <label class="setting-label">🎨 تم رنگی</label>
-            <div class="theme-color-picker" id="accentPicker">
-              <button class="accent-dot active" data-accent="gold" title="طلایی" type="button"></button>
-              <button class="accent-dot" data-accent="emerald" title="سبز زمرد" type="button"></button>
-              <button class="accent-dot" data-accent="ocean" title="آبی اقیانوس" type="button"></button>
-              <button class="accent-dot" data-accent="royal" title="بنفش سلطنتی" type="button"></button>
-              <button class="accent-dot" data-accent="ruby" title="قرمز یاقوت" type="button"></button>
+            <label class="setting-label">
+              🎨 تم رنگی
+            </label>
+
+            <div
+              class="theme-color-picker"
+              id="accentPicker"
+            >
+              <button
+                class="accent-dot active"
+                data-accent="gold"
+                title="طلایی"
+                type="button"
+              ></button>
+
+              <button
+                class="accent-dot"
+                data-accent="emerald"
+                title="سبز زمرد"
+                type="button"
+              ></button>
+
+              <button
+                class="accent-dot"
+                data-accent="ocean"
+                title="آبی اقیانوس"
+                type="button"
+              ></button>
+
+              <button
+                class="accent-dot"
+                data-accent="royal"
+                title="بنفش سلطنتی"
+                type="button"
+              ></button>
+
+              <button
+                class="accent-dot"
+                data-accent="ruby"
+                title="قرمز یاقوت"
+                type="button"
+              ></button>
             </div>
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">🃏 طرح کارت</label>
-            <select class="setting-select" id="cardThemeSelect">
+            <label class="setting-label">
+              🃏 طرح کارت
+            </label>
+
+            <select
+              class="setting-select"
+              id="cardThemeSelect"
+            >
               <option value="classic">کلاسیک</option>
               <option value="dark">تاریک</option>
               <option value="wooden">چوبی</option>
@@ -252,8 +907,14 @@
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">🖼️ پس‌زمینه</label>
-            <select class="setting-select" id="bgThemeSelect">
+            <label class="setting-label">
+              🖼️ پس‌زمینه
+            </label>
+
+            <select
+              class="setting-select"
+              id="bgThemeSelect"
+            >
               <option value="gradient">گرادیانت</option>
               <option value="wooden">چوبی</option>
               <option value="checker">شطرنج</option>
@@ -263,345 +924,903 @@
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">🎯 سطح هوش مصنوعی</label>
-            <div class="segmented" id="aiLevelSegmented">
-              <button data-level="easy" type="button">آسان</button>
-              <button data-level="medium" class="active" type="button">متوسط</button>
-              <button data-level="hard" type="button">سخت</button>
-              <button data-level="master" type="button">استاد</button>
+            <label class="setting-label">
+              🎯 سطح هوش مصنوعی
+            </label>
+
+            <div
+              class="segmented"
+              id="aiLevelSegmented"
+            >
+              <button data-level="easy" type="button">
+                آسان
+              </button>
+
+              <button
+                data-level="medium"
+                class="active"
+                type="button"
+              >
+                متوسط
+              </button>
+
+              <button data-level="hard" type="button">
+                سخت
+              </button>
+
+              <button data-level="master" type="button">
+                استاد
+              </button>
             </div>
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">👥 تعداد بازیکنان</label>
-            <div class="segmented" id="playerCountSegmented">
-              <button data-count="2" type="button">۲ نفره</button>
-              <button data-count="4" class="active" type="button">۴ نفره</button>
+            <label class="setting-label">
+              👥 تعداد بازیکنان
+            </label>
+
+            <div
+              class="segmented"
+              id="playerCountSegmented"
+            >
+              <button data-count="2" type="button">
+                ۲ نفره
+              </button>
+
+              <button
+                data-count="4"
+                class="active"
+                type="button"
+              >
+                ۴ نفره
+              </button>
             </div>
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">⏱️ سرعت تایمر</label>
-            <div class="segmented" id="timerSpeedSegmented">
-              <button data-speed="fast" type="button">سریع (۱۵ث)</button>
-              <button data-speed="normal" class="active" type="button">معمولی (۳۰ث)</button>
-              <button data-speed="slow" type="button">آهسته (۴۵ث)</button>
+            <label class="setting-label">
+              ⏱️ سرعت تایمر
+            </label>
+
+            <div
+              class="segmented"
+              id="timerSpeedSegmented"
+            >
+              <button data-speed="fast" type="button">
+                سریع (۱۵ث)
+              </button>
+
+              <button
+                data-speed="normal"
+                class="active"
+                type="button"
+              >
+                معمولی (۳۰ث)
+              </button>
+
+              <button data-speed="slow" type="button">
+                آهسته (۴۵ث)
+              </button>
             </div>
           </div>
 
           <div class="setting-group row">
-            <label class="setting-label">🔊 صداهای بازی</label>
+            <label class="setting-label">
+              🔊 صداهای بازی
+            </label>
+
             <label class="switch">
-              <input type="checkbox" id="sfxToggle" checked />
+              <input
+                type="checkbox"
+                id="sfxToggle"
+                checked
+              />
               <span class="switch-slider"></span>
             </label>
           </div>
 
           <div class="setting-group row">
-            <label class="setting-label">🎵 موسیقی پس‌زمینه</label>
+            <label class="setting-label">
+              🎵 موسیقی پس‌زمینه
+            </label>
+
             <label class="switch">
-              <input type="checkbox" id="musicToggle" />
+              <input
+                type="checkbox"
+                id="musicToggle"
+              />
               <span class="switch-slider"></span>
             </label>
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">🎚️ صدای موسیقی</label>
-            <input type="range" id="musicVolume" min="0" max="100" value="15" class="slider" />
+            <label class="setting-label">
+              🎚️ صدای موسیقی
+            </label>
+
+            <input
+              type="range"
+              id="musicVolume"
+              min="0"
+              max="100"
+              value="15"
+              class="slider"
+            />
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">🎚️ صدای افکت‌ها</label>
-            <input type="range" id="sfxVolume" min="0" max="100" value="60" class="slider" />
+            <label class="setting-label">
+              🎚️ صدای افکت‌ها
+            </label>
+
+            <input
+              type="range"
+              id="sfxVolume"
+              min="0"
+              max="100"
+              value="60"
+              class="slider"
+            />
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">📖 راهنما</label>
-            <button class="btn btn-outline btn-block" id="btnOpenHelp" type="button">
+            <label class="setting-label">
+              📖 راهنما
+            </label>
+
+            <button
+              class="btn btn-outline btn-block"
+              id="btnOpenHelp"
+              type="button"
+            >
               مشاهده راهنمای بازی
             </button>
           </div>
 
           <div class="danger-zone">
-            <button class="btn-danger" id="btnResetStats" type="button">🗑️ پاک‌کردن آمار</button>
-            <button class="btn-danger" id="btnResetAll" type="button">⚠️ بازنشانی کامل</button>
+            <button
+              class="btn-danger"
+              id="btnResetStats"
+              type="button"
+            >
+              🗑️ پاک‌کردن آمار
+            </button>
+
+            <button
+              class="btn-danger"
+              id="btnResetAll"
+              type="button"
+            >
+              ⚠️ بازنشانی کامل
+            </button>
           </div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه آمار ═══════ -->
-      <section class="screen" id="screen-stats" data-screen="stats">
+      <!-- صفحه آمار -->
+      <section
+        class="screen"
+        id="screen-stats"
+        data-screen="stats"
+      >
         <div class="menu-container">
-          <h2 class="screen-title gold-title">📊 آمار کامل</h2>
-          <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
+
+          <h2 class="screen-title">
+            📊 آمار کامل
+          </h2>
+
+          <div
+            class="stats-grid"
+            style="
+              grid-template-columns: repeat(2, 1fr);
+              gap: 12px;
+              margin-top: 20px;
+            "
+          >
             <div class="stat-card">
-              <div class="stat-value" id="statsTotalGames">۰</div>
+              <div
+                class="stat-value"
+                id="statsTotalGames"
+              >
+                ۰
+              </div>
               <div class="stat-label">کل بازی‌ها</div>
             </div>
+
             <div class="stat-card">
-              <div class="stat-value" id="statsTotalWins">۰</div>
+              <div
+                class="stat-value"
+                id="statsTotalWins"
+              >
+                ۰
+              </div>
               <div class="stat-label">بردها</div>
             </div>
+
             <div class="stat-card">
-              <div class="stat-value" id="statsTotalRounds">۰</div>
+              <div
+                class="stat-value"
+                id="statsTotalRounds"
+              >
+                ۰
+              </div>
               <div class="stat-label">دست‌های برده</div>
             </div>
+
             <div class="stat-card">
-              <div class="stat-value" id="statsHokmClaimed">۰</div>
+              <div
+                class="stat-value"
+                id="statsHokmClaimed"
+              >
+                ۰
+              </div>
               <div class="stat-label">حکم‌های خوانده</div>
             </div>
+
             <div class="stat-card">
-              <div class="stat-value" id="statsBestStreak">۰</div>
+              <div
+                class="stat-value"
+                id="statsBestStreak"
+              >
+                ۰
+              </div>
               <div class="stat-label">رکورد پیاپی</div>
             </div>
+
             <div class="stat-card">
-              <div class="stat-value" id="statsPlayTime">۰</div>
+              <div
+                class="stat-value"
+                id="statsPlayTime"
+              >
+                ۰
+              </div>
               <div class="stat-label">دقیقه بازی</div>
             </div>
           </div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه دوستان ═══════ -->
-      <section class="screen" id="screen-friends" data-screen="friends">
+      <!-- صفحه دوستان -->
+      <section
+        class="screen"
+        id="screen-friends"
+        data-screen="friends"
+      >
         <div class="friends-container">
-          <h2 class="screen-title gold-title">👥 دوستان</h2>
+
+          <h2 class="screen-title">
+            👥 دوستان
+          </h2>
+
           <div class="add-friend-bar">
-            <input type="text" id="friendCodeInput" placeholder="کد کاربری دوست (HK-12345)..." />
-            <button id="btnAddFriend" type="button">افزودن</button>
+            <input
+              type="text"
+              id="friendCodeInput"
+              placeholder="کد کاربری دوست (HK-12345)..."
+            />
+
+            <button
+              id="btnAddFriend"
+              type="button"
+            >
+              افزودن
+            </button>
           </div>
+
           <div id="myFriendCodeDisplay"></div>
-          <div class="friends-list" id="friendsList">
-            <p class="empty-msg">هنوز دوستی اضافه نکرده‌ای</p>
+
+          <div
+            class="friends-list"
+            id="friendsList"
+          >
+            <p class="empty-msg">
+              هنوز دوستی اضافه نکرده‌ای
+            </p>
           </div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه بازی ═══════ -->
-      <section class="screen" id="screen-game" data-screen="game">
-        <div class="game-container" id="gameContainer">
+      <!-- صفحه بازی -->
+      <section
+        class="screen"
+        id="screen-game"
+        data-screen="game"
+      >
+        <div
+          class="game-container"
+          id="gameContainer"
+        >
+
           <div class="game-info-bar">
+
             <div class="team-score team-a">
               <span class="team-label">تیم ما</span>
-              <span class="team-score-value" id="scoreA">۰</span>
+              <span
+                class="team-score-value"
+                id="scoreA"
+              >
+                ۰
+              </span>
             </div>
+
             <div class="game-center-info">
-              <div class="hokm-display" id="hokmDisplay">
+              <div
+                class="hokm-display"
+                id="hokmDisplay"
+              >
                 <span class="hokm-label">حکم:</span>
-                <span class="hokm-suit" id="hokmSuit">—</span>
+                <span
+                  class="hokm-suit"
+                  id="hokmSuit"
+                >
+                  —
+                </span>
               </div>
+
               <div class="round-display">
-                <span>دور <span id="roundNumber">۱</span> از ۱۳</span>
+                <span>
+                  دور
+                  <span id="roundNumber">۱</span>
+                  از ۱۳
+                </span>
               </div>
             </div>
+
             <div class="team-score team-b">
               <span class="team-label">تیم حریف</span>
-              <span class="team-score-value" id="scoreB">۰</span>
+              <span
+                class="team-score-value"
+                id="scoreB"
+              >
+                ۰
+              </span>
             </div>
+
           </div>
 
-          <div class="table-area" id="tableArea">
-            <div class="player-seat seat-top" id="seatTop">
-              <div class="seat-avatar" id="avatarTop">
-                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+          <div
+            class="table-area"
+            id="tableArea"
+          >
+
+            <div
+              class="player-seat seat-top"
+              id="seatTop"
+            >
+              <div
+                class="seat-avatar"
+                id="avatarTop"
+              >
+                <img
+                  src="assets/svg/avatar-default.svg"
+                  alt=""
+                />
               </div>
+
               <div class="seat-info">
-                <span class="seat-name" id="nameTop">هم‌تیمی</span>
-                <span class="seat-cards" id="cardsTop">۱۳</span>
+                <span
+                  class="seat-name"
+                  id="nameTop"
+                >
+                  هم‌تیمی
+                </span>
+
+                <span
+                  class="seat-cards"
+                  id="cardsTop"
+                >
+                  ۱۳
+                </span>
               </div>
-              <div class="played-card-slot" id="playedTop"></div>
+
+              <div
+                class="played-card-slot"
+                id="playedTop"
+              ></div>
             </div>
-            <div class="player-seat seat-left" id="seatLeft">
-              <div class="seat-avatar" id="avatarLeft">
-                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+
+            <div
+              class="player-seat seat-left"
+              id="seatLeft"
+            >
+              <div
+                class="seat-avatar"
+                id="avatarLeft"
+              >
+                <img
+                  src="assets/svg/avatar-default.svg"
+                  alt=""
+                />
               </div>
+
               <div class="seat-info">
-                <span class="seat-name" id="nameLeft">P1</span>
-                <span class="seat-cards" id="cardsLeft">۱۳</span>
+                <span
+                  class="seat-name"
+                  id="nameLeft"
+                >
+                  P1
+                </span>
+
+                <span
+                  class="seat-cards"
+                  id="cardsLeft"
+                >
+                  ۱۳
+                </span>
               </div>
-              <div class="played-card-slot" id="playedLeft"></div>
+
+              <div
+                class="played-card-slot"
+                id="playedLeft"
+              ></div>
             </div>
-            <div class="player-seat seat-right" id="seatRight">
-              <div class="seat-avatar" id="avatarRight">
-                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+
+            <div
+              class="player-seat seat-right"
+              id="seatRight"
+            >
+              <div
+                class="seat-avatar"
+                id="avatarRight"
+              >
+                <img
+                  src="assets/svg/avatar-default.svg"
+                  alt=""
+                />
               </div>
+
               <div class="seat-info">
-                <span class="seat-name" id="nameRight">P2</span>
-                <span class="seat-cards" id="cardsRight">۱۳</span>
+                <span
+                  class="seat-name"
+                  id="nameRight"
+                >
+                  P2
+                </span>
+
+                <span
+                  class="seat-cards"
+                  id="cardsRight"
+                >
+                  ۱۳
+                </span>
               </div>
-              <div class="played-card-slot" id="playedRight"></div>
+
+              <div
+                class="played-card-slot"
+                id="playedRight"
+              ></div>
             </div>
-            <div class="trick-center" id="trickCenter"></div>
-            <div class="player-seat seat-bottom" id="seatBottom">
-              <div class="played-card-slot" id="playedBottom"></div>
+
+            <div
+              class="trick-center"
+              id="trickCenter"
+            ></div>
+
+            <div
+              class="player-seat seat-bottom"
+              id="seatBottom"
+            >
+              <div
+                class="played-card-slot"
+                id="playedBottom"
+              ></div>
             </div>
+
           </div>
 
           <div class="player-hand-wrapper">
-            <div class="player-hand" id="playerHand"></div>
+            <div
+              class="player-hand"
+              id="playerHand"
+            ></div>
           </div>
 
-          <div class="action-bar" id="actionBar">
+          <!-- نوار اقدامات: فقط تایمر -->
+          <div
+            class="action-bar"
+            id="actionBar"
+          >
             <div class="timer-bar">
-              <div class="timer-fill" id="timerFill"></div>
+              <div
+                class="timer-fill"
+                id="timerFill"
+              ></div>
             </div>
           </div>
 
-          <div class="hokm-picker hidden" id="hokmPicker">
-            <h3 class="gold-title">خال حکم را انتخاب کن</h3>
+          <div
+            class="hokm-picker hidden"
+            id="hokmPicker"
+          >
+            <h3>خال حکم را انتخاب کن</h3>
+
             <div class="suit-options">
-              <button class="suit-btn suit-spades" data-suit="spades" type="button">♠</button>
-              <button class="suit-btn suit-hearts" data-suit="hearts" type="button">♥</button>
-              <button class="suit-btn suit-diamonds" data-suit="diamonds" type="button">♦</button>
-              <button class="suit-btn suit-clubs" data-suit="clubs" type="button">♣</button>
+              <button
+                class="suit-btn suit-spades"
+                data-suit="spades"
+                type="button"
+              >
+                ♠
+              </button>
+
+              <button
+                class="suit-btn suit-hearts"
+                data-suit="hearts"
+                type="button"
+              >
+                ♥
+              </button>
+
+              <button
+                class="suit-btn suit-diamonds"
+                data-suit="diamonds"
+                type="button"
+              >
+                ♦
+              </button>
+
+              <button
+                class="suit-btn suit-clubs"
+                data-suit="clubs"
+                type="button"
+              >
+                ♣
+              </button>
             </div>
           </div>
+
         </div>
       </section>
-
-      <!-- ═══════ صفحه لیدربورد ═══════ -->
-      <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
+      <!-- صفحه لیدربورد -->
+      <section
+        class="screen"
+        id="screen-leaderboard"
+        data-screen="leaderboard"
+      >
         <div class="leaderboard-container">
-          <h2 class="screen-title gold-title">🏆 جدول امتیازات</h2>
-          <div class="segmented" id="lbFilter">
-            <button data-filter="weekly" type="button">هفتگی</button>
-            <button data-filter="monthly" type="button">ماهانه</button>
-            <button data-filter="all" class="active" type="button">کل</button>
+
+          <h2 class="screen-title">
+            🏆 جدول امتیازات
+          </h2>
+
+          <div
+            class="segmented"
+            id="lbFilter"
+          >
+            <button
+              data-filter="weekly"
+              type="button"
+            >
+              هفتگی
+            </button>
+
+            <button
+              data-filter="monthly"
+              type="button"
+            >
+              ماهانه
+            </button>
+
+            <button
+              data-filter="all"
+              class="active"
+              type="button"
+            >
+              کل
+            </button>
           </div>
-          <div class="leaderboard-list" id="leaderboardList"></div>
+
+          <div
+            class="leaderboard-list"
+            id="leaderboardList"
+          ></div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه دستاوردها ═══════ -->
-      <section class="screen" id="screen-achievements" data-screen="achievements">
+      <!-- صفحه دستاوردها -->
+      <section
+        class="screen"
+        id="screen-achievements"
+        data-screen="achievements"
+      >
         <div class="achievements-container">
-          <h2 class="screen-title gold-title">🎖️ دستاوردها</h2>
-          <p class="ach-progress-text"><span id="achProgressText">۰ از ۱۲</span> دستاورد باز شده</p>
-          <div class="ach-progress-bar"><div class="ach-progress-fill" id="achProgressFill"></div></div>
-          <div class="achievements-grid" id="achievementsGrid"></div>
+
+          <h2 class="screen-title">
+            🎖️ دستاوردها
+          </h2>
+
+          <p class="ach-progress-text">
+            <span id="achProgressText">
+              ۰ از ۱۲
+            </span>
+            دستاورد باز شده
+          </p>
+
+          <div class="ach-progress-bar">
+            <div
+              class="ach-progress-fill"
+              id="achProgressFill"
+            ></div>
+          </div>
+
+          <div
+            class="achievements-grid"
+            id="achievementsGrid"
+          ></div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه تورنمنت ═══════ -->
-      <section class="screen" id="screen-tournament" data-screen="tournament">
+      <!-- صفحه تورنمنت -->
+      <section
+        class="screen"
+        id="screen-tournament"
+        data-screen="tournament"
+      >
         <div class="tournament-container">
-          <h2 class="screen-title gold-title">🏆 تورنمنت هفتگی</h2>
+
+          <h2 class="screen-title">
+            <img
+              class="tournament-icon"
+              src="assets/svg/trophy.svg"
+              alt=""
+            />
+            تورنمنت هفتگی
+          </h2>
+
           <div class="tournament-card">
+
             <div class="tournament-header">
+
               <span class="tournament-badge">
-                <img src="assets/svg/crown-vip.svg" alt="" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-left:4px;" />
+                <img
+                  src="assets/svg/crown-vip.svg"
+                  alt=""
+                />
                 حذفی ۸ نفره
               </span>
-              <span class="tournament-time">شنبه‌ها — ۲۰:۰۰</span>
+
+              <span class="tournament-time">
+                شنبه‌ها — ۲۰:۰۰
+              </span>
+
             </div>
+
             <ul class="tournament-prizes">
-              <li>🥇 قهرمان: ۵۰۰ ELO + مدال طلا</li>
-              <li>🥈 نایب‌قهرمان: ۳۰۰ ELO + نقره</li>
-              <li>🥉 سوم: ۱۵۰ ELO + برنز</li>
+              <li>
+                🥇 قهرمان: ۵۰۰ ELO + مدال طلا
+              </li>
+
+              <li>
+                🥈 نایب‌قهرمان: ۳۰۰ ELO + نقره
+              </li>
+
+              <li>
+                🥉 سوم: ۱۵۰ ELO + برنز
+              </li>
             </ul>
-            <button class="btn-primary btn-large btn-block" id="btnJoinTournament" type="button">
+
+            <button
+              class="btn-primary btn-large"
+              id="btnJoinTournament"
+              type="button"
+            >
               ثبت‌نام با ۱۰۰ سکه
-              <img src="assets/svg/coin.svg" alt="" style="width:24px;height:24px;" />
+
+              <img
+                class="tournament-coin-icon"
+                src="assets/svg/coin.svg"
+                alt=""
+              />
             </button>
-            <p class="tournament-note">تا شروع: <span id="tournamentCountdown">—</span></p>
+
+            <p class="tournament-note">
+              تا شروع:
+              <span id="tournamentCountdown">—</span>
+            </p>
+
           </div>
         </div>
       </section>
 
-      <!-- ═══════ صفحه ری‌پلی ═══════ -->
-      <section class="screen" id="screen-replay" data-screen="replay">
+      <!-- صفحه ری‌پلی -->
+      <section
+        class="screen"
+        id="screen-replay"
+        data-screen="replay"
+      >
         <div class="replay-container">
-          <h2 class="screen-title gold-title">📼 پخش مجدد</h2>
-          <div class="replay-list" id="replayList">
-            <p class="empty-msg">هیچ بازی ذخیره‌شده‌ای نیست</p>
+
+          <h2 class="screen-title">
+            📼 پخش مجدد
+          </h2>
+
+          <div
+            class="replay-list"
+            id="replayList"
+          >
+            <p class="empty-msg">
+              هیچ بازی ذخیره‌شده‌ای نیست
+            </p>
           </div>
+
         </div>
       </section>
 
-      <!-- ═══════ صفحه آنلاین ═══════ -->
-      <section class="screen" id="screen-online" data-screen="online">
+      <!-- صفحه آنلاین -->
+      <section
+        class="screen"
+        id="screen-online"
+        data-screen="online"
+      >
         <div class="online-container">
-          <h2 class="screen-title gold-title">🌐 بازی آنلاین</h2>
+
+          <h2 class="screen-title">
+            🌐 بازی آنلاین
+          </h2>
+
           <div class="online-options">
-            <button class="btn-primary btn-large btn-block" id="btnCreateRoom" type="button">➕ ساخت اتاق</button>
+
+            <button
+              class="btn-primary btn-large"
+              id="btnCreateRoom"
+              type="button"
+            >
+              ➕ ساخت اتاق
+            </button>
+
             <div class="join-room-bar">
-              <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" />
-              <button class="btn-primary" id="btnJoinRoom" type="button">ورود</button>
+              <input
+                type="text"
+                id="roomCodeInput"
+                placeholder="کد اتاق ۶ رقمی..."
+                maxlength="6"
+              />
+
+              <button
+                class="btn-primary"
+                id="btnJoinRoom"
+                type="button"
+              >
+                ورود
+              </button>
             </div>
+
           </div>
         </div>
       </section>
 
-      <!-- ═══════ صفحه ثبت‌نام / ورود ═══════ -->
-      <section class="screen" id="screen-auth" data-screen="auth">
+      <!-- صفحه ثبت‌نام / ورود -->
+      <section
+        class="screen"
+        id="screen-auth"
+        data-screen="auth"
+      >
         <div class="auth-container">
-          <h2 class="screen-title gold-title">🔐 حساب کاربری</h2>
+
+          <h2 class="screen-title">
+            🔐 حساب کاربری
+          </h2>
+
           <div class="auth-tabs">
-            <button class="auth-tab active" data-auth="login" type="button">ورود</button>
-            <button class="auth-tab" data-auth="register" type="button">ثبت‌نام</button>
+            <button
+              class="auth-tab active"
+              data-auth="login"
+              type="button"
+            >
+              ورود
+            </button>
+
+            <button
+              class="auth-tab"
+              data-auth="register"
+              type="button"
+            >
+              ثبت‌نام
+            </button>
           </div>
-          <form class="auth-form" id="authForm" autocomplete="on">
-            <input type="text" id="authName" placeholder="نام کاربری" required style="display:none;" />
-            <input type="email" id="authEmail" placeholder="ایمیل" required />
-            <input type="password" id="authPassword" placeholder="رمز عبور (حداقل ۶ کاراکتر)" minlength="6" required />
-            <button type="submit" class="btn-primary btn-large btn-block" id="btnAuthSubmit">ورود</button>
+
+          <form
+            class="auth-form"
+            id="authForm"
+            autocomplete="on"
+          >
+            <input
+              type="text"
+              id="authName"
+              placeholder="نام کاربری"
+              required
+              style="display:none;"
+            />
+
+            <input
+              type="email"
+              id="authEmail"
+              placeholder="ایمیل"
+              required
+            />
+
+            <input
+              type="password"
+              id="authPassword"
+              placeholder="رمز عبور (حداقل ۶ کاراکتر)"
+              minlength="6"
+              required
+            />
+
+            <button
+              type="submit"
+              class="btn-primary btn-large"
+              id="btnAuthSubmit"
+            >
+              ورود
+            </button>
           </form>
-          <button class="btn-ghost btn-block" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
+
+          <button
+            class="btn-ghost"
+            id="btnQuickPlay"
+            type="button"
+          >
+            ادامه به‌عنوان مهمان
+          </button>
+
         </div>
       </section>
 
     </main>
 
-    <nav class="bottom-nav" id="bottomNav">
-      <button class="bottom-nav-item active" type="button">
-        <span class="bottom-nav-item-icon">
-          <img src="assets/svg/home-icon.svg" alt="" style="width:26px;height:26px;" />
-        </span>
-        <span>خانه</span>
-      </button>
-      <button class="bottom-nav-item" type="button">
-        <span class="bottom-nav-item-icon">
-          <img src="assets/svg/shop-icon.svg" alt="" style="width:26px;height:26px;" />
-        </span>
-        <span>فروشگاه</span>
-      </button>
-      <button class="bottom-nav-item" type="button">
-        <span class="bottom-nav-item-icon">
-          <img src="assets/svg/slot-icon.svg" alt="" style="width:26px;height:26px;" />
-        </span>
-        <span>شانس</span>
-      </button>
-      <button class="bottom-nav-item" type="button">
-        <span class="bottom-nav-item-icon">
-          <img src="assets/svg/trophy.svg" alt="" style="width:26px;height:26px;" />
-        </span>
-        <span>لیدر</span>
-      </button>
-      <button class="bottom-nav-item" type="button">
-        <span class="bottom-nav-item-icon">
-          <img src="assets/svg/target-icon.svg" alt="" style="width:26px;height:26px;" />
-        </span>
-        <span>دوستان</span>
-      </button>
-    </nav>
+    <!-- bottom-nav کد ۱ حفظ شده است -->
+    <nav
+      class="bottom-nav"
+      id="bottomNav"
+    ></nav>
+
   </div>
 
   <!-- مودال -->
-  <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal" id="modalBox">
-      <button class="modal-close" id="modalClose" type="button">×</button>
-      <div class="modal-content" id="modalContent"></div>
+  <div
+    class="modal-overlay hidden"
+    id="modalOverlay"
+  >
+    <div
+      class="modal"
+      id="modalBox"
+    >
+      <button
+        class="modal-close"
+        id="modalClose"
+        type="button"
+      >
+        ×
+      </button>
+
+      <div
+        class="modal-content"
+        id="modalContent"
+      ></div>
     </div>
   </div>
 
   <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
+  <div
+    class="toast-container"
+    id="toastContainer"
+  ></div>
 
-  <!-- Particle Canvas -->
-  <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
+  <!-- Canvas برای ذرات -->
+  <canvas
+    id="particleCanvas"
+    class="particle-canvas hidden"
+  ></canvas>
 
-  <!-- اسکریپت‌ها -->
+  <!-- اسکریپت‌های اصلی: ترتیب کد ۱ حفظ شده است -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/audio.js"></script>
@@ -624,105 +1843,233 @@
   <script>
     (function () {
       'use strict';
+
       var killed = false;
+
       function killSplash(reason) {
         if (killed) return;
+
         killed = true;
+
         var splash = document.getElementById('splashScreen');
         var app = document.getElementById('app');
-        if (splash) { splash.classList.add('hidden'); splash.style.display = 'none'; }
-        if (app) app.classList.remove('hidden');
+
+        if (splash) {
+          splash.classList.add('hidden');
+          splash.style.display = 'none';
+        }
+
+        if (app) {
+          app.classList.remove('hidden');
+        }
+
         try {
-          if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
-            window.HokmUI.navigate('menu', { force: true });
+          if (
+            window.HokmUI &&
+            typeof window.HokmUI.navigate === 'function'
+          ) {
+            window.HokmUI.navigate('menu', {
+              force: true
+            });
+
             return;
           }
-        } catch (e) { }
+        } catch (e) {
+          // ادامه با روش جایگزین
+        }
+
         var screens = document.querySelectorAll('.screen');
-        for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+
+        for (var i = 0; i < screens.length; i++) {
+          screens[i].classList.remove('active');
+        }
+
         var menu = document.getElementById('screen-menu');
-        if (menu) menu.classList.add('active');
+
+        if (menu) {
+          menu.classList.add('active');
+        }
       }
+
+      // حذف خودکار Splash پس از ۳.۵ ثانیه
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
-        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 3.5s');
+
+        if (
+          splash &&
+          !splash.classList.contains('hidden')
+        ) {
+          killSplash('Timeout 3.5s');
+        }
       }, 3500);
+
+      // زمان پشتیبان برای حذف Splash
       setTimeout(function () {
         var splash = document.getElementById('splashScreen');
-        if (splash && !splash.classList.contains('hidden')) killSplash('Timeout 6s');
+
+        if (
+          splash &&
+          !splash.classList.contains('hidden')
+        ) {
+          killSplash('Timeout 6s');
+        }
       }, 6000);
+
+      // دکمه ورود سریع
       setTimeout(function () {
         var skipBtn = document.getElementById('btnSkipSplash');
-        if (skipBtn && !skipBtn.dataset.killerBound) {
+
+        if (
+          skipBtn &&
+          !skipBtn.dataset.killerBound
+        ) {
           skipBtn.dataset.killerBound = '1';
+
           skipBtn.addEventListener('click', function (e) {
-            e.preventDefault(); e.stopPropagation(); killSplash('Skip clicked');
+            e.preventDefault();
+            e.stopPropagation();
+
+            killSplash('Skip clicked');
           });
         }
       }, 100);
+
+      // اتصال دکمه شروع بازی
       setTimeout(function () {
         var startBtn = document.getElementById('btnStartGame');
-        if (startBtn && !startBtn.dataset.killerBound) {
+
+        if (
+          startBtn &&
+          !startBtn.dataset.killerBound
+        ) {
           startBtn.dataset.killerBound = '1';
+
           startBtn.addEventListener('click', function (e) {
             e.preventDefault();
+
             try {
-              if (window.HokmUI && typeof window.HokmUI.startGame === 'function') window.HokmUI.startGame();
-              else if (window.HokmGame && typeof window.HokmGame.start === 'function') window.HokmGame.start();
-              else alert('موتور بازی آماده نیست');
-            } catch (err) { console.error(err); alert('خطا: ' + err.message); }
+              if (
+                window.HokmUI &&
+                typeof window.HokmUI.startGame === 'function'
+              ) {
+                window.HokmUI.startGame();
+              } else if (
+                window.HokmGame &&
+                typeof window.HokmGame.start === 'function'
+              ) {
+                window.HokmGame.start();
+              } else {
+                alert('موتور بازی آماده نیست');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('خطا: ' + err.message);
+            }
           });
         }
       }, 100);
+
+      // اتصال تب‌های بالای صفحه
       setTimeout(function () {
         var tabs = document.querySelectorAll('.tab');
+
         for (var i = 0; i < tabs.length; i++) {
           (function (tab) {
             if (tab.dataset.killerBound) return;
+
             tab.dataset.killerBound = '1';
+
             tab.addEventListener('click', function () {
               var name = tab.dataset.tab;
+
               try {
-                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
-                  window.HokmUI.navigate(name === 'game' ? 'menu' : name);
+                if (
+                  window.HokmUI &&
+                  typeof window.HokmUI.navigate === 'function'
+                ) {
+                  window.HokmUI.navigate(
+                    name === 'game' ? 'menu' : name
+                  );
+
                   return;
                 }
-              } catch (e) { }
+              } catch (e) {
+                // استفاده از روش جایگزین
+              }
+
               var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
-              var sid = 'screen-' + (name === 'game' ? 'menu' : name);
+
+              for (var j = 0; j < screens.length; j++) {
+                screens[j].classList.remove('active');
+              }
+
+              var sid =
+                'screen-' +
+                (name === 'game' ? 'menu' : name);
+
               var screen = document.getElementById(sid);
-              if (screen) screen.classList.add('active');
+
+              if (screen) {
+                screen.classList.add('active');
+              }
+
               var allTabs = document.querySelectorAll('.tab');
-              for (var k = 0; k < allTabs.length; k++) allTabs[k].classList.remove('active');
+
+              for (var k = 0; k < allTabs.length; k++) {
+                allTabs[k].classList.remove('active');
+              }
+
               tab.classList.add('active');
             });
           })(tabs[i]);
         }
       }, 100);
+
+      // اتصال کارت‌های منوی اصلی
       setTimeout(function () {
         var cards = document.querySelectorAll('.menu-card');
+
         for (var i = 0; i < cards.length; i++) {
           (function (card) {
             if (card.dataset.killerBound) return;
+
             card.dataset.killerBound = '1';
+
             card.addEventListener('click', function () {
               var action = card.dataset.action;
+
               try {
-                if (window.HokmUI && typeof window.HokmUI.navigate === 'function') {
+                if (
+                  window.HokmUI &&
+                  typeof window.HokmUI.navigate === 'function'
+                ) {
                   window.HokmUI.navigate(action);
                   return;
                 }
-              } catch (e) { }
+              } catch (e) {
+                // استفاده از روش جایگزین
+              }
+
               var screens = document.querySelectorAll('.screen');
-              for (var j = 0; j < screens.length; j++) screens[j].classList.remove('active');
-              var screen = document.getElementById('screen-' + action);
-              if (screen) screen.classList.add('active');
+
+              for (var j = 0; j < screens.length; j++) {
+                screens[j].classList.remove('active');
+              }
+
+              var screen = document.getElementById(
+                'screen-' + action
+              );
+
+              if (screen) {
+                screen.classList.add('active');
+              }
             });
           })(cards[i]);
         }
       }, 100);
+
     })();
   </script>
+
 </body>
 </html>
