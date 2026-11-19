@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0d1b2a" id="metaThemeColor" />
-  <meta name="description" content="بازی حکم ایرانی حرفه‌ای" />
+  <meta name="theme-color" content="#0a1512" id="metaThemeColor" />
+  <meta name="description" content="بازی حکم ایرانی حرفه‌ای — Hokm Pro v7.0.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>حکم حرفه‌ای — Hokm Pro</title>
 
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="assets/svg/card-suits.svg" />
+  <link rel="apple-touch-icon" href="assets/svg/card-suits.svg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,145 +22,38 @@
   <link rel="stylesheet" href="css/screens.css" />
   <link rel="stylesheet" href="css/animations.css" />
   <link rel="stylesheet" href="css/responsive.css" />
-
-  <style>
-    :root { --topbar-h: 96px; }
-    @media (max-width: 600px) { :root { --topbar-h: 90px; } }
-    @media (max-width: 380px) { :root { --topbar-h: 86px; } }
-
-    .top-bar {
-      position: fixed !important;
-      top: 0 !important; left: 0 !important; right: 0 !important;
-      z-index: var(--z-sticky) !important;
-      background: rgba(13, 27, 42, 0.85) !important;
-      backdrop-filter: blur(16px) saturate(160%) !important;
-      -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35) !important;
-      padding: 6px 12px 8px !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 4px !important;
-      height: auto !important;
-    }
-    .top-bar-row-top {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 8px; width: 100%;
-    }
-    .top-bar-row-top .top-bar-right {
-      display: flex; align-items: center; gap: 8px;
-      flex-shrink: 0; flex: 0 0 auto !important;
-    }
-    .top-bar-row-top .tabs {
-      flex: 0 1 auto !important; display: flex !important;
-      gap: 2px !important; padding: 3px !important;
-      background: rgba(0, 0, 0, 0.2) !important;
-      border-radius: 9999px !important; margin: 0 auto !important;
-    }
-    .top-bar-row-bottom {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; padding: 0 4px;
-    }
-    .top-bar-row-bottom .top-bar-left {
-      display: flex; align-items: center; gap: 6px;
-      justify-content: flex-end; flex: 0 0 auto !important;
-    }
-    #btnThemeToggle, #btnSoundToggle, #btnBackFromGame {
-      display: inline-flex !important; align-items: center !important;
-      justify-content: center !important; width: 34px !important;
-      height: 34px !important; padding: 0 !important;
-      font-size: 17px !important; line-height: 1 !important;
-      color: var(--text-primary) !important;
-      background: rgba(255, 255, 255, 0.04) !important;
-      border: 1px solid var(--border-color) !important;
-      border-radius: 50% !important; cursor: pointer !important;
-      transition: all 0.15s ease !important; flex-shrink: 0 !important;
-    }
-    #btnThemeToggle:hover, #btnSoundToggle:hover {
-      background: var(--accent-soft) !important;
-      border-color: var(--accent) !important;
-      transform: scale(1.1) !important;
-    }
-    #btnThemeToggle:active, #btnSoundToggle:active, #btnBackFromGame:active {
-      transform: scale(0.92) !important;
-    }
-    #btnBackFromGame:hover {
-      background: var(--color-danger) !important;
-      border-color: var(--color-danger) !important;
-      color: #fff !important; transform: scale(1.1) !important;
-    }
-    .app { padding-top: var(--topbar-h) !important; }
-    .screen[data-screen="game"] .game-container {
-      height: calc(100vh - var(--topbar-h)) !important;
-      height: calc(100dvh - var(--topbar-h)) !important;
-    }
-    .player-hand .card-face { margin: 0 -6px !important; }
-    @media (max-width: 600px) { .player-hand .card-face { margin: 0 -8px !important; } }
-    @media (max-width: 380px) { .player-hand .card-face { margin: 0 -10px !important; } }
-    @media (min-width: 1024px) { .player-hand .card-face { margin: 0 -4px !important; } }
-
-    .player-seat.hokm-caller { position: relative; }
-    .player-seat.hokm-caller .seat-avatar {
-      border-color: #ffd60a !important;
-      box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.3), 0 0 25px rgba(255, 214, 10, 0.6) !important;
-      animation: crownPulse 1.5s ease-in-out infinite !important;
-    }
-    .player-seat.hokm-caller::after {
-      content: '👑'; position: absolute; top: -12px; left: 50%;
-      transform: translateX(-50%); font-size: 24px;
-      animation: crownFloat 2s ease-in-out infinite;
-      pointer-events: none;
-      filter: drop-shadow(0 0 8px rgba(255, 214, 10, 0.9));
-      z-index: 10;
-    }
-    @keyframes crownPulse {
-      0%, 100% { box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.3), 0 0 25px rgba(255, 214, 10, 0.6); }
-      50% { box-shadow: 0 0 0 8px rgba(255, 214, 10, 0.1), 0 0 40px rgba(255, 214, 10, 0.9); }
-    }
-    @keyframes crownFloat {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-6px); }
-    }
-
-    @media (max-width: 600px) {
-      .top-bar { padding: 4px 8px 6px !important; gap: 3px !important; }
-      .top-title { display: none !important; }
-      .top-bar-row-top .tab { padding: 5px 8px !important; min-height: 32px !important; }
-      .top-bar-row-top .tab-label { display: none !important; }
-      .top-bar-row-top .tab-icon { font-size: 16px !important; }
-      #btnThemeToggle, #btnSoundToggle, #btnBackFromGame { width: 32px !important; height: 32px !important; font-size: 16px !important; }
-    }
-    @media (max-width: 380px) {
-      .top-bar-row-top .tab { padding: 4px 6px !important; min-height: 30px !important; }
-      .top-bar-row-top .tab-icon { font-size: 15px !important; }
-      #btnThemeToggle, #btnSoundToggle, #btnBackFromGame { width: 30px !important; height: 30px !important; font-size: 15px !important; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/luxury.css" />
 </head>
 <body data-theme="dark" data-accent="gold" data-card-theme="classic" data-bg="gradient">
 
-  <!-- Splash Screen -->
+  <!-- ═══════════════════════════════════════════
+       Splash Screen
+       ═══════════════════════════════════════════ -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-logo-wrap">
         <div class="splash-ring"></div>
-        <img src="assets/logo.svg" alt="حکم" class="splash-logo" />
+        <img src="assets/svg/card-suits.svg" alt="حکم" class="splash-logo" />
       </div>
       <h1 class="splash-title">حُکم</h1>
-      <p class="splash-subtitle">Hokm Pro — نسخه ۶.۳</p>
+      <p class="splash-subtitle">Hokm Pro — نسخه ۷.۰</p>
       <div class="splash-loading-bar">
         <div class="splash-loading-fill" id="splashFill"></div>
       </div>
       <button class="btn-skip" id="btnSkipSplash" type="button">ورود سریع ⏭</button>
-      <p class="splash-version">v6.3.0</p>
+      <p class="splash-version">v7.0.0</p>
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════
+       اپلیکیشن اصلی
+       ═══════════════════════════════════════════ -->
   <div id="app" class="app hidden">
+
     <header class="top-bar" id="topBar">
       <div class="top-bar-row-top">
         <div class="top-bar-right">
-          <img src="assets/logo.svg" alt="" class="top-logo" />
+          <img src="assets/svg/card-suits.svg" alt="" class="top-logo" />
           <span class="top-title">حُکم</span>
         </div>
         <nav class="tabs" role="tablist" aria-label="ناوبری اصلی">
@@ -179,67 +72,89 @@
         </nav>
       </div>
       <div class="top-bar-row-bottom">
-        <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">🌙</button>
+        <button class="icon-btn" id="btnThemeToggle" aria-label="تغییر تم شب/روز" title="شب/روز" type="button">
+          <img src="assets/svg/dark-mode-toggle.svg" alt="" style="width:22px;height:22px;" />
+        </button>
         <div class="top-bar-left">
           <button class="icon-btn hidden" id="btnBackFromGame" aria-label="بازگشت به منو" title="منو" type="button">↩</button>
-          <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">🔊</button>
+          <button class="icon-btn" id="btnSoundToggle" aria-label="صدا" title="صدا" type="button">
+            <img src="assets/svg/sound-icon.svg" alt="" style="width:22px;height:22px;" />
+          </button>
         </div>
       </div>
     </header>
 
     <main class="main-content" id="mainContent">
 
-      <!-- صفحه منو -->
+      <!-- ═══════ صفحه منو ═══════ -->
       <section class="screen active" id="screen-menu" data-screen="menu">
         <div class="menu-container">
-          <button class="btn-start-big" id="btnStartGame" type="button">
-            <span class="btn-start-icon">🎮</span>
+
+          <button class="btn-start-big shimmer-btn" id="btnStartGame" type="button">
+            <span class="btn-start-icon">
+              <img src="assets/svg/card-front-frame.svg" alt="" style="width:48px;height:48px;" />
+            </span>
             <span class="btn-start-text">شروع بازی</span>
             <span class="btn-start-sub">آفلاین با هوش مصنوعی</span>
           </button>
 
           <div class="menu-secondary-grid">
-            <button class="menu-card" data-action="online" type="button">
-              <span class="menu-card-icon">🌐</span>
+            <button class="menu-card lift-hover" data-action="online" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/target-icon.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">بازی آنلاین</span>
               <span class="menu-card-sub">با دوستان</span>
             </button>
-            <button class="menu-card" data-action="tournament" type="button">
-              <span class="menu-card-icon">🏆</span>
+            <button class="menu-card lift-hover" data-action="tournament" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/trophy.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">تورنمنت</span>
               <span class="menu-card-sub">هفتگی</span>
             </button>
-            <button class="menu-card" data-action="leaderboard" type="button">
-              <span class="menu-card-icon">📊</span>
+            <button class="menu-card lift-hover" data-action="leaderboard" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/medal-icon.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">لیدربورد</span>
               <span class="menu-card-sub">Top 100</span>
             </button>
-            <button class="menu-card" data-action="achievements" type="button">
-              <span class="menu-card-icon">🎖️</span>
+            <button class="menu-card lift-hover" data-action="achievements" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/medal-icon.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">دستاوردها</span>
               <span class="menu-card-sub" id="achCountLabel">۰ / ۱۲</span>
             </button>
-            <button class="menu-card" data-action="friends" type="button">
-              <span class="menu-card-icon">👥</span>
+            <button class="menu-card lift-hover" data-action="friends" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/chat-icon.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">دوستان</span>
               <span class="menu-card-sub" id="friendsCountLabel">۰ آنلاین</span>
             </button>
-            <button class="menu-card" data-action="replay" type="button">
-              <span class="menu-card-icon">📼</span>
+            <button class="menu-card lift-hover" data-action="replay" type="button">
+              <span class="menu-card-icon">
+                <img src="assets/svg/clover-icon.svg" alt="" style="width:40px;height:40px;" />
+              </span>
               <span class="menu-card-title">پخش مجدد</span>
               <span class="menu-card-sub">بازی‌های اخیر</span>
             </button>
           </div>
 
-          <div class="quick-profile" id="quickProfile">
-            <div class="quick-avatar" id="quickAvatar">🌱</div>
+          <div class="quick-profile luxury-glass">
+            <div class="quick-avatar avatar-glow-ring" id="quickAvatar">
+              <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+            </div>
             <div class="quick-info">
               <div class="quick-name" id="quickName">مهمان</div>
               <div class="quick-elo">
                 <span id="quickElo">۱۰۰۰</span>
                 <span class="quick-rank" id="quickRank">تازه‌کار</span>
-                <span style="color: var(--accent); font-family: var(--font-num); margin-right: auto; font-weight: 700;">
-                  🪙 <span id="quickCoins">۵۰۰</span>
+                <span style="color: var(--gold-bright); font-family: var(--font-num); margin-right: auto; font-weight: 900; display:flex; align-items:center; gap:4px;">
+                  <img src="assets/svg/coin.svg" alt="" style="width:20px;height:20px;" />
+                  <span id="quickCoins">۵۰۰</span>
                 </span>
               </div>
             </div>
@@ -248,11 +163,13 @@
         </div>
       </section>
 
-      <!-- صفحه پروفایل -->
+      <!-- ═══════ صفحه پروفایل ═══════ -->
       <section class="screen" id="screen-profile" data-screen="profile">
         <div class="profile-container">
           <div class="profile-header-card">
-            <div class="profile-avatar-big" id="profileAvatarBig">🌱</div>
+            <div class="profile-avatar-big avatar-glow-ring" id="profileAvatarBig">
+              <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+            </div>
             <input type="file" id="avatarUpload" accept="image/*" hidden />
             <button class="btn-change-avatar" id="btnChangeAvatar" type="button">تغییر آواتار</button>
             <h2 class="profile-name" id="profileName">مهمان</h2>
@@ -264,9 +181,12 @@
           </div>
 
           <div class="stats-grid">
-            <div class="stat-card" style="grid-column: span 2; background: linear-gradient(135deg, #ffd60a, #b8860b);">
-              <div class="stat-value" id="statCoins" style="color: #1a1a1a; font-size: 32px;">۵۰۰</div>
-              <div class="stat-label" style="color: #1a1a1a; font-weight: 700;">🪙 سکه‌های من</div>
+            <div class="stat-card" style="grid-column: span 2; background: var(--gradient-gold);">
+              <div class="stat-value" id="statCoins" style="color: var(--accent-text-on); font-size: 34px; display:flex; align-items:center; gap:8px; justify-content:center;">
+                <img src="assets/svg/coin.svg" alt="" style="width:32px;height:32px;" />
+                <span>۵۰۰</span>
+              </div>
+              <div class="stat-label" style="color: var(--accent-text-on); font-weight: 800;">سکه‌های من</div>
             </div>
             <div class="stat-card">
               <div class="stat-value" id="statWins">۰</div>
@@ -304,10 +224,10 @@
         </div>
       </section>
 
-      <!-- صفحه تنظیمات -->
+      <!-- ═══════ صفحه تنظیمات ═══════ -->
       <section class="screen" id="screen-settings" data-screen="settings">
         <div class="settings-container">
-          <h2 class="screen-title">⚙️ تنظیمات</h2>
+          <h2 class="screen-title gold-title">⚙️ تنظیمات</h2>
 
           <div class="setting-group">
             <label class="setting-label">🎨 تم رنگی</label>
@@ -409,10 +329,10 @@
         </div>
       </section>
 
-      <!-- صفحه آمار -->
+      <!-- ═══════ صفحه آمار ═══════ -->
       <section class="screen" id="screen-stats" data-screen="stats">
         <div class="menu-container">
-          <h2 class="screen-title">📊 آمار کامل</h2>
+          <h2 class="screen-title gold-title">📊 آمار کامل</h2>
           <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px;">
             <div class="stat-card">
               <div class="stat-value" id="statsTotalGames">۰</div>
@@ -442,24 +362,22 @@
         </div>
       </section>
 
-      <!-- صفحه دوستان -->
+      <!-- ═══════ صفحه دوستان ═══════ -->
       <section class="screen" id="screen-friends" data-screen="friends">
         <div class="friends-container">
-          <h2 class="screen-title">👥 دوستان</h2>
+          <h2 class="screen-title gold-title">👥 دوستان</h2>
           <div class="add-friend-bar">
             <input type="text" id="friendCodeInput" placeholder="کد کاربری دوست (HK-12345)..." />
             <button id="btnAddFriend" type="button">افزودن</button>
           </div>
-          
           <div id="myFriendCodeDisplay"></div>
-
           <div class="friends-list" id="friendsList">
             <p class="empty-msg">هنوز دوستی اضافه نکرده‌ای</p>
           </div>
         </div>
       </section>
 
-      <!-- صفحه بازی -->
+      <!-- ═══════ صفحه بازی ═══════ -->
       <section class="screen" id="screen-game" data-screen="game">
         <div class="game-container" id="gameContainer">
           <div class="game-info-bar">
@@ -484,7 +402,9 @@
 
           <div class="table-area" id="tableArea">
             <div class="player-seat seat-top" id="seatTop">
-              <div class="seat-avatar" id="avatarTop">🤖</div>
+              <div class="seat-avatar" id="avatarTop">
+                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+              </div>
               <div class="seat-info">
                 <span class="seat-name" id="nameTop">هم‌تیمی</span>
                 <span class="seat-cards" id="cardsTop">۱۳</span>
@@ -492,7 +412,9 @@
               <div class="played-card-slot" id="playedTop"></div>
             </div>
             <div class="player-seat seat-left" id="seatLeft">
-              <div class="seat-avatar" id="avatarLeft">🤖</div>
+              <div class="seat-avatar" id="avatarLeft">
+                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+              </div>
               <div class="seat-info">
                 <span class="seat-name" id="nameLeft">P1</span>
                 <span class="seat-cards" id="cardsLeft">۱۳</span>
@@ -500,7 +422,9 @@
               <div class="played-card-slot" id="playedLeft"></div>
             </div>
             <div class="player-seat seat-right" id="seatRight">
-              <div class="seat-avatar" id="avatarRight">🤖</div>
+              <div class="seat-avatar" id="avatarRight">
+                <img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;" />
+              </div>
               <div class="seat-info">
                 <span class="seat-name" id="nameRight">P2</span>
                 <span class="seat-cards" id="cardsRight">۱۳</span>
@@ -517,7 +441,6 @@
             <div class="player-hand" id="playerHand"></div>
           </div>
 
-          <!-- نوار اقدامات (فقط تایمر، بدون دکمه پاس/حکم) -->
           <div class="action-bar" id="actionBar">
             <div class="timer-bar">
               <div class="timer-fill" id="timerFill"></div>
@@ -525,7 +448,7 @@
           </div>
 
           <div class="hokm-picker hidden" id="hokmPicker">
-            <h3>خال حکم را انتخاب کن</h3>
+            <h3 class="gold-title">خال حکم را انتخاب کن</h3>
             <div class="suit-options">
               <button class="suit-btn suit-spades" data-suit="spades" type="button">♠</button>
               <button class="suit-btn suit-hearts" data-suit="hearts" type="button">♥</button>
@@ -536,10 +459,10 @@
         </div>
       </section>
 
-      <!-- صفحه لیدربورد -->
+      <!-- ═══════ صفحه لیدربورد ═══════ -->
       <section class="screen" id="screen-leaderboard" data-screen="leaderboard">
         <div class="leaderboard-container">
-          <h2 class="screen-title">🏆 جدول امتیازات</h2>
+          <h2 class="screen-title gold-title">🏆 جدول امتیازات</h2>
           <div class="segmented" id="lbFilter">
             <button data-filter="weekly" type="button">هفتگی</button>
             <button data-filter="monthly" type="button">ماهانه</button>
@@ -549,23 +472,26 @@
         </div>
       </section>
 
-      <!-- صفحه دستاوردها -->
+      <!-- ═══════ صفحه دستاوردها ═══════ -->
       <section class="screen" id="screen-achievements" data-screen="achievements">
         <div class="achievements-container">
-          <h2 class="screen-title">🎖️ دستاوردها</h2>
+          <h2 class="screen-title gold-title">🎖️ دستاوردها</h2>
           <p class="ach-progress-text"><span id="achProgressText">۰ از ۱۲</span> دستاورد باز شده</p>
           <div class="ach-progress-bar"><div class="ach-progress-fill" id="achProgressFill"></div></div>
           <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
       </section>
 
-      <!-- صفحه تورنمنت -->
+      <!-- ═══════ صفحه تورنمنت ═══════ -->
       <section class="screen" id="screen-tournament" data-screen="tournament">
         <div class="tournament-container">
-          <h2 class="screen-title">🏆 تورنمنت هفتگی</h2>
+          <h2 class="screen-title gold-title">🏆 تورنمنت هفتگی</h2>
           <div class="tournament-card">
             <div class="tournament-header">
-              <span class="tournament-badge">🎯 حذفی ۸ نفره</span>
+              <span class="tournament-badge">
+                <img src="assets/svg/crown-vip.svg" alt="" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-left:4px;" />
+                حذفی ۸ نفره
+              </span>
               <span class="tournament-time">شنبه‌ها — ۲۰:۰۰</span>
             </div>
             <ul class="tournament-prizes">
@@ -573,28 +499,31 @@
               <li>🥈 نایب‌قهرمان: ۳۰۰ ELO + نقره</li>
               <li>🥉 سوم: ۱۵۰ ELO + برنز</li>
             </ul>
-            <button class="btn-primary btn-large" id="btnJoinTournament" type="button">ثبت‌نام با ۱۰۰ سکه 🪙</button>
+            <button class="btn-primary btn-large btn-block" id="btnJoinTournament" type="button">
+              ثبت‌نام با ۱۰۰ سکه
+              <img src="assets/svg/coin.svg" alt="" style="width:24px;height:24px;" />
+            </button>
             <p class="tournament-note">تا شروع: <span id="tournamentCountdown">—</span></p>
           </div>
         </div>
       </section>
 
-      <!-- صفحه ری‌پلی -->
+      <!-- ═══════ صفحه ری‌پلی ═══════ -->
       <section class="screen" id="screen-replay" data-screen="replay">
         <div class="replay-container">
-          <h2 class="screen-title">📼 پخش مجدد</h2>
+          <h2 class="screen-title gold-title">📼 پخش مجدد</h2>
           <div class="replay-list" id="replayList">
             <p class="empty-msg">هیچ بازی ذخیره‌شده‌ای نیست</p>
           </div>
         </div>
       </section>
 
-      <!-- صفحه آنلاین -->
+      <!-- ═══════ صفحه آنلاین ═══════ -->
       <section class="screen" id="screen-online" data-screen="online">
         <div class="online-container">
-          <h2 class="screen-title">🌐 بازی آنلاین</h2>
+          <h2 class="screen-title gold-title">🌐 بازی آنلاین</h2>
           <div class="online-options">
-            <button class="btn-primary btn-large" id="btnCreateRoom" type="button">➕ ساخت اتاق</button>
+            <button class="btn-primary btn-large btn-block" id="btnCreateRoom" type="button">➕ ساخت اتاق</button>
             <div class="join-room-bar">
               <input type="text" id="roomCodeInput" placeholder="کد اتاق ۶ رقمی..." maxlength="6" />
               <button class="btn-primary" id="btnJoinRoom" type="button">ورود</button>
@@ -603,10 +532,10 @@
         </div>
       </section>
 
-      <!-- صفحه ثبت‌نام / ورود -->
+      <!-- ═══════ صفحه ثبت‌نام / ورود ═══════ -->
       <section class="screen" id="screen-auth" data-screen="auth">
         <div class="auth-container">
-          <h2 class="screen-title">🔐 حساب کاربری</h2>
+          <h2 class="screen-title gold-title">🔐 حساب کاربری</h2>
           <div class="auth-tabs">
             <button class="auth-tab active" data-auth="login" type="button">ورود</button>
             <button class="auth-tab" data-auth="register" type="button">ثبت‌نام</button>
@@ -615,15 +544,46 @@
             <input type="text" id="authName" placeholder="نام کاربری" required style="display:none;" />
             <input type="email" id="authEmail" placeholder="ایمیل" required />
             <input type="password" id="authPassword" placeholder="رمز عبور (حداقل ۶ کاراکتر)" minlength="6" required />
-            <button type="submit" class="btn-primary btn-large" id="btnAuthSubmit">ورود</button>
+            <button type="submit" class="btn-primary btn-large btn-block" id="btnAuthSubmit">ورود</button>
           </form>
-          <button class="btn-ghost" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
+          <button class="btn-ghost btn-block" id="btnQuickPlay" type="button">ادامه به‌عنوان مهمان</button>
         </div>
       </section>
 
     </main>
 
-    <nav class="bottom-nav" id="bottomNav"></nav>
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="bottom-nav-item active" type="button">
+        <span class="bottom-nav-item-icon">
+          <img src="assets/svg/home-icon.svg" alt="" style="width:26px;height:26px;" />
+        </span>
+        <span>خانه</span>
+      </button>
+      <button class="bottom-nav-item" type="button">
+        <span class="bottom-nav-item-icon">
+          <img src="assets/svg/shop-icon.svg" alt="" style="width:26px;height:26px;" />
+        </span>
+        <span>فروشگاه</span>
+      </button>
+      <button class="bottom-nav-item" type="button">
+        <span class="bottom-nav-item-icon">
+          <img src="assets/svg/slot-icon.svg" alt="" style="width:26px;height:26px;" />
+        </span>
+        <span>شانس</span>
+      </button>
+      <button class="bottom-nav-item" type="button">
+        <span class="bottom-nav-item-icon">
+          <img src="assets/svg/trophy.svg" alt="" style="width:26px;height:26px;" />
+        </span>
+        <span>لیدر</span>
+      </button>
+      <button class="bottom-nav-item" type="button">
+        <span class="bottom-nav-item-icon">
+          <img src="assets/svg/target-icon.svg" alt="" style="width:26px;height:26px;" />
+        </span>
+        <span>دوستان</span>
+      </button>
+    </nav>
   </div>
 
   <!-- مودال -->
@@ -637,10 +597,10 @@
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- Canvas برای ذرات -->
+  <!-- Particle Canvas -->
   <canvas id="particleCanvas" class="particle-canvas hidden"></canvas>
 
-  <!-- 🎯 اسکریپت‌های اصلی (ترتیب مهم است) -->
+  <!-- اسکریپت‌ها -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
