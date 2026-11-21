@@ -1,39 +1,62 @@
 /* ═══════════════════════════════════════════════════════════
-   👤 HOKM PRO v6.2.0 — profile.js
-   پروفایل کاربر، ELO FIDE، ۷ سطح رتبه، آواتار، سکه، جایزه روزانه
+   👤 HOKM PRO v7.0.0 — profile.js
+   پروفایل، ELO، ۷ سطح رتبه، آواتار SVG، سکه، جایزه روزانه
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
   const RANKS = [
-    { id: 'legend',      name: 'افسانه',       icon: '🔥', min: 2000, color: '#ef476f', gradient: 'linear-gradient(135deg, #ef476f, #b8304e)' },
-    { id: 'grandmaster', name: 'استاد بزرگ',   icon: '👑', min: 1800, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffe97a, #b8860b)' },
-    { id: 'master',      name: 'استاد',         icon: '💎', min: 1600, color: '#9b5de5', gradient: 'linear-gradient(135deg, #c195f0, #7a3dbd)' },
-    { id: 'pro',         name: 'حرفه‌ای',        icon: '🥇', min: 1400, color: '#ffd60a', gradient: 'linear-gradient(135deg, #ffd60a, #b8860b)' },
-    { id: 'intermediate',name: 'متوسط',         icon: '🥈', min: 1200, color: '#e0e0e0', gradient: 'linear-gradient(135deg, #e0e0e0, #909090)' },
-    { id: 'rookie',      name: 'تازه‌کار',       icon: '🥉', min: 1000, color: '#d4a373', gradient: 'linear-gradient(135deg, #d4a373, #8b5a2b)' },
-    { id: 'beginner',    name: 'مبتدی',         icon: '🌱', min: 0,    color: '#06d6a0', gradient: 'linear-gradient(135deg, #5cf0c2, #059669)' }
+    { id: 'legend',      name: 'افسانه',       icon: 'assets/svg/crown-vip.svg',    min: 2000, color: '#ef476f' },
+    { id: 'grandmaster', name: 'استاد بزرگ',   icon: 'assets/svg/trophy.svg',       min: 1800, color: '#ffd60a' },
+    { id: 'master',      name: 'استاد',         icon: 'assets/svg/medal-icon.svg',   min: 1600, color: '#9b5de5' },
+    { id: 'pro',         name: 'حرفه‌ای',        icon: 'assets/svg/medal-icon.svg',   min: 1400, color: '#ffd60a' },
+    { id: 'intermediate',name: 'متوسط',         icon: 'assets/svg/medal-icon.svg',   min: 1200, color: '#e0e0e0' },
+    { id: 'rookie',      name: 'تازه‌کار',       icon: 'assets/svg/medal-icon.svg',   min: 1000, color: '#d4a373' },
+    { id: 'beginner',    name: 'مبتدی',         icon: 'assets/svg/avatar-default.svg', min: 0,  color: '#06d6a0' }
   ];
 
   const AVATAR_PRESETS = [
-    '🌱', '🥉', '🥈', '🥇', '💎', '👑', '🔥',
-    '😎', '🧑‍🎓', '🤴', '🦁', '🐯', '🦊',
-    '🐼', '🐺', '🦉', '🎭', '🎯', '⚡', '🌟'
+    'assets/svg/avatar-default.svg'
+  ];
+
+  const ACH_ICONS = {
+    first_game: 'assets/svg/medal-icon.svg',
+    first_win: 'assets/svg/trophy.svg',
+    wins_5: 'assets/svg/medal-icon.svg',
+    wins_10: 'assets/svg/trophy.svg',
+    wins_50: 'assets/svg/crown-vip.svg',
+    streak_3: 'assets/svg/clover-icon.svg',
+    streak_5: 'assets/svg/clover-icon.svg',
+    streak_10: 'assets/svg/crown-vip.svg',
+    elo_1300: 'assets/svg/medal-icon.svg',
+    elo_1500: 'assets/svg/trophy.svg',
+    elo_1800: 'assets/svg/crown-vip.svg',
+    elo_2000: 'assets/svg/crown-vip.svg'
+  };
+
+  const ACH_LIST = [
+    { id: 'first_game', title: 'شروع سفر', desc: 'اولین بازی خود را انجام بده', target: 1 },
+    { id: 'first_win', title: 'اولین برد', desc: 'اولین بازی خود را ببر', target: 1 },
+    { id: 'wins_5', title: '۵ برد', desc: 'پنج بازی را ببر', target: 5 },
+    { id: 'wins_10', title: '۱۰ برد', desc: 'ده بازی را ببر', target: 10 },
+    { id: 'wins_50', title: '۵۰ برد', desc: 'پنجاه بازی را ببر', target: 50 },
+    { id: 'streak_3', title: 'آتشین ۳', desc: 'سه بازی پیاپی ببر', target: 3 },
+    { id: 'streak_5', title: 'آتشین ۵', desc: 'پنج بازی پیاپی ببر', target: 5 },
+    { id: 'streak_10', title: 'آتشین ۱۰', desc: 'ده بازی پیاپی ببر', target: 10 },
+    { id: 'elo_1300', title: 'متوسط', desc: 'به ELO ۱۳۰۰ برس', target: 300 },
+    { id: 'elo_1500', title: 'حرفه‌ای', desc: 'به ELO ۱۵۰۰ برس', target: 500 },
+    { id: 'elo_1800', title: 'استاد بزرگ', desc: 'به ELO ۱۸۰۰ برس', target: 800 },
+    { id: 'elo_2000', title: 'افسانه', desc: 'به ELO ۲۰۰۰ برس', target: 1000 }
   ];
 
   const ELO_K_FACTOR = 32;
   const ELO_MIN_CHANGE = 5;
   const ELO_MAX_LOSS = -5;
-
-  // 🎁 جایزه روزانه
   const DAILY_BONUS_AMOUNT = 50;
-  const DAILY_BONUS_INTERVAL = 24 * 60 * 60 * 1000; // ۲۴ ساعت
+  const DAILY_BONUS_INTERVAL = 24 * 60 * 60 * 1000;
 
-  const state = {
-    data: null,
-    listeners: []
-  };
+  const state = { data: null, listeners: [] };
 
   function _storage() { return global.HokmStorage; }
   function _ui() { return global.HokmUI; }
@@ -54,20 +77,10 @@
 
   function _load() {
     const storage = _storage();
-    if (!storage) {
-      state.data = _defaultProfile();
-      return state.data;
-    }
+    if (!storage) { state.data = _defaultProfile(); return state.data; }
     state.data = storage.getProfile();
-    
-    // 🎯 همگام‌سازی وضعیت مهمان با توکن
     const token = localStorage.getItem('hokm_auth_token');
-    if (token) {
-      state.data.isGuest = false;
-    } else {
-      state.data.isGuest = true;
-    }
-    
+    state.data.isGuest = !token;
     return state.data;
   }
 
@@ -81,7 +94,7 @@
   function _defaultProfile() {
     return {
       name: 'مهمان',
-      avatar: '🌱',
+      avatar: 'assets/svg/avatar-default.svg',
       elo: 1000,
       level: 1,
       coins: 500,
@@ -96,7 +109,6 @@
     };
   }
 
-  /* ─── ELO ─── */
   function _calculateExpected(playerElo, opponentElo) {
     return 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
   }
@@ -109,11 +121,8 @@
     return Math.round(change);
   }
 
-  /* ─── رتبه از ELO ─── */
   function _getRankFromElo(elo) {
-    for (const rank of RANKS) {
-      if (elo >= rank.min) return rank;
-    }
+    for (const rank of RANKS) { if (elo >= rank.min) return rank; }
     return RANKS[RANKS.length - 1];
   }
 
@@ -133,27 +142,21 @@
     return { percent, current, next, eloToNext: next.min - elo };
   }
 
-  /* ─── 🎁 جایزه روزانه ─── */
   function _checkDailyBonus() {
     const storage = _storage();
     if (!storage) return;
-
     const lastBonusRaw = storage.getRaw('hokm_daily_bonus');
     const now = Date.now();
-
     if (!lastBonusRaw || (now - parseInt(lastBonusRaw, 10)) >= DAILY_BONUS_INTERVAL) {
       Profile.addCoins(DAILY_BONUS_AMOUNT);
       storage.setRaw('hokm_daily_bonus', String(now));
-
-      console.log(`%c🎁 +${DAILY_BONUS_AMOUNT} سکه روزانه اعطا شد`, 'color: #ffd60a; font-weight: bold;');
-
+      console.log(`%c🎁 +${DAILY_BONUS_AMOUNT} سکه روزانه`, 'color: #ffd60a; font-weight: bold;');
       setTimeout(() => {
         if (_ui() && typeof _ui().showToast === 'function') {
-          _ui().showToast('🎁 جایزه روزانه!', `+${_toPersianNumber(DAILY_BONUS_AMOUNT)} سکه رایگان دریافت کردی`, 'success', 5000);
+          _ui().showToast('🎁 جایزه روزانه!', `+${_toPersianNumber(DAILY_BONUS_AMOUNT)} سکه رایگان`, 'success', 5000);
         }
         if (_audio()) _audio().play('coin');
       }, 2000);
-
       _emit('daily:bonus', { amount: DAILY_BONUS_AMOUNT });
     }
   }
@@ -165,8 +168,7 @@
       _checkDailyBonus();
       Profile.updateUI();
       _bindEvents();
-
-      console.log(`%c👤 Profile loaded: ${state.data.name} (${state.data.elo} ELO)`, 'color: #118ab2; font-weight: bold;');
+      console.log(`%c👤 Profile: ${state.data.name} (${state.data.elo} ELO)`, 'color: #118ab2; font-weight: bold;');
       return state.data;
     },
 
@@ -201,12 +203,8 @@
 
     setAvatarFromFile(file) {
       return new Promise((resolve, reject) => {
-        if (!file || !file.type.startsWith('image/')) {
-          reject(new Error('فایل نامعتبر')); return;
-        }
-        if (file.size > 200 * 1024) {
-          reject(new Error('حجم فایل بیش از ۲۰۰ کیلوبایت')); return;
-        }
+        if (!file || !file.type.startsWith('image/')) { reject(new Error('فایل نامعتبر')); return; }
+        if (file.size > 200 * 1024) { reject(new Error('حجم فایل بیش از ۲۰۰ کیلوبایت')); return; }
         const reader = new FileReader();
         reader.onload = (e) => {
           const img = new Image();
@@ -330,7 +328,6 @@
 
     updateUI() {
       if (!state.data) return;
-
       const elo = state.data.elo;
       const rank = _getRankFromElo(elo);
       const progress = _getRankProgress(elo);
@@ -346,20 +343,19 @@
       _setText('statCoins', _toPersianNumber(state.data.coins));
       _setAvatarHTML('profileAvatarBig', state.data.avatar);
 
-      // 🎯 نمایش کد دوست‌یابی در پروفایل
       const friendCodeEl = document.getElementById('profileFriendCode');
       if (friendCodeEl) {
         if (state.data.friendCode) {
           friendCodeEl.innerHTML = `
-            <div style="margin-top: 8px; padding: 8px 16px; background: var(--bg-secondary); border: 1px solid var(--accent); border-radius: var(--radius-full); display: inline-block;">
-              <span style="font-size: 11px; color: var(--text-muted);">کد دوست‌یابی:</span>
-              <span style="font-size: 16px; font-weight: 900; color: var(--accent); font-family: var(--font-num); margin-right: 6px;">${state.data.friendCode}</span>
-              <button class="icon-btn" style="width: 24px; height: 24px; font-size: 12px;" onclick="navigator.clipboard.writeText('${state.data.friendCode}'); HokmUI.showToast('کپی شد', 'کد شما کپی شد', 'success');">📋</button>
+            <div style="margin-top: 10px; padding: 10px 18px; background: var(--bg-elevated); border: 2px solid var(--gold-mid); border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 20px var(--accent-glow);">
+              <span style="font-size: 12px; color: var(--text-secondary); font-weight: 700;">کد دوست‌یابی:</span>
+              <span style="font-size: 18px; font-weight: 900; color: var(--gold-bright); font-family: var(--font-num); text-shadow: 0 0 12px var(--accent-glow);">${state.data.friendCode}</span>
+              <button class="icon-btn" style="width: 30px; height: 30px; font-size: 14px;" onclick="navigator.clipboard.writeText('${state.data.friendCode}'); HokmUI.showToast('کپی شد', 'کد شما کپی شد', 'success');">📋</button>
             </div>
           `;
         } else {
           friendCodeEl.innerHTML = `
-            <div style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
               برای دریافت کد دوست‌یابی، وارد حساب خود شوید.
             </div>
           `;
@@ -371,13 +367,8 @@
 
       const loginBtn = document.getElementById('btnLogin');
       if (loginBtn) {
-        if (state.data.isGuest) {
-          loginBtn.textContent = 'ورود / ثبت‌نام';
-          loginBtn.classList.remove('logout');
-        } else {
-          loginBtn.textContent = 'خروج';
-          loginBtn.classList.add('logout');
-        }
+        if (state.data.isGuest) { loginBtn.textContent = 'ورود / ثبت‌نام'; loginBtn.classList.remove('logout'); }
+        else { loginBtn.textContent = 'خروج'; loginBtn.classList.add('logout'); }
       }
 
       const stats = Profile.getStats();
@@ -401,11 +392,7 @@
       if (!storage) return;
       const history = storage.getHistory();
       const games = (history.games || []).slice(0, 10);
-
-      if (games.length === 0) {
-        el.innerHTML = '<p class="empty-msg">هنوز بازی‌ای انجام نداده‌ای</p>';
-        return;
-      }
+      if (games.length === 0) { el.innerHTML = '<p class="empty-msg">هنوز بازی‌ای انجام نداده‌ای</p>'; return; }
 
       el.innerHTML = games.map(g => {
         const win = g.win;
@@ -413,9 +400,8 @@
         const cls = win ? 'win' : 'loss';
         const eloChange = g.eloChange || 0;
         const eloSign = eloChange >= 0 ? '+' : '';
-        const eloColor = eloChange > 0 ? 'var(--color-success)' : eloChange < 0 ? 'var(--color-danger)' : 'var(--text-muted)';
+        const eloColor = eloChange > 0 ? 'var(--emerald-bright)' : eloChange < 0 ? 'var(--ruby-bright)' : 'var(--text-muted)';
         const timeAgo = _timeAgo(g.timestamp);
-
         return `
           <div class="history-item ${cls}">
             <div class="history-result">${icon}</div>
@@ -431,12 +417,18 @@
   };
 
   function _setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
   function _setAvatarHTML(id, avatar) {
-    const el = document.getElementById(id); if (!el) return;
+    const el = document.getElementById(id);
+    if (!el) return;
     if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
       el.innerHTML = `<img src="${avatar}" alt="آواتار" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else if (typeof avatar === 'string' && avatar.startsWith('assets/')) {
+      el.innerHTML = `<img src="${avatar}" alt="آواتار" style="width:100%;height:100%;object-fit:contain;" />`;
+    } else if (typeof avatar === 'string' && avatar.length <= 4) {
+      el.textContent = avatar;
     } else {
-      el.textContent = avatar || '🌱';
+      el.innerHTML = `<img src="assets/svg/avatar-default.svg" alt="آواتار" style="width:100%;height:100%;object-fit:contain;" />`;
     }
   }
 
@@ -464,28 +456,21 @@
     const achData = storage.getAchievements();
     const unlocked = achData.unlocked || {};
 
-    const ACH_LIST = [
-      { id: 'first_game', icon: '🎬' }, { id: 'first_win', icon: '⭐' },
-      { id: 'wins_5', icon: '🌟' }, { id: 'wins_10', icon: '✨' },
-      { id: 'wins_50', icon: '💫' }, { id: 'streak_3', icon: '🔥' },
-      { id: 'streak_5', icon: '🔥' }, { id: 'streak_10', icon: '🔥' },
-      { id: 'elo_1300', icon: '🥈' }, { id: 'elo_1500', icon: '🥇' },
-      { id: 'elo_1800', icon: '👑' }, { id: 'elo_2000', icon: '🔥' }
-    ];
-
-    const unlockedCount = Object.keys(unlocked).length;
-
     grid.innerHTML = ACH_LIST.map(a => {
       const isUnlocked = !!unlocked[a.id];
+      const iconPath = ACH_ICONS[a.id] || 'assets/svg/medal-icon.svg';
       return `
         <div class="achievement-mini ${isUnlocked ? 'unlocked' : 'locked'}" title="${a.id}" data-ach="${a.id}">
-          ${a.icon}
+          <img src="${iconPath}" alt="" style="width:32px;height:32px;${isUnlocked ? '' : 'filter:grayscale(1) brightness(0.5);'}" />
         </div>
       `;
     }).join('');
 
     const label = document.getElementById('achCountLabel');
-    if (label) label.textContent = `${_toPersianNumber(unlockedCount)} / ${_toPersianNumber(ACH_LIST.length)}`;
+    if (label) {
+      const unlockedCount = Object.keys(unlocked).length;
+      label.textContent = `${_toPersianNumber(unlockedCount)} / ${_toPersianNumber(ACH_LIST.length)}`;
+    }
   }
 
   function _bindEvents() {
@@ -541,58 +526,38 @@
     const picker = document.getElementById('modalContent');
     const overlay = document.getElementById('modalOverlay');
     if (!picker || !overlay) return;
-    const presets = Profile.getAvatarPresets();
 
     picker.innerHTML = `
       <h3 class="modal-title">یک آواتار انتخاب کن</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 10px; padding: 12px 0;">
-        ${presets.map(a => `
-          <button class="avatar-picker-btn" data-avatar="${a}" style="aspect-ratio: 1; font-size: 28px; background: var(--bg-elevated); border: 2px solid ${a === state.data.avatar ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 50%; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            ${a}
-          </button>
-        `).join('')}
+      <div style="text-align: center; padding: 20px;">
+        <img src="assets/svg/avatar-default.svg" alt="" style="width: 120px; height: 120px; filter: drop-shadow(0 0 20px var(--accent-glow));" />
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-outline" id="btnRandomAvatar">🎲 تصادفی</button>
-        <button class="btn btn-primary" id="btnUploadAvatar">📷 آپلود تصویر</button>
+      <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-primary btn-block" id="btnUploadAvatar">📷 آپلود تصویر</button>
+        <button class="btn btn-outline btn-block" id="btnResetAvatar">🔄 بازگشت به پیش‌فرض</button>
       </div>
     `;
 
     overlay.classList.remove('hidden');
 
-    picker.querySelectorAll('.avatar-picker-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const avatar = btn.dataset.avatar;
-        Profile.setAvatar(avatar);
-        if (_audio()) _audio().play('softClick');
-        overlay.classList.add('hidden');
-        _toast('آواتار تغییر کرد', 'success');
-      });
-    });
-
-    document.getElementById('btnRandomAvatar')?.addEventListener('click', () => {
-      Profile.randomAvatar();
-      if (_audio()) _audio().play('click');
+    document.getElementById('btnUploadAvatar')?.addEventListener('click', () => {
+      document.getElementById('avatarUpload')?.click();
       overlay.classList.add('hidden');
     });
 
-    document.getElementById('btnUploadAvatar')?.addEventListener('click', () => {
-      document.getElementById('avatarUpload')?.click();
+    document.getElementById('btnResetAvatar')?.addEventListener('click', () => {
+      Profile.setAvatar('assets/svg/avatar-default.svg');
+      if (_audio()) _audio().play('click');
       overlay.classList.add('hidden');
     });
   }
 
   function _toast(msg, type) {
-    if (_ui() && typeof _ui().showToast === 'function') {
-      _ui().showToast('اطلاع', msg, type || 'info');
-    } else {
-      console.log(`[${type}] ${msg}`);
-    }
+    if (_ui() && typeof _ui().showToast === 'function') _ui().showToast('اطلاع', msg, type || 'info');
+    else console.log(`[${type}] ${msg}`);
   }
 
-  function bootstrap() {
-    Profile.init();
-  }
+  function bootstrap() { Profile.init(); }
 
   Profile.RANKS = RANKS;
   Profile.AVATAR_PRESETS = AVATAR_PRESETS;
@@ -601,11 +566,8 @@
   global.HokmProfile = Profile;
 
   if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 50));
-    } else {
-      setTimeout(bootstrap, 50);
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(bootstrap, 50));
+    else setTimeout(bootstrap, 50);
   }
 
 })(typeof window !== 'undefined' ? window : globalThis);
