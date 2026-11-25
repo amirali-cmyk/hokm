@@ -1,633 +1,1182 @@
 
-/* ============================================================
-   HOKM PRO v7.0 — PREMIUM AUDIO ENGINE
-   Web Audio API | 30+ Sound Effects | Ambient Music
-   Compatible with previous HokmAudio API
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════
+   HOKM PRO v7.0 — audio.js
+   Web Audio API — ۲۷ افکت صوتی + Original Luxury Ambient
+   Music: Calm / Elegant / Premium
+   ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
   'use strict';
 
-  const NOTES = {
-    C3: 130.81, E3: 164.81, G3: 196,
-    A3: 220, B3: 246.94,
-    C4: 261.63, D4: 293.66, E4: 329.63,
-    F4: 349.23, G4: 392, A4: 440, B4: 493.88,
+  /* ═══════════════════════════════════════════════════════════
+     تنظیمات نت‌ها و موسیقی
+     ═══════════════════════════════════════════════════════════ */
+
+  const NOTE_FREQS = {
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61,
+    G3: 196.00, A3: 220.00, B3: 246.94,
+
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23,
+    G4: 392.00, A4: 440.00, B4: 493.88,
+
     C5: 523.25, D5: 587.33, E5: 659.25,
-    G5: 783.99, A5: 880, C6: 1046.50
+    F5: 698.46, G5: 783.99, A5: 880.00,
+    B5: 987.77
   };
 
-  const CHORDS = [
-    [NOTES.C4, NOTES.E4, NOTES.G4, NOTES.C5],
-    [NOTES.A3, NOTES.C4, NOTES.E4, NOTES.A4],
-    [NOTES.F4, NOTES.A4, NOTES.C5],
-    [NOTES.G3, NOTES.B3, NOTES.D4, NOTES.G4],
-    [NOTES.D4, NOTES.F4, NOTES.A4, NOTES.D5],
-    [NOTES.E4, NOTES.G4, NOTES.B4, NOTES.E5]
+  const MAJOR_SCALE = [
+    NOTE_FREQS.D4,
+    NOTE_FREQS.E4,
+    NOTE_FREQS.F4 * 1.05946,
+    NOTE_FREQS.G4,
+    NOTE_FREQS.A4,
+    NOTE_FREQS.B4,
+    NOTE_FREQS.C5 * 1.05946,
+    NOTE_FREQS.D5
   ];
+
+  // آکوردهای اصلی موسیقی اختصاصی
+  // Dmaj9 — Bm9 — Gmaj7 — Aadd9
+  const LUXURY_CHORDS = [
+    [50, 57, 62, 66, 69],
+    [47, 54, 57, 62, 66],
+    [43, 50, 55, 59, 62],
+    [45, 52, 57, 59, 64]
+  ];
+
+  // ملودی اصلی؛ نت‌ها بر اساس شماره MIDI
+  const LUXURY_MELODY = [
+    [74, 76, 81, 78, 76, 74, 69, null],
+    [71, 74, 78, 81, 78, 74, 71, null],
+    [79, 78, 74, 71, 74, 76, 74, null],
+    [76, 78, 81, 83, 81, 78, 76, null]
+  ];
+
+  const MUSIC_BPM = 76;
+  const MUSIC_BEAT = 60 / MUSIC_BPM;
+  const MUSIC_BAR = MUSIC_BEAT * 4;
+
+  /* ═══════════════════════════════════════════════════════════
+     وضعیت موتور صدا
+     ═══════════════════════════════════════════════════════════ */
 
   const state = {
     ctx: null,
-    master: null,
-    sfx: null,
-    music: null,
-    reverb: null,
+
+    masterGain: null,
+    sfxGain: null,
+    musicGain: null,
+    reverbNode: null,
+
     initialized: false,
     unlocked: false,
+
     musicPlaying: false,
-    musicEnabled: false,
-    sfxEnabled: true,
-    sfxVolume: 0.6,
-    musicVolume: 0.18,
-    chordIndex: 0,
-    padNodes: [],
-    timers: [],
-    arpTimer: null,
-    lastPlayed: new Map()
+    musicTimers: [],
+    musicNodes: [],
+
+    currentChordIndex: 0,
+    musicBarIndex: 0,
+
+    enabled: {
+      sfx: true,
+      music: false
+    },
+
+    volumes: {
+      sfx: 0.6,
+      music: 0.22,
+      master: 1
+    }
   };
 
-  const storage = () => global.HokmStorage;
+  let unlockEventsBound = false;
+  let domEventsBound = false;
 
-  function loadSettings() {
-    try {
-      const s = storage()?.getSettings?.();
-      if (!s) return;
+  /* ═══════════════════════════════════════════════════════════
+     ابزارهای عمومی داخلی
+     ═══════════════════════════════════════════════════════════ */
 
-      state.sfxEnabled = s.soundEnabled !== false;
-      state.musicEnabled = s.musicEnabled === true;
-      state.sfxVolume = (s.sfxVolume ?? 60) / 100;
-      state.musicVolume = (s.musicVolume ?? 18) / 100;
-    } catch (_) {}
+  function _storage() {
+    return global.HokmStorage;
   }
 
-  function saveSettings() {
+  function _loadFromStorage() {
     try {
-      storage()?.updateSettings?.({
-        soundEnabled: state.sfxEnabled,
-        musicEnabled: state.musicEnabled,
-        sfxVolume: Math.round(state.sfxVolume * 100),
-        musicVolume: Math.round(state.musicVolume * 100)
+      const storage = _storage();
+      if (!storage || typeof storage.getSettings !== 'function') return;
+
+      const settings = storage.getSettings() || {};
+
+      state.enabled.sfx = settings.soundEnabled !== false;
+      state.enabled.music = settings.musicEnabled === true;
+
+      state.volumes.sfx =
+        Math.max(0, Math.min(1, (settings.sfxVolume ?? 60) / 100));
+
+      state.volumes.music =
+        Math.max(0, Math.min(1, (settings.musicVolume ?? 22) / 100));
+
+    } catch (error) {
+      console.warn('[Audio] Storage read error:', error);
+    }
+  }
+
+  function _saveToStorage() {
+    try {
+      const storage = _storage();
+
+      if (!storage || typeof storage.updateSettings !== 'function') return;
+
+      storage.updateSettings({
+        soundEnabled: state.enabled.sfx,
+        musicEnabled: state.enabled.music,
+        sfxVolume: Math.round(state.volumes.sfx * 100),
+        musicVolume: Math.round(state.volumes.music * 100)
       });
-    } catch (_) {}
+
+    } catch (error) {
+      console.warn('[Audio] Storage save error:', error);
+    }
   }
 
-  function init() {
+  function _clamp(value, min = 0, max = 1) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return min;
+    return Math.max(min, Math.min(max, number));
+  }
+
+  function _midiToFrequency(note) {
+    return 440 * Math.pow(2, (note - 69) / 12);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     راه‌اندازی Audio Context
+     ═══════════════════════════════════════════════════════════ */
+
+  function _init() {
     if (state.initialized) return true;
 
     try {
-      const AC = global.AudioContext || global.webkitAudioContext;
-      if (!AC) return false;
+      const AudioContextClass =
+        global.AudioContext || global.webkitAudioContext;
 
-      state.ctx = new AC();
+      if (!AudioContextClass) {
+        console.warn('[Audio] Web Audio API پشتیبانی نمی‌شود');
+        return false;
+      }
 
-      state.master = state.ctx.createGain();
-      state.master.gain.value = 0.85;
-      state.master.connect(state.ctx.destination);
+      state.ctx = new AudioContextClass();
 
-      state.sfx = state.ctx.createGain();
-      state.sfx.gain.value = state.sfxVolume;
-      state.sfx.connect(state.master);
+      state.masterGain = state.ctx.createGain();
+      state.masterGain.gain.value = state.volumes.master;
+      state.masterGain.connect(state.ctx.destination);
 
-      state.music = state.ctx.createGain();
-      state.music.gain.value = state.musicVolume;
-      state.music.connect(state.master);
+      state.sfxGain = state.ctx.createGain();
+      state.sfxGain.gain.value = state.volumes.sfx;
+      state.sfxGain.connect(state.masterGain);
 
-      state.reverb = createReverb(2.5, 3);
+      state.musicGain = state.ctx.createGain();
+      state.musicGain.gain.value = state.volumes.music;
+
+      state.reverbNode = _createReverb(3.5, 2.5);
+      state.reverbNode.connect(state.musicGain);
+
+      state.musicGain.connect(state.masterGain);
+
       state.initialized = true;
 
-      console.log('[HOKM AUDIO] Premium engine ready');
+      console.log(
+        '%c🔊 HOKM PRO Audio Engine Ready',
+        'color:#06d6a0;font-weight:bold;'
+      );
+
       return true;
-    } catch (e) {
-      console.warn('[HOKM AUDIO]', e);
+
+    } catch (error) {
+      console.warn('[Audio] Init error:', error);
       return false;
     }
   }
 
-  function createReverb(duration, decay) {
-    const ctx = state.ctx;
-    const length = Math.floor(ctx.sampleRate * duration);
-    const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  /* ═══════════════════════════════════════════════════════════
+     Reverb
+     ═══════════════════════════════════════════════════════════ */
 
-    for (let ch = 0; ch < 2; ch++) {
-      const data = buffer.getChannelData(ch);
+  function _createReverb(duration, decay) {
+    const ctx = state.ctx;
+    const sampleRate = ctx.sampleRate;
+    const length = Math.floor(sampleRate * duration);
+
+    const impulse = ctx.createBuffer(2, length, sampleRate);
+
+    for (let channel = 0; channel < 2; channel++) {
+      const data = impulse.getChannelData(channel);
+
       for (let i = 0; i < length; i++) {
-        data[i] =
-          (Math.random() * 2 - 1) *
-          Math.pow(1 - i / length, decay);
+        const fade = Math.pow(1 - i / length, decay);
+        data[i] = (Math.random() * 2 - 1) * fade;
       }
     }
 
     const convolver = ctx.createConvolver();
-    convolver.buffer = buffer;
-    convolver.connect(state.music);
+    convolver.buffer = impulse;
+
     return convolver;
   }
 
-  function unlock() {
-    if (!init()) return;
+  /* ═══════════════════════════════════════════════════════════
+     باز کردن قفل Audio در مرورگر
+     ═══════════════════════════════════════════════════════════ */
+
+  function _unlock() {
+    if (!state.ctx && !_init()) return;
+
+    if (!state.ctx) return;
 
     if (state.ctx.state === 'suspended') {
-      state.ctx.resume().then(() => {
-        state.unlocked = true;
-        if (state.musicEnabled) startMusicInternal();
-      }).catch(() => {});
+      state.ctx.resume()
+        .then(() => {
+          state.unlocked = true;
+
+          console.log(
+            '%c🔓 Audio Unlocked',
+            'color:#06d6a0;'
+          );
+
+          if (state.enabled.music) {
+            _startMusic();
+          }
+        })
+        .catch(error => {
+          console.warn('[Audio] Unlock error:', error);
+        });
+
     } else {
       state.unlocked = true;
-      if (state.musicEnabled) startMusicInternal();
+
+      if (state.enabled.music) {
+        _startMusic();
+      }
     }
   }
 
-  function bindUnlock() {
-    const events = ['pointerdown', 'keydown', 'touchstart'];
+  function _bindUnlockEvents() {
+    if (
+      unlockEventsBound ||
+      typeof document === 'undefined'
+    ) return;
+
+    unlockEventsBound = true;
+
+    const events = [
+      'pointerdown',
+      'touchstart',
+      'keydown',
+      'click'
+    ];
 
     const handler = () => {
-      unlock();
-      if (state.unlocked) {
-        events.forEach(e =>
-          document.removeEventListener(e, handler, true)
+      _unlock();
+
+      events.forEach(eventName => {
+        document.removeEventListener(
+          eventName,
+          handler,
+          true
         );
-      }
+      });
+
+      unlockEventsBound = false;
     };
 
-    events.forEach(e =>
-      document.addEventListener(e, handler, {
-        capture: true,
-        passive: true
-      })
-    );
-  }
-
-  function tone(options = {}) {
-    if (!state.ctx || !state.sfxEnabled) return;
-
-    const {
-      freq = 440,
-      duration = 0.12,
-      volume = 0.25,
-      type = 'sine',
-      attack = 0.005,
-      release = 0.08,
-      delay = 0,
-      ramp = null,
-      detune = 0
-    } = options;
-
-    const ctx = state.ctx;
-    const now = ctx.currentTime + delay;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    osc.detune.value = detune;
-
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(volume, now + attack);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001, now + duration + release
-    );
-
-    if (ramp) {
-      osc.frequency.exponentialRampToValueAtTime(
-        ramp, now + duration
+    events.forEach(eventName => {
+      document.addEventListener(
+        eventName,
+        handler,
+        {
+          capture: true,
+          passive: true
+        }
       );
-    }
-
-    osc.connect(gain);
-    gain.connect(state.sfx);
-
-    osc.start(now);
-    osc.stop(now + duration + release + 0.03);
+    });
   }
 
-  function noise(options = {}) {
-    if (!state.ctx || !state.sfxEnabled) return;
+  /* ═══════════════════════════════════════════════════════════
+     پخش تن ساده — افکت‌های بازی
+     ═══════════════════════════════════════════════════════════ */
 
-    const {
-      duration = 0.1,
-      volume = 0.2,
-      frequency = 1800,
-      type = 'lowpass',
-      delay = 0
-    } = options;
+  function _playTone({
+    freq = 440,
+    duration = 0.15,
+    type = 'sine',
+    volume = 0.4,
+    attack = 0.005,
+    release = 0.08,
+    delay = 0,
+    destination = null,
+    detune = 0,
+    frequencyRamp = null
+  } = {}) {
+    if (!state.ctx || !state.enabled.sfx) return null;
 
-    const ctx = state.ctx;
-    const now = ctx.currentTime + delay;
-    const length = Math.max(1, Math.floor(ctx.sampleRate * duration));
+    try {
+      const ctx = state.ctx;
+      const now = ctx.currentTime + Math.max(0, delay);
 
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
-    for (let i = 0; i < length; i++) {
-      const fade = 1 - i / length;
-      data[i] = (Math.random() * 2 - 1) * fade;
+      osc.type = type;
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+
+      const safeAttack = Math.max(0.001, attack);
+      const safeDuration = Math.max(0.01, duration);
+      const safeRelease = Math.max(0.01, release);
+
+      gain.gain.setValueAtTime(0.0001, now);
+
+      gain.gain.linearRampToValueAtTime(
+        Math.max(0.0001, volume),
+        now + safeAttack
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        now + safeAttack + safeDuration + safeRelease
+      );
+
+      if (frequencyRamp && frequencyRamp.to) {
+        osc.frequency.setValueAtTime(freq, now);
+
+        osc.frequency.exponentialRampToValueAtTime(
+          frequencyRamp.to,
+          now + Math.max(
+            0.01,
+            frequencyRamp.duration || safeDuration
+          )
+        );
+      }
+
+      osc.connect(gain);
+      gain.connect(destination || state.sfxGain);
+
+      osc.start(now);
+      osc.stop(now + safeAttack + safeDuration + safeRelease + 0.03);
+
+      return { osc, gain };
+
+    } catch (error) {
+      console.warn('[Audio] Tone error:', error);
+      return null;
     }
-
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = type;
-    filter.frequency.value = frequency;
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001, now + duration
-    );
-
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(state.sfx);
-
-    source.start(now);
-    source.stop(now + duration + 0.02);
   }
 
-  function chord(freqs, options = {}) {
-    freqs.forEach((freq, i) => {
-      tone({
+  function _playNoise({
+    duration = 0.15,
+    volume = 0.3,
+    filterFreq = 1000,
+    filterType = 'bandpass',
+    delay = 0,
+    destination = null
+  } = {}) {
+    if (!state.ctx || !state.enabled.sfx) return null;
+
+    try {
+      const ctx = state.ctx;
+      const now = ctx.currentTime + Math.max(0, delay);
+
+      const safeDuration = Math.max(0.01, duration);
+      const bufferSize = Math.floor(ctx.sampleRate * safeDuration);
+
+      const buffer = ctx.createBuffer(
+        1,
+        bufferSize,
+        ctx.sampleRate
+      );
+
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] =
+          (Math.random() * 2 - 1) *
+          (1 - i / bufferSize);
+      }
+
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = filterType;
+      filter.frequency.value = filterFreq;
+      filter.Q.value = 1;
+
+      const gain = ctx.createGain();
+
+      gain.gain.setValueAtTime(volume, now);
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        now + safeDuration
+      );
+
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(destination || state.sfxGain);
+
+      source.start(now);
+      source.stop(now + safeDuration + 0.03);
+
+      return { source, gain };
+
+    } catch (error) {
+      console.warn('[Audio] Noise error:', error);
+      return null;
+    }
+  }
+
+  function _playChord(freqs, options = {}) {
+    freqs.forEach((frequency, index) => {
+      _playTone({
         ...options,
-        freq,
-        delay: (options.delay || 0) + i * 0.035
+        freq: frequency,
+        delay: (options.delay || 0) + index * 0.02
       });
     });
   }
 
-  function playOnce(name, fn, cooldown = 35) {
-    const now = Date.now();
-    const last = state.lastPlayed.get(name) || 0;
-
-    if (now - last < cooldown) return;
-
-    state.lastPlayed.set(name, now);
-    fn();
-  }
-
-  /* ================= SOUND LIBRARY ================= */
+  /* ═══════════════════════════════════════════════════════════
+     افکت‌های صوتی بازی
+     ═══════════════════════════════════════════════════════════ */
 
   const SOUNDS = {
 
     click() {
-      tone({ freq: 950, ramp: 1250, duration: 0.045, volume: 0.16 });
+      _playTone({
+        freq: 800,
+        duration: 0.06,
+        volume: 0.3,
+        frequencyRamp: { to: 1200, duration: 0.04 }
+      });
     },
 
     softClick() {
-      tone({ freq: 650, duration: 0.045, type: 'triangle', volume: 0.12 });
+      _playTone({
+        freq: 600,
+        duration: 0.05,
+        type: 'triangle',
+        volume: 0.2
+      });
     },
 
     modalOpen() {
-      tone({ freq: 440, ramp: 660, duration: 0.1, volume: 0.2 });
-      tone({ freq: 660, delay: 0.07, duration: 0.13, volume: 0.14 });
+      _playTone({
+        freq: 440,
+        duration: 0.1,
+        volume: 0.25,
+        frequencyRamp: { to: 660, duration: 0.08 }
+      });
+
+      _playTone({
+        freq: 660,
+        duration: 0.12,
+        volume: 0.15,
+        delay: 0.06
+      });
     },
 
     modalClose() {
-      tone({ freq: 660, ramp: 440, duration: 0.12, volume: 0.17 });
+      _playTone({
+        freq: 660,
+        duration: 0.1,
+        volume: 0.2,
+        frequencyRamp: { to: 440, duration: 0.08 }
+      });
     },
 
     notification() {
-      tone({ freq: 880, duration: 0.08, volume: 0.18 });
-      tone({ freq: 1174.66, delay: 0.09, duration: 0.14, volume: 0.16 });
+      _playTone({
+        freq: 880,
+        duration: 0.08,
+        volume: 0.28
+      });
+
+      _playTone({
+        freq: 1320,
+        duration: 0.14,
+        volume: 0.22,
+        delay: 0.08
+      });
     },
 
     playCard() {
-      noise({ duration: 0.09, frequency: 2100, type: 'highpass', volume: 0.17 });
-      tone({ freq: 180, duration: 0.07, type: 'triangle', volume: 0.13 });
+      _playNoise({
+        duration: 0.08,
+        volume: 0.35,
+        filterFreq: 2500,
+        filterType: 'highpass'
+      });
+
+      _playTone({
+        freq: 220,
+        duration: 0.08,
+        type: 'triangle',
+        volume: 0.25
+      });
     },
 
     deal() {
-      noise({ duration: 0.055, frequency: 2800, type: 'highpass', volume: 0.13 });
-      tone({ freq: 290, duration: 0.05, type: 'triangle', volume: 0.09 });
-    },
+      _playNoise({
+        duration: 0.05,
+        volume: 0.25,
+        filterFreq: 3000,
+        filterType: 'highpass'
+      });
 
-    shuffle() {
-      for (let i = 0; i < 7; i++) {
-        noise({
-          duration: 0.055,
-          frequency: 1900 + i * 180,
-          type: 'highpass',
-          volume: 0.11,
-          delay: i * 0.055
-        });
-      }
+      _playTone({
+        freq: 350,
+        duration: 0.05,
+        type: 'triangle',
+        volume: 0.15
+      });
     },
 
     winTrick() {
-      [523.25, 659.25, 783.99].forEach((f, i) =>
-        tone({ freq: f, duration: 0.17, volume: 0.2, delay: i * 0.105 })
-      );
+      [523.25, 659.25, 783.99].forEach((freq, index) => {
+        _playTone({
+          freq,
+          duration: index === 2 ? 0.2 : 0.12,
+          volume: 0.32,
+          delay: index * 0.1
+        });
+      });
     },
 
     loseTrick() {
-      tone({ freq: 390, ramp: 260, duration: 0.19, volume: 0.16 });
+      _playTone({
+        freq: 400,
+        duration: 0.15,
+        volume: 0.25,
+        frequencyRamp: { to: 280, duration: 0.15 }
+      });
     },
 
     claimHokm() {
-      chord([NOTES.C4, NOTES.E4, NOTES.G4], {
-        duration: 0.28, volume: 0.17, type: 'sine'
+      _playChord(
+        [
+          NOTE_FREQS.C4,
+          NOTE_FREQS.E4,
+          NOTE_FREQS.G4
+        ],
+        {
+          duration: 0.25,
+          volume: 0.3
+        }
+      );
+
+      _playTone({
+        freq: 1046.5,
+        duration: 0.4,
+        volume: 0.35,
+        delay: 0.15
       });
-      tone({ freq: NOTES.C6, duration: 0.35, delay: 0.2, volume: 0.18 });
     },
 
     pass() {
-      tone({ freq: 500, ramp: 390, duration: 0.1, type: 'triangle' });
+      _playTone({
+        freq: 500,
+        duration: 0.1,
+        type: 'triangle',
+        volume: 0.2,
+        frequencyRamp: { to: 400, duration: 0.08 }
+      });
     },
 
     win() {
-      const melody = [NOTES.C4, NOTES.E4, NOTES.G4, NOTES.C5, NOTES.E5];
+      const notes = [
+        { f: NOTE_FREQS.C4, d: 0.15 },
+        { f: NOTE_FREQS.E4, d: 0.15 },
+        { f: NOTE_FREQS.G4, d: 0.15 },
+        { f: NOTE_FREQS.C5, d: 0.35 }
+      ];
 
-      melody.forEach((f, i) => {
-        tone({
-          freq: f,
-          duration: i === 4 ? 0.5 : 0.16,
-          volume: 0.21,
+      let time = 0;
+
+      notes.forEach(note => {
+        _playTone({
+          freq: note.f,
+          duration: note.d,
           type: 'triangle',
-          delay: i * 0.13
+          volume: 0.35,
+          delay: time
         });
+
+        time += note.d * 0.85;
       });
 
-      chord([NOTES.C4, NOTES.E4, NOTES.G4, NOTES.C5], {
-        delay: 0.75, duration: 0.65, volume: 0.14
-      });
+      setTimeout(() => {
+        _playChord(
+          [
+            NOTE_FREQS.C4,
+            NOTE_FREQS.E4,
+            NOTE_FREQS.G4,
+            NOTE_FREQS.C5
+          ],
+          {
+            duration: 0.6,
+            volume: 0.25
+          }
+        );
+      }, 700);
     },
 
     lose() {
-      [NOTES.G4, NOTES.E4, NOTES.C4].forEach((f, i) => {
-        tone({
-          freq: f,
-          duration: 0.24,
-          volume: 0.17,
-          delay: i * 0.19
+      const notes = [
+        { f: NOTE_FREQS.G4, d: 0.2 },
+        { f: NOTE_FREQS.E4, d: 0.2 },
+        { f: NOTE_FREQS.C4, d: 0.4 }
+      ];
+
+      let time = 0;
+
+      notes.forEach(note => {
+        _playTone({
+          freq: note.f,
+          duration: note.d,
+          volume: 0.28,
+          delay: time
         });
+
+        time += note.d * 0.9;
       });
     },
 
     gameStart() {
-      [440, 554.37, 659.25, 880].forEach((f, i) => {
-        tone({ freq: f, duration: 0.16, volume: 0.17, delay: i * 0.12 });
+      [440, 660, 880].forEach((freq, index) => {
+        _playTone({
+          freq,
+          duration: index === 2 ? 0.25 : 0.1,
+          volume: 0.3,
+          delay: index * 0.1
+        });
       });
     },
 
     timeout() {
-      tone({ freq: 850, ramp: 350, type: 'square', duration: 0.13, volume: 0.12 });
-      tone({ freq: 600, ramp: 250, type: 'square', duration: 0.13, delay: 0.16, volume: 0.1 });
-    },
+      _playTone({
+        freq: 800,
+        duration: 0.15,
+        type: 'square',
+        volume: 0.25,
+        frequencyRamp: { to: 300, duration: 0.15 }
+      });
 
-    error() {
-      tone({ freq: 300, duration: 0.12, type: 'triangle', volume: 0.15 });
-      tone({ freq: 220, duration: 0.16, type: 'triangle', delay: 0.12, volume: 0.13 });
-    },
-
-    success() {
-      tone({ freq: 587.33, duration: 0.1, volume: 0.17 });
-      tone({ freq: 880, duration: 0.2, delay: 0.11, volume: 0.19 });
-    },
-
-    coin() {
-      tone({ freq: 988, duration: 0.07, type: 'sine', volume: 0.16 });
-      tone({ freq: 1318.51, duration: 0.12, delay: 0.065, volume: 0.13 });
-    },
-
-    chat() {
-      tone({ freq: 880, duration: 0.06, volume: 0.12 });
-      tone({ freq: 1174.66, duration: 0.08, delay: 0.06, volume: 0.1 });
-    },
-
-    tick() {
-      tone({ freq: 1200, duration: 0.025, volume: 0.07 });
-    },
-
-    countdown() {
-      tone({ freq: 1500, duration: 0.08, volume: 0.15 });
-      tone({ freq: 1000, duration: 0.1, delay: 0.09, volume: 0.12 });
-    },
-
-    achievement() {
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-        tone({ freq: f, duration: 0.2, volume: 0.17, delay: i * 0.12 });
+      _playTone({
+        freq: 600,
+        duration: 0.15,
+        type: 'square',
+        volume: 0.2,
+        delay: 0.15,
+        frequencyRamp: { to: 200, duration: 0.15 }
       });
     },
 
+    error() {
+      _playTone({
+        freq: 300,
+        duration: 0.12,
+        type: 'sawtooth',
+        volume: 0.22
+      });
+
+      _playTone({
+        freq: 200,
+        duration: 0.18,
+        type: 'sawtooth',
+        volume: 0.2,
+        delay: 0.1
+      });
+    },
+
+    success() {
+      _playTone({
+        freq: 587.33,
+        duration: 0.1,
+        volume: 0.3
+      });
+
+      _playTone({
+        freq: 880,
+        duration: 0.2,
+        volume: 0.32,
+        delay: 0.1
+      });
+    },
+
+    coin() {
+      _playTone({
+        freq: 988,
+        duration: 0.08,
+        type: 'square',
+        volume: 0.25
+      });
+
+      _playTone({
+        freq: 1318.51,
+        duration: 0.15,
+        type: 'square',
+        volume: 0.22,
+        delay: 0.06
+      });
+    },
+
+    chat() {
+      _playTone({
+        freq: 880,
+        duration: 0.06,
+        volume: 0.2
+      });
+
+      _playTone({
+        freq: 1174.66,
+        duration: 0.08,
+        volume: 0.18,
+        delay: 0.05
+      });
+    },
+
+    tick() {
+      _playTone({
+        freq: 1200,
+        duration: 0.03,
+        volume: 0.12
+      });
+    },
+
+    countdown() {
+      _playTone({
+        freq: 1500,
+        duration: 0.08,
+        volume: 0.25
+      });
+
+      _playTone({
+        freq: 1000,
+        duration: 0.1,
+        volume: 0.2,
+        delay: 0.08
+      });
+    },
+
+    achievement() {
+      const notes = [
+        { f: 523.25, d: 0.12 },
+        { f: 659.25, d: 0.12 },
+        { f: 783.99, d: 0.12 },
+        { f: 1046.5, d: 0.3 }
+      ];
+
+      let time = 0;
+
+      notes.forEach(note => {
+        _playTone({
+          freq: note.f,
+          duration: note.d,
+          type: 'triangle',
+          volume: 0.3,
+          delay: time
+        });
+
+        time += note.d * 0.9;
+      });
+
+      setTimeout(() => {
+        _playChord(
+          [1046.5, 1318.51, 1567.98],
+          {
+            duration: 0.5,
+            volume: 0.2
+          }
+        );
+      }, 600);
+    },
+
+    shuffle() {
+      for (let i = 0; i < 5; i++) {
+        _playNoise({
+          duration: 0.05,
+          volume: 0.2,
+          filterFreq: 3000 + i * 500,
+          delay: i * 0.04
+        });
+      }
+    },
+
     turn() {
-      tone({ freq: 800, duration: 0.07, volume: 0.15 });
-      tone({ freq: 1200, duration: 0.1, delay: 0.07, volume: 0.13 });
+      _playTone({
+        freq: 800,
+        duration: 0.08,
+        volume: 0.28
+      });
+
+      _playTone({
+        freq: 1200,
+        duration: 0.12,
+        volume: 0.25,
+        delay: 0.06
+      });
     },
 
     pop() {
-      tone({ freq: 400, ramp: 800, duration: 0.06, volume: 0.14 });
+      _playTone({
+        freq: 400,
+        duration: 0.05,
+        volume: 0.25,
+        frequencyRamp: { to: 800, duration: 0.04 }
+      });
     },
 
     swipe() {
-      noise({ duration: 0.1, frequency: 1400, type: 'bandpass', volume: 0.12 });
-    },
-
-    goodJob() {
-      SOUNDS.success();
-    },
-
-    cardSelect() {
-      tone({ freq: 720, ramp: 920, duration: 0.07, volume: 0.13 });
-    },
-
-    cardPlace() {
-      noise({ duration: 0.08, frequency: 1500, type: 'lowpass', volume: 0.15 });
-    },
-
-    victory() {
-      SOUNDS.win();
-    },
-
-    defeat() {
-      SOUNDS.lose();
+      _playNoise({
+        duration: 0.1,
+        volume: 0.2,
+        filterFreq: 1500,
+        filterType: 'bandpass'
+      });
     }
   };
 
-  /* ================= AMBIENT MUSIC ================= */
+  /* ═══════════════════════════════════════════════════════════
+     🎵 موسیقی اختصاصی آرام و لوکس
+     ═══════════════════════════════════════════════════════════ */
 
-  function playPad(freqs) {
-    if (!state.ctx || !state.musicPlaying) return;
+  function _trackMusicNode(osc, gain) {
+    const node = { osc, gain };
+    state.musicNodes.push(node);
 
-    const ctx = state.ctx;
-    const now = ctx.currentTime;
+    osc.onended = () => {
+      const index = state.musicNodes.indexOf(node);
 
-    freqs.forEach((freq, i) => {
+      if (index !== -1) {
+        state.musicNodes.splice(index, 1);
+      }
+
+      try {
+        osc.disconnect();
+        gain.disconnect();
+      } catch (error) {}
+    };
+
+    return node;
+  }
+
+  function _musicTone(
+    note,
+    start,
+    duration,
+    options = {}
+  ) {
+    if (!state.ctx || !state.musicPlaying) return null;
+
+    try {
+      const ctx = state.ctx;
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const filter = ctx.createBiquadFilter();
 
-      osc.type = i === 0 ? 'sine' : 'triangle';
-      osc.frequency.value = freq;
-      osc.detune.value = i % 2 ? 3 : -3;
+      osc.type = options.type || 'sine';
+      osc.frequency.value = _midiToFrequency(note);
 
       filter.type = 'lowpass';
-      filter.frequency.value = 850;
+      filter.frequency.value = options.filter || 1800;
+      filter.Q.value = 0.6;
 
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(0.025, now + 3);
+      const peak = options.volume ?? 0.04;
+      const attack = options.attack ?? 0.15;
+      const release = options.release ?? 0.3;
+
+      gain.gain.setValueAtTime(0.0001, start);
+
+      gain.gain.linearRampToValueAtTime(
+        peak,
+        start + attack
+      );
+
+      gain.gain.setValueAtTime(
+        peak,
+        start + duration
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        start + duration + release
+      );
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(state.music);
-      gain.connect(state.reverb);
 
-      osc.start(now);
+      // صدای مستقیم و صدای دارای Reverb
+      gain.connect(state.musicGain);
+      gain.connect(state.reverbNode);
 
-      state.padNodes.push({ osc, gain });
+      _trackMusicNode(osc, gain);
+
+      osc.start(start);
+      osc.stop(start + duration + release + 0.05);
+
+      return { osc, gain };
+
+    } catch (error) {
+      console.warn('[Audio] Music tone error:', error);
+      return null;
+    }
+  }
+
+  function _playLuxuryPad(chord, start) {
+    if (!state.ctx || !state.musicPlaying) return;
+
+    chord.forEach((note, index) => {
+      _musicTone(note, start, MUSIC_BAR * 0.96, {
+        type: index === 0 ? 'sine' : 'triangle',
+        volume: index === 0 ? 0.025 : 0.014,
+        attack: 1.2,
+        release: 1.0,
+        filter: 1100
+      });
     });
   }
 
-  function changeChord() {
-    if (!state.musicPlaying) return;
-
-    const ctx = state.ctx;
-    const now = ctx.currentTime;
-
-    state.padNodes.forEach(node => {
-      try {
-        node.gain.gain.cancelScheduledValues(now);
-        node.gain.gain.setTargetAtTime(0.0001, now, 1.1);
-        node.osc.stop(now + 4);
-      } catch (_) {}
+  function _playLuxuryPluck(note, start, volume = 0.045) {
+    _musicTone(note, start, 0.85, {
+      type: 'sine',
+      volume,
+      attack: 0.025,
+      release: 1.0,
+      filter: 2600
     });
 
-    state.padNodes = [];
-
-    state.chordIndex = (state.chordIndex + 1) % CHORDS.length;
-    playPad(CHORDS[state.chordIndex]);
-
-    const timer = setTimeout(changeChord, 12000);
-    state.timers.push(timer);
+    // هارمونیک بالایی بسیار ملایم
+    _musicTone(note + 12, start, 0.35, {
+      type: 'sine',
+      volume: volume * 0.14,
+      attack: 0.02,
+      release: 0.6,
+      filter: 3200
+    });
   }
 
-  function playArpeggio() {
+  function _playMusicBar(barIndex, start) {
     if (!state.musicPlaying) return;
 
-    const chord = CHORDS[state.chordIndex];
-    const freq = chord[Math.floor(Math.random() * chord.length)];
+    const chordIndex = barIndex % LUXURY_CHORDS.length;
 
-    const ctx = state.ctx;
-    const now = ctx.currentTime;
+    const chord = LUXURY_CHORDS[chordIndex];
+    const melody = LUXURY_MELODY[chordIndex];
 
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
+    state.currentChordIndex = chordIndex;
 
-    osc.type = 'sine';
-    osc.frequency.value = freq * (Math.random() < 0.2 ? 2 : 1);
+    // پد اصلی آکورد
+    _playLuxuryPad(chord, start);
 
-    filter.type = 'lowpass';
-    filter.frequency.value = 1600;
+    // آرپژ نرم و منظم
+    const arpeggioPattern = [0, 2, 3, 2];
 
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.025, now + 0.25);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+    arpeggioPattern.forEach((noteIndex, index) => {
+      const note = chord[noteIndex] + 12;
 
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(state.music);
-    gain.connect(state.reverb);
+      _playLuxuryPluck(
+        note,
+        start + index * MUSIC_BEAT,
+        0.025
+      );
+    });
 
-    osc.start(now);
-    osc.stop(now + 2.3);
+    // ملودی اختصاصی
+    melody.forEach((note, index) => {
+      if (note === null) return;
 
-    state.arpTimer = setTimeout(playArpeggio, 3500 + Math.random() * 1800);
+      _playLuxuryPluck(
+        note,
+        start + index * MUSIC_BEAT * 0.5,
+        0.04
+      );
+    });
   }
 
-  function startMusicInternal() {
-    if (!state.ctx || state.musicPlaying || !state.musicEnabled) return;
+  function _scheduleMusicBar() {
+    if (!state.musicPlaying || !state.ctx) return;
+
+    const start = state.ctx.currentTime + 0.08;
+
+    _playMusicBar(state.musicBarIndex, start);
+
+    state.musicBarIndex++;
+
+    const timer = setTimeout(() => {
+      if (state.musicPlaying) {
+        _scheduleMusicBar();
+      }
+    }, MUSIC_BAR * 1000);
+
+    state.musicTimers.push(timer);
+  }
+
+  function _startMusic() {
+    if (!state.ctx || state.musicPlaying) return;
+    if (!state.enabled.music) return;
+
+    if (state.ctx.state === 'suspended') {
+      state.ctx.resume().then(() => {
+        if (state.enabled.music && !state.musicPlaying) {
+          _startMusic();
+        }
+      }).catch(() => {});
+
+      return;
+    }
 
     state.musicPlaying = true;
-    state.chordIndex = 0;
+    state.musicBarIndex = 0;
+    state.currentChordIndex = 0;
 
-    playPad(CHORDS[0]);
-    state.arpTimer = setTimeout(playArpeggio, 1800);
+    state.musicGain.gain.cancelScheduledValues(
+      state.ctx.currentTime
+    );
 
-    const timer = setTimeout(changeChord, 12000);
-    state.timers.push(timer);
+    state.musicGain.gain.setTargetAtTime(
+      state.volumes.music,
+      state.ctx.currentTime,
+      0.4
+    );
+
+    _scheduleMusicBar();
+
+    console.log(
+      '%c🎵 Luxury Ambient Music Started',
+      'color:#c9a96e;font-weight:bold;'
+    );
   }
 
-  function stopMusicInternal() {
+  function _stopMusic() {
+    if (!state.musicPlaying && state.musicNodes.length === 0) {
+      return;
+    }
+
     state.musicPlaying = false;
 
-    if (state.arpTimer) clearTimeout(state.arpTimer);
-    state.timers.forEach(clearTimeout);
-    state.timers = [];
-
-    const now = state.ctx?.currentTime || 0;
-
-    state.padNodes.forEach(node => {
-      try {
-        node.gain.gain.cancelScheduledValues(now);
-        node.gain.gain.setTargetAtTime(0.0001, now, 0.35);
-        node.osc.stop(now + 2);
-      } catch (_) {}
+    // لغو تمام تایمرهای موسیقی
+    state.musicTimers.forEach(timer => {
+      clearTimeout(timer);
     });
 
-    state.padNodes = [];
+    state.musicTimers = [];
+
+    if (!state.ctx) return;
+
+    const now = state.ctx.currentTime;
+
+    // Fade out تمام نت‌های در حال پخش
+    state.musicNodes.forEach(node => {
+      try {
+        node.gain.gain.cancelScheduledValues(now);
+
+        node.gain.gain.setTargetAtTime(
+          0.0001,
+          now,
+          0.25
+        );
+
+        node.osc.stop(now + 1.2);
+
+      } catch (error) {}
+    });
+
+    console.log(
+      '%c🎵 Luxury Ambient Music Stopped',
+      'color:#6b7280;'
+    );
   }
 
-  /* ================= PUBLIC API ================= */
+  /* ═══════════════════════════════════════════════════════════
+     API عمومی HokmAudio
+     سازگار با نسخه قبلی
+     ═══════════════════════════════════════════════════════════ */
 
   const Audio = {
 
     init() {
-      loadSettings();
-      init();
-      bindUnlock();
+      _loadFromStorage();
+      _init();
+      _bindUnlockEvents();
+
       return Audio;
     },
 
     play(name) {
-      if (!state.initialized && !init()) return;
-      if (!state.sfxEnabled) return;
+      if (!state.initialized && !_init()) return;
+      if (!state.enabled.sfx) return;
 
-      if (!state.unlocked) unlock();
+      if (!state.unlocked) {
+        _unlock();
+      }
 
-      const fn = SOUNDS[name];
+      const sound = SOUNDS[name];
 
-      if (typeof fn === 'function') {
-        playOnce(name, () => {
-          try { fn(); }
-          catch (e) { console.warn('[Audio]', name, e); }
-        });
+      if (typeof sound === 'function') {
+        try {
+          sound();
+        } catch (error) {
+          console.warn(
+            `[Audio] Error playing "${name}":`,
+            error
+          );
+        }
       } else {
-        console.warn('[Audio] Unknown sound:', name);
+        console.warn(`[Audio] Unknown sound: "${name}"`);
       }
     },
 
     playTone(options) {
-      tone(options);
+      if (!state.initialized && !_init()) return null;
+      return _playTone(options);
     },
 
     playNoise(options) {
-      noise(options);
+      if (!state.initialized && !_init()) return null;
+      return _playNoise(options);
     },
 
     startMusic() {
-      state.musicEnabled = true;
-      saveSettings();
+      state.enabled.music = true;
+      _saveToStorage();
+
+      if (!state.initialized && !_init()) return;
 
       if (!state.unlocked) {
-        unlock();
+        _unlock();
         return;
       }
 
-      startMusicInternal();
+      _startMusic();
     },
 
     stopMusic() {
-      state.musicEnabled = false;
-      saveSettings();
-      stopMusicInternal();
+      state.enabled.music = false;
+      _saveToStorage();
+
+      _stopMusic();
     },
 
     toggleMusic() {
-      state.musicEnabled
-        ? Audio.stopMusic()
-        : Audio.startMusic();
+      if (state.enabled.music) {
+        Audio.stopMusic();
+      } else {
+        Audio.startMusic();
+      }
 
-      return state.musicEnabled;
+      return state.enabled.music;
     },
 
     isMusicPlaying() {
@@ -635,52 +1184,83 @@
     },
 
     setSfxEnabled(enabled) {
-      state.sfxEnabled = !!enabled;
-      saveSettings();
+      state.enabled.sfx = !!enabled;
+      _saveToStorage();
 
-      const btn = document.getElementById('btnSoundToggle');
-      if (btn) btn.textContent = state.sfxEnabled ? '🔊' : '🔇';
+      const button =
+        typeof document !== 'undefined'
+          ? document.getElementById('btnSoundToggle')
+          : null;
+
+      if (button) {
+        button.textContent = state.enabled.sfx ? '🔊' : '🔇';
+      }
     },
 
     isSfxEnabled() {
-      return state.sfxEnabled;
+      return state.enabled.sfx;
     },
 
     toggleSfx() {
-      Audio.setSfxEnabled(!state.sfxEnabled);
-      if (state.sfxEnabled) Audio.play('click');
-      return state.sfxEnabled;
+      Audio.setSfxEnabled(!state.enabled.sfx);
+
+      if (state.enabled.sfx) {
+        Audio.play('click');
+      }
+
+      return state.enabled.sfx;
     },
 
-    setMusicVolume(value) {
-      state.musicVolume = Math.max(0, Math.min(1, Number(value) || 0));
-      if (state.music) state.music.gain.setTargetAtTime(
-        state.musicVolume, state.ctx.currentTime, 0.04
-      );
-      saveSettings();
+    setMusicVolume(volume) {
+      state.volumes.music = _clamp(volume);
+
+      if (state.musicGain && state.ctx) {
+        state.musicGain.gain.setTargetAtTime(
+          state.volumes.music,
+          state.ctx.currentTime,
+          0.08
+        );
+      }
+
+      _saveToStorage();
     },
 
     getMusicVolume() {
-      return state.musicVolume;
+      return state.volumes.music;
     },
 
-    setSfxVolume(value) {
-      state.sfxVolume = Math.max(0, Math.min(1, Number(value) || 0));
-      if (state.sfx) state.sfx.gain.setTargetAtTime(
-        state.sfxVolume, state.ctx.currentTime, 0.04
-      );
-      saveSettings();
+    setSfxVolume(volume) {
+      state.volumes.sfx = _clamp(volume);
+
+      if (state.sfxGain && state.ctx) {
+        state.sfxGain.gain.setTargetAtTime(
+          state.volumes.sfx,
+          state.ctx.currentTime,
+          0.05
+        );
+      }
+
+      _saveToStorage();
     },
 
     getSfxVolume() {
-      return state.sfxVolume;
+      return state.volumes.sfx;
     },
 
-    setMasterVolume(value) {
-      const v = Math.max(0, Math.min(1, Number(value) || 0));
-      if (state.master) state.master.gain.setTargetAtTime(
-        v, state.ctx.currentTime, 0.04
-      );
+    setMasterVolume(volume) {
+      state.volumes.master = _clamp(volume);
+
+      if (state.masterGain && state.ctx) {
+        state.masterGain.gain.setTargetAtTime(
+          state.volumes.master,
+          state.ctx.currentTime,
+          0.05
+        );
+      }
+    },
+
+    getMasterVolume() {
+      return state.volumes.master;
     },
 
     getState() {
@@ -688,10 +1268,11 @@
         initialized: state.initialized,
         unlocked: state.unlocked,
         musicPlaying: state.musicPlaying,
-        sfx: state.sfxEnabled,
-        music: state.musicEnabled,
-        sfxVolume: state.sfxVolume,
-        musicVolume: state.musicVolume
+        sfx: state.enabled.sfx,
+        music: state.enabled.music,
+        sfxVolume: state.volumes.sfx,
+        musicVolume: state.volumes.music,
+        masterVolume: state.volumes.master
       };
     },
 
@@ -703,127 +1284,206 @@
       const names = Audio.listSounds();
       let index = 0;
 
-      function next() {
+      const next = () => {
         if (index >= names.length) return;
 
-        Audio.play(names[index++]);
-        setTimeout(next, 900);
-      }
+        console.log(`🔊 ${names[index]}`);
+
+        Audio.play(names[index]);
+
+        index++;
+
+        setTimeout(next, 500);
+      };
 
       next();
     },
 
     playVoiceLine(id) {
       const lines = {
-        good_job: 'success',
-        nice_play: 'coin',
-        give_up: 'error',
-        wow: 'notification',
-        hello: 'chat',
-        thanks: 'softClick',
-        sorry: 'loseTrick',
-        hurry: 'countdown'
+        good_job: () => Audio.play('success'),
+        nice_play: () => Audio.play('coin'),
+        give_up: () => Audio.play('error'),
+        wow: () => Audio.play('notification'),
+        hello: () => Audio.play('chat'),
+        thanks: () => Audio.play('softClick'),
+        sorry: () => Audio.play('loseTrick'),
+        hurry: () => Audio.play('countdown')
       };
 
-      if (lines[id]) Audio.play(lines[id]);
+      const line = lines[id];
+
+      if (line) {
+        line();
+      }
     },
 
     destroy() {
-      stopMusicInternal();
+      _stopMusic();
 
       if (state.ctx) {
-        state.ctx.close().catch(() => {});
+        try {
+          state.ctx.close();
+        } catch (error) {}
       }
 
       state.ctx = null;
+      state.masterGain = null;
+      state.sfxGain = null;
+      state.musicGain = null;
+      state.reverbNode = null;
+
       state.initialized = false;
       state.unlocked = false;
+      state.musicPlaying = false;
+
+      state.musicNodes = [];
+      state.musicTimers = [];
     }
   };
 
-  /* ================= DOM INTEGRATION ================= */
+  /* ═══════════════════════════════════════════════════════════
+     اتصال به رابط کاربری
+     ═══════════════════════════════════════════════════════════ */
 
-  function attachDOM() {
-    const soundBtn = document.getElementById('btnSoundToggle');
+  function _attachToDOM() {
+    if (typeof document === 'undefined') return;
 
-    if (soundBtn && !soundBtn.dataset.bound) {
-      soundBtn.dataset.bound = '1';
-      soundBtn.textContent = state.sfxEnabled ? '🔊' : '🔇';
-      soundBtn.addEventListener('click', () => Audio.toggleSfx());
+    const soundButton =
+      document.getElementById('btnSoundToggle');
+
+    if (soundButton && !soundButton.dataset.bound) {
+      soundButton.dataset.bound = '1';
+
+      if (!soundButton.querySelector('img')) {
+        soundButton.textContent =
+          state.enabled.sfx ? '🔊' : '🔇';
+      }
+
+      soundButton.addEventListener('click', () => {
+        Audio.toggleSfx();
+      });
     }
 
-    const sfxToggle = document.getElementById('sfxToggle');
+    const sfxToggle =
+      document.getElementById('sfxToggle');
 
     if (sfxToggle && !sfxToggle.dataset.bound) {
       sfxToggle.dataset.bound = '1';
-      sfxToggle.checked = state.sfxEnabled;
+      sfxToggle.checked = state.enabled.sfx;
 
-      sfxToggle.addEventListener('change', e => {
-        Audio.setSfxEnabled(e.target.checked);
-        if (e.target.checked) Audio.play('click');
+      sfxToggle.addEventListener('change', event => {
+        Audio.setSfxEnabled(event.target.checked);
+
+        if (event.target.checked) {
+          Audio.play('click');
+        }
       });
     }
 
-    const musicToggle = document.getElementById('musicToggle');
+    const musicToggle =
+      document.getElementById('musicToggle');
 
     if (musicToggle && !musicToggle.dataset.bound) {
       musicToggle.dataset.bound = '1';
-      musicToggle.checked = state.musicEnabled;
+      musicToggle.checked = state.enabled.music;
 
-      musicToggle.addEventListener('change', e => {
-        if (e.target.checked) Audio.startMusic();
-        else Audio.stopMusic();
+      musicToggle.addEventListener('change', event => {
+        if (event.target.checked) {
+          Audio.startMusic();
+        } else {
+          Audio.stopMusic();
+        }
       });
     }
 
-    const musicVol = document.getElementById('musicVolume');
+    const musicVolume =
+      document.getElementById('musicVolume');
 
-    if (musicVol && !musicVol.dataset.bound) {
-      musicVol.dataset.bound = '1';
-      musicVol.value = Math.round(state.musicVolume * 100);
+    if (musicVolume && !musicVolume.dataset.bound) {
+      musicVolume.dataset.bound = '1';
 
-      musicVol.addEventListener('input', e => {
-        Audio.setMusicVolume(e.target.value / 100);
+      musicVolume.value =
+        Math.round(state.volumes.music * 100);
+
+      musicVolume.addEventListener('input', event => {
+        Audio.setMusicVolume(
+          Number(event.target.value) / 100
+        );
       });
     }
 
-    const sfxVol = document.getElementById('sfxVolume');
+    const sfxVolume =
+      document.getElementById('sfxVolume');
 
-    if (sfxVol && !sfxVol.dataset.bound) {
-      sfxVol.dataset.bound = '1';
-      sfxVol.value = Math.round(state.sfxVolume * 100);
+    if (sfxVolume && !sfxVolume.dataset.bound) {
+      sfxVolume.dataset.bound = '1';
 
-      sfxVol.addEventListener('input', e => {
-        Audio.setSfxVolume(e.target.value / 100);
+      sfxVolume.value =
+        Math.round(state.volumes.sfx * 100);
+
+      sfxVolume.addEventListener('input', event => {
+        Audio.setSfxVolume(
+          Number(event.target.value) / 100
+        );
+      });
+
+      sfxVolume.addEventListener('change', () => {
+        Audio.play('click');
       });
     }
 
-    document.addEventListener('click', e => {
-      const btn = e.target.closest(
-        '.btn, .icon-btn, .tab, .menu-card, .chip'
-      );
+    // صدای کلیک کنترل‌های رابط کاربری
+    if (!domEventsBound) {
+      domEventsBound = true;
 
-      if (btn && !btn.dataset.noSound) {
-        Audio.play('softClick');
-      }
-    }, { passive: true });
+      document.addEventListener('click', event => {
+        const target = event.target;
+
+        if (!target || typeof target.closest !== 'function') {
+          return;
+        }
+
+        const button = target.closest(
+          '.btn, .icon-btn, .tab, .menu-card, .chip'
+        );
+
+        if (
+          button &&
+          !button.dataset.noSound &&
+          !button.closest('#btnSoundToggle')
+        ) {
+          Audio.play('softClick');
+        }
+
+      }, { passive: true });
+    }
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     راه‌اندازی خودکار
+     ═══════════════════════════════════════════════════════════ */
 
   function bootstrap() {
     Audio.init();
-    attachDOM();
+    _attachToDOM();
 
     console.log(
-      `%c HOKM PRO AUDIO v7.0 — ${Audio.listSounds().length} sounds ready `,
-      'background:#171717;color:#d4af37;padding:8px;font-weight:bold'
+      `%c🔊 HOKM PRO v7.0 Ready — ${Audio.listSounds().length} sounds + Luxury Music`,
+      'color:#c9a96e;font-weight:bold;'
     );
   }
 
+  // API عمومی
   global.HokmAudio = Audio;
 
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', bootstrap, { once: true });
+      document.addEventListener(
+        'DOMContentLoaded',
+        bootstrap,
+        { once: true }
+      );
     } else {
       bootstrap();
     }
