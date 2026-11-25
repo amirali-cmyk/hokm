@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    🎨 HOKM PRO v7.0.0 — ui.js
-   ناوبری + رندر بازی + آواتار SVG + ری‌اکشن
+   ناوبری + رندر بازی + ری‌اکشن + آواتار SVG
    ═══════════════════════════════════════════════════════════ */
 
 (function (global) {
@@ -26,8 +26,6 @@
 
   const SEAT_MAP = { Bottom: 0, Left: 1, Top: 2, Right: 3 };
   const SEAT_POSITIONS = ['Bottom', 'Left', 'Top', 'Right'];
-
-  const DEFAULT_AVATAR = 'assets/svg/avatar-default.svg';
 
   const state = {
     currentScreen: 'menu',
@@ -63,20 +61,6 @@
 
   function _$(id) { return document.getElementById(id); }
   function _$$(sel) { return document.querySelectorAll(sel); }
-
-  function _avatarHTML(avatar, size) {
-    size = size || 44;
-    if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
-      return `<img src="${avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
-    }
-    if (typeof avatar === 'string' && avatar.startsWith('assets/')) {
-      return `<img src="${avatar}" alt="" style="width:100%;height:100%;object-fit:contain;" />`;
-    }
-    if (typeof avatar === 'string' && /^[^a-zA-Z0-9]/.test(avatar) && avatar.length <= 4) {
-      return avatar;
-    }
-    return `<img src="${DEFAULT_AVATAR}" alt="" style="width:100%;height:100%;object-fit:contain;" />`;
-  }
 
   const UI = {
 
@@ -234,11 +218,14 @@
         _setText('cards' + pos, _toPersianNumber(p.hand.length));
         const avatarEl = _$('avatar' + pos);
         if (avatarEl) {
-          const avatarContent = _avatarHTML(p.avatar);
           if (p.isAI) {
-            avatarEl.innerHTML = `<img src="${DEFAULT_AVATAR}" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0.9) hue-rotate(200deg);" />`;
+            avatarEl.innerHTML = `<img src="assets/svg/avatar-default.svg" alt="" style="width:100%;height:100%;object-fit:contain;filter:hue-rotate(200deg) brightness(0.9);" />`;
+          } else if (typeof p.avatar === 'string' && p.avatar.startsWith('data:image')) {
+            avatarEl.innerHTML = `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+          } else if (typeof p.avatar === 'string' && p.avatar.startsWith('assets/')) {
+            avatarEl.innerHTML = `<img src="${p.avatar}" alt="" style="width:100%;height:100%;object-fit:contain;" />`;
           } else {
-            avatarEl.innerHTML = avatarContent;
+            avatarEl.textContent = p.avatar || '🌱';
           }
         }
       });
@@ -270,7 +257,7 @@
       if (!el) return;
       el.textContent = SUIT_SYMBOLS[suit] || '—';
       const isRed = suit === 'hearts' || suit === 'diamonds';
-      el.style.color = isRed ? 'var(--ruby-bright)' : 'var(--gold-bright)';
+      el.style.color = isRed ? 'var(--color-danger)' : 'var(--accent)';
     },
 
     highlightCurrentPlayer(playerIdx) {
@@ -351,12 +338,11 @@
         ${pos.bottom ? 'bottom: ' + pos.bottom + ';' : ''}
         ${pos.left ? 'left: ' + pos.left + ';' : ''}
         ${pos.right ? 'right: ' + pos.right + ';' : ''}
-        font-size: 52px;
+        font-size: 48px;
         z-index: 2000;
         pointer-events: none;
         animation: floatUp 2s ease-out forwards;
         transform: translateX(-50%);
-        filter: drop-shadow(0 0 15px var(--accent-glow));
       `;
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 2000);
@@ -408,25 +394,25 @@
       const eloChange = result.eloChange || 0;
       const coinsReward = result.coinsReward || 0;
       const eloSign = eloChange >= 0 ? '+' : '';
-      const eloColor = eloChange > 0 ? 'var(--emerald-bright)' : eloChange < 0 ? 'var(--ruby-bright)' : 'var(--text-muted)';
+      const eloColor = eloChange > 0 ? 'var(--color-success)' : eloChange < 0 ? 'var(--color-danger)' : 'var(--text-muted)';
       const title = win ? '🏆 بردی!' : '💔 باختی';
 
       const html = `
         <div style="text-align:center;">
-          <div style="font-size:80px; margin-bottom: 10px; ${win ? 'animation: victoryBounce 0.9s var(--ease-luxury);' : 'animation: defeatShake 0.8s;'}">
+          <div style="font-size:72px; margin-bottom: 8px; ${win ? 'animation: victoryBounce 0.8s var(--ease-bounce);' : 'animation: defeatShake 0.7s;'}">
             ${win ? '🏆' : '💔'}
           </div>
-          <h2 class="modal-title" style="color: ${win ? 'var(--emerald-bright)' : 'var(--ruby-bright)'}; font-size: 28px;">
+          <h2 class="modal-title" style="color: ${win ? 'var(--color-success)' : 'var(--color-danger)'}; font-size: 26px;">
             ${title}
           </h2>
-          <p style="color: var(--text-secondary); margin: 10px 0 22px; font-size: 15px;">
-            نتیجه نهایی: <strong style="font-family: var(--font-num); font-size: 20px; color: var(--gold-bright);">${_toPersianNumber(result.myScore)}</strong>
+          <p style="color: var(--text-secondary); margin: 8px 0 20px;">
+            نتیجه نهایی: <strong style="font-family: var(--font-num);">${_toPersianNumber(result.myScore)}</strong>
             —
-            <strong style="font-family: var(--font-num); font-size: 20px; color: var(--gold-bright);">${_toPersianNumber(result.opponentScore)}</strong>
+            <strong style="font-family: var(--font-num);">${_toPersianNumber(result.opponentScore)}</strong>
           </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
           <div class="stat-card">
             <div class="stat-value" style="color: ${eloColor};">
               ${_toPersianNumber(eloSign + eloChange)}
@@ -434,8 +420,8 @@
             <div class="stat-label">تغییر ELO</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" style="color: var(--gold-bright); display:flex; align-items:center; justify-content:center; gap:6px;">
-              <img src="assets/svg/coin.svg" alt="" style="width:26px;height:26px;" />
+            <div class="stat-value" style="color: var(--accent); display:flex; align-items:center; justify-content:center; gap:6px;">
+              <img src="assets/svg/coin.svg" alt="" style="width:24px;height:24px;" />
               ${_toPersianNumber(coinsReward)}
             </div>
             <div class="stat-label">سکه</div>
@@ -484,15 +470,14 @@
     },
 
     celebrateWin() {
-      const colors = ['#ffd700', '#06d6a0', '#ef476f', '#3a7bd5', '#9b5de5'];
-      for (let i = 0; i < 70; i++) {
+      const colors = ['#ffd60a', '#06d6a0', '#ef476f', '#118ab2', '#9b5de5'];
+      for (let i = 0; i < 60; i++) {
         const c = document.createElement('div');
         c.className = 'confetti';
         c.style.left = Math.random() * 100 + 'vw';
         c.style.background = colors[Math.floor(Math.random() * colors.length)];
         c.style.animationDuration = (2 + Math.random() * 2) + 's';
         c.style.animationDelay = Math.random() * 0.5 + 's';
-        c.style.boxShadow = `0 0 10px ${c.style.background}`;
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 5000);
       }
@@ -675,10 +660,7 @@
     }
   }
 
-  function _setText(id, text) {
-    const el = _$(id);
-    if (el) el.textContent = text;
-  }
+  function _setText(id, text) { const el = _$(id); if (el) el.textContent = text; }
 
   function bootstrap() {
     _bindGlobalEvents();
@@ -690,7 +672,7 @@
         } else _game().clearSaved();
       }
     }, 2000);
-    console.log('%c🎨 UI ready (v7.0.0)', 'color: #118ab2; font-weight: bold; font-size: 13px;');
+    console.log('%c🎨 UI ready (v6.3.0 + SVG)', 'color: #118ab2; font-weight: bold; font-size: 13px;');
   }
 
   UI.SCREENS = SCREENS;
